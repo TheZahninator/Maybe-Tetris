@@ -6,11 +6,17 @@ const int Field::mHeight = 20;
 const int Field::mWidth = 10;
 
 DirectX::SimpleMath::Vector2 Field::mScreenPosition;
-std::vector<TetrominoGroup*> Field::mTetrominoQueue;
+std::vector<std::shared_ptr<TetrominoGroup>> Field::mTetrominoQueue;
 
 float Field::mGravity;
 UINT Field::mPoints;
 UINT Field::mTotalLinesCleared;
+
+std::vector<std::unique_ptr<ComputerPlayer>>	Field::AIList;
+bool											Field::AIMode;
+unsigned										Field::AICount;
+unsigned										Field::CurrentAI;
+unsigned										Field::SurvivingAIs = 3;
 
 void Field::init(DirectX::SimpleMath::Vector2& screenPosition){
 	mScreenPosition = screenPosition;
@@ -18,12 +24,112 @@ void Field::init(DirectX::SimpleMath::Vector2& screenPosition){
 	memset(mGrid, 0, mWidth * mHeight * sizeof(Block*));
 
 	for (int i = 0; i < QUEUE_SIZE; i++){
-		mTetrominoQueue.push_back(new TetrominoGroup(rand() % NUMBER_OF_MINOS + 1));
+		mTetrominoQueue.push_back(std::shared_ptr<TetrominoGroup>(new TetrominoGroup(rand() % NUMBER_OF_MINOS + 1)));
 	}
 
 	mGravity = 1.0f;
 	mPoints = 0;
 	mTotalLinesCleared = 0;
+
+	AICount = 10;
+	for (unsigned i = 0; i < AICount; i++){
+		AIList.push_back(std::unique_ptr<ComputerPlayer>(new ComputerPlayer()));
+	}
+
+	AIMode = false;
+}
+
+void Field::restart(){
+	if (mGrid)
+		delete[] mGrid;
+
+	mTetrominoQueue.clear();
+
+	mGrid = new Block*[mWidth * mHeight];
+	memset(mGrid, 0, mWidth * mHeight * sizeof(Block*));
+
+	for (int i = 0; i < QUEUE_SIZE; i++){
+		mTetrominoQueue.push_back(std::shared_ptr<TetrominoGroup>(new TetrominoGroup(rand() % NUMBER_OF_MINOS + 1)));
+	}
+
+	if (AIMode){
+		AIList[CurrentAI]->m_fitness += mPoints;
+		CurrentAI++;
+
+		if (CurrentAI >= AICount){
+			NewGen();
+
+			CurrentAI = 0;
+		}
+	}
+
+	mGravity = 1.0f;
+	mPoints = 0;
+	mTotalLinesCleared = 0;
+}
+
+void Field::NewGen(){
+	if (AIList.size() < SurvivingAIs)
+		SurvivingAIs = AIList.size();
+
+	std::vector<std::unique_ptr<ComputerPlayer>> survived;
+	survived.clear();
+
+	while (survived.size() < SurvivingAIs){
+		ComputerPlayer* highestFitness = AIList.front().get();
+		unsigned x = 0;
+
+		for (unsigned i = 1; i < AIList.size(); i++){
+			if (AIList[i]->m_fitness > highestFitness->m_fitness){
+				highestFitness = AIList[i].get();
+				x = i;
+			}
+		}
+
+		survived.push_back(std::move(AIList[x]));
+		AIList.erase(AIList.begin() + x);
+}
+	//Clear car list.
+	AIList.clear();
+
+	//Write survived cars back into the list.
+	for (unsigned i = 0; i < survived.size(); i++){
+		AIList.push_back(std::move(survived[i]));
+		AIList.back()->m_fitness = 0;
+	}
+
+	//Calculate chances for every surviver to recreate.
+	float chanceScale = 1.5;
+
+	float totalChance = 0;
+
+	std::vector<float> chances;
+	chances.push_back(1);
+
+	totalChance += 1;
+
+	for (unsigned i = 1; i < SurvivingAIs; i++){
+		float chance = chances[i - 1] / chanceScale;
+		totalChance += chance;
+		chances.push_back(chance);
+	}
+
+	while (AIList.size() < AICount){
+		int num = rand();
+		float result = static_cast<float>(ZAHN_MAP(static_cast<double>(num), 0.0, static_cast<double>(RAND_MAX), 0.0, static_cast<double>(totalChance)));
+
+		float cumlutativeChance = totalChance;
+
+		for (unsigned i = 0; i < chances.size(); i++){
+			cumlutativeChance -= chances[i];
+			if (result >= cumlutativeChance){
+
+				AIList.push_back(std::unique_ptr<ComputerPlayer>(AIList[i]->recreate()));
+				break;
+			}
+		}
+	}
+	CurrentAI = 0;
 }
 
 void Field::Update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::Keyboard::KeyboardStateTracker* keyboardTracker, DirectX::Keyboard::State* keyboardState, DirectX::Mouse::State* mouse, DirectX::Mouse::ButtonStateTracker* mouseTracker){
@@ -44,14 +150,22 @@ void Field::Update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::
 	}
 #endif	
 	
+	//Let the AI controll the Button presses
+	if (AIMode){
+
+		AIList[CurrentAI]->update();
+		auto state = AIList[CurrentAI]->m_controller->GetState();
+		inputGamePad->Update(state);
+
+	}
+
 	//Updatet den aktiven Tetromino.
 	mTetrominoQueue[0]->update(inputGamePad, keyboardTracker, keyboardState);
 
 	//Wenn der aktive Tetromino gesetzt wurde, wird er gelöscht und die Tetrominos in der Schlange rücken nach. Ein neuer reiht sich hinten ein.
 	if (mTetrominoQueue[0]->shouldDestroy()){
-		delete mTetrominoQueue[0];
 		mTetrominoQueue.erase(mTetrominoQueue.begin());
-		mTetrominoQueue.push_back(new TetrominoGroup(rand() % NUMBER_OF_MINOS + 1));
+		mTetrominoQueue.push_back(std::shared_ptr<TetrominoGroup>(new TetrominoGroup(rand() % NUMBER_OF_MINOS + 1)));
 	}
 }
 

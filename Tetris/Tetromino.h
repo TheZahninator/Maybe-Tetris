@@ -35,8 +35,8 @@ public:
 	Vector2 getBlockMostLeft();
 	Vector2 getBlockMostRight();
 
-	int* getBaseMatrix(){ return mBaseMatrix; }
-	int* getFieldMatrix(){ return mFieldMatrix; }
+	int* getBaseMatrix(){ return mBaseMatrix.get(); }
+	int* getFieldMatrix(){ return mFieldMatrix.get(); }
 
 	bool isLocked(){ return mLocked; }
 	bool collidedAtSpawn(){ return mCollisionAtSpawn; }
@@ -47,8 +47,8 @@ private:
 	Vector2 mPositionSreen;
 	Vector2 mPositionGrid;
 	
-	int* mBaseMatrix;
-	int* mFieldMatrix;
+	std::unique_ptr<int> mBaseMatrix;
+	std::unique_ptr<int> mFieldMatrix;
 	int mMatrixWidth, mMatrixHeight;
 
 	bool mLocked;

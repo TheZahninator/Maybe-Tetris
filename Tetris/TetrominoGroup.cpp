@@ -258,16 +258,14 @@ TetrominoGroup::TetrominoGroup(int type) : mSplitted(false), mToBeDestroyed(fals
 	mPositionGrid.x = (float)(Field::getWidth() / 2 - (int)(w / 2));
 	mPositionGrid.y = (float)(2 - h);
 
-	mTetrominos.push_back(new Tetromino(mPositionGrid, matrix, w, h, color));
+	mTetrominos.push_back(std::shared_ptr<Tetromino>(new Tetromino(mPositionGrid, matrix, w, h, color)));
 	if (mTetrominos[0]->collidedAtSpawn()){
-		PostQuitMessage(0);
+		Field::restart();
 	}
 }
 
 
 TetrominoGroup::~TetrominoGroup(){
-	for (UINT i = 0; i < mTetrominos.size(); i++)
-		delete mTetrominos[i];
 }
 
 void TetrominoGroup::update(DirectX::GamePad::ButtonStateTracker* gamePadTracker, DirectX::Keyboard::KeyboardStateTracker* keyboardTracker, DirectX::Keyboard::State* keyboardState){
@@ -285,7 +283,7 @@ void TetrominoGroup::update(DirectX::GamePad::ButtonStateTracker* gamePadTracker
 			if (!mSplitted){
 				allLocked = false;
 				if (mTetrominos[i]->isLocked()){
-					split(mTetrominos[i]);
+					split(mTetrominos[i].get());
 					break;
 				}
 			}
@@ -293,7 +291,6 @@ void TetrominoGroup::update(DirectX::GamePad::ButtonStateTracker* gamePadTracker
 				allLocked &= mTetrominos[i]->isLocked();
 				if (mTetrominos[i]->isLocked()){
 					mTetrominos[i]->placeOnField();
-					delete mTetrominos[i];
 					mTetrominos.erase(mTetrominos.begin() + i);
 					i--;
 				}
@@ -363,7 +360,7 @@ bool TetrominoGroup::move(DirectX::SimpleMath::Vector2& direction){
 }
 
 void TetrominoGroup::split(Tetromino* tetromino){
-	std::vector<Tetromino*> newMinos;	//Liste der neuen Tetrominos.
+	std::vector<std::shared_ptr<Tetromino>> newMinos;	//Liste der neuen Tetrominos.
 	
 	int* matrix = tetromino->getFieldMatrix();	//Zwischenspeichern der Matrix.
 	int width = (int)tetromino->getMatrixSize().x;	//Zwischenspeichern der Matrixbreite.
@@ -378,18 +375,25 @@ void TetrominoGroup::split(Tetromino* tetromino){
 				checked[y * width + x] = true;	//Das aktuelle Feld wird als überprüft markiert.
 				if (matrix[y * width + x] > 0){	//Wenn das Feld einen Block besitzt...
 					//Der Teil-Tettromino wird der Liste hinzugefügt.
-					newMinos.push_back(tetromino->getPart(matrix, checked, width, height, x, y));
+					newMinos.push_back(std::shared_ptr<Tetromino>(tetromino->getPart(matrix, checked, width, height, x, y)));
 				}
 			}
 
 		}
 	}
 
-	for (UINT i = 0; i < mTetrominos.size(); i++)
-		delete mTetrominos[i];
 
 	mTetrominos = newMinos;
 	mSplitted = true;
 
 	delete[] checked;
+}
+
+
+int* TetrominoGroup::getMatrix(){ 
+	return mTetrominos[0]->getFieldMatrix(); 
+}
+
+DirectX::SimpleMath::Vector2 TetrominoGroup::getMatrixSize() { 
+	return mTetrominos[0]->getMatrixSize(); 
 }

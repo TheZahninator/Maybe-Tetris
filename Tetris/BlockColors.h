@@ -13,8 +13,8 @@
 #define BLOCK_COLOR_O DirectX::SimpleMath::Vector4(1.0f, 1.0f, 0.0f, 1.0f)
 #define BLOCK_COLOR_L DirectX::SimpleMath::Vector4(1.0f, 0.5f, 0.0f, 1.0f)
 #define BLOCK_COLOR_J DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f)
-#define BLOCK_COLOR_Z DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f)
-#define BLOCK_COLOR_S DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f)
+#define BLOCK_COLOR_Z DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f)
+#define BLOCK_COLOR_S DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f)
 #define BLOCK_COLOR_T DirectX::SimpleMath::Vector4(0.75f, 0.0f, 1.0f, 1.0f)
 
 //Special Blocks

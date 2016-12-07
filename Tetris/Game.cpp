@@ -25,26 +25,51 @@ void Game::Initialize(HWND window, int width, int height)
     m_window = window;
     m_outputWidth = std::max(width, 1);
     m_outputHeight = std::max(height, 1);
+	m_running = true;
+
+	D3D11_VIEWPORT view;
+
+	view.TopLeftX = 0;
+	view.TopLeftY = 0;
+
+	view.Width = width;
+	view.Height = height;
+
 
     CreateDevice();
 
     CreateResources();
 
+	mSpriteBatch->SetViewport(view);
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
+	m_currentFPS = 60.0;
 
     m_timer.SetFixedTimeStep(true);
-    m_timer.SetTargetElapsedSeconds(1.0 / 60.0);
+	m_timer.SetTargetElapsedSeconds(1.0 / m_currentFPS);
 
+	srand(time(nullptr));
+
+	Field::init(DirectX::SimpleMath::Vector2(150, 300 - 360 / 2));
+
+	Field::AIMode = true; //Debug
 
 	//Eingabegeräte initialisieren
-	mGamePad.reset(new GamePad);
+	if (Field::AIMode){
+		mGamePad.reset(Field::AIList.front()->m_controller.get());
+	}
+	else{
+		mGamePad.reset(new GamePad);
+	}
+	
 	mGamePadTracker.reset(new GamePad::ButtonStateTracker);
 	mMouse = std::make_unique<Mouse>();
 	mMouse->SetWindow(window);
 	mMouseButtonTracker.reset(new Mouse::ButtonStateTracker);
 	mKeyboard = std::make_unique<Keyboard>();
 	mKeyboardTracker.reset(new Keyboard::KeyboardStateTracker);
+
+	m_wpPrev = { sizeof(m_wpPrev) };
 }
 
 // Executes the basic game loop.
@@ -78,6 +103,30 @@ void Game::Update(DX::StepTimer const& timer)
 	Field::Update(mGamePadTracker.get(), mKeyboardTracker.get(), &keyState, &mouseState, mMouseButtonTracker.get());
     
 	elapsedTime;
+	
+	if (keyState.Escape){
+		PostQuitMessage(0);
+	}
+
+	if (mKeyboardTracker->IsKeyPressed(Keyboard::F))
+		switchFullscreen();
+
+	double oldFPS = m_currentFPS;
+	if (keyState.Multiply){
+		if (mKeyboardTracker->IsKeyPressed(Keyboard::NumPad2))	m_currentFPS *= 2;
+		if (mKeyboardTracker->IsKeyPressed(Keyboard::NumPad3))	m_currentFPS *= 3;
+		if (mKeyboardTracker->IsKeyPressed(Keyboard::NumPad4))	m_currentFPS *= 4;
+		if (mKeyboardTracker->IsKeyPressed(Keyboard::NumPad5))	m_currentFPS *= 5;
+	}
+	if (keyState.Divide){
+		if (mKeyboardTracker->IsKeyPressed(Keyboard::NumPad2))	m_currentFPS /= 2;
+		if (mKeyboardTracker->IsKeyPressed(Keyboard::NumPad3))	m_currentFPS /= 3;
+		if (mKeyboardTracker->IsKeyPressed(Keyboard::NumPad4))	m_currentFPS /= 4;
+		if (mKeyboardTracker->IsKeyPressed(Keyboard::NumPad5))	m_currentFPS /= 5;
+	}
+
+	if (m_currentFPS != oldFPS)
+		m_timer.SetTargetElapsedSeconds(1.0 / m_currentFPS);
 }
 
 // Draws the scene.
@@ -98,8 +147,8 @@ void Game::Render()
 	CommonStates states(m_d3dDevice.Get());
 																//|
 																//V Setting scaling mode to nearest neighbour
-	mSpriteBatch->Begin(SpriteSortMode_Deferred, nullptr, states.PointClamp());
-
+	mSpriteBatch->Begin(SpriteSortMode_Deferred, nullptr, states.PointClamp(), nullptr, nullptr, nullptr, SimpleMath::Matrix::CreateScale(1.0f));
+	
 	Field::Render(mSpriteBatch.get());
 
 	mSpriteBatch->End();
@@ -268,8 +317,7 @@ void Game::CreateDevice()
 
 	mSpriteBatch.reset(new SpriteBatch(m_d3dContext.Get()));
 	TextureManager::init(m_d3dDevice.Get());
-	Field::init(DirectX::SimpleMath::Vector2(150, 300 - 360/2));
-
+	
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -389,6 +437,7 @@ void Game::CreateResources()
     DX::ThrowIfFailed(m_d3dDevice->CreateDepthStencilView(depthStencil.Get(), &depthStencilViewDesc, m_depthStencilView.ReleaseAndGetAddressOf()));
 
     // TODO: Initialize windows-size dependent objects here.
+	//m_swapChain->SetFullscreenState(true, NULL);
 }
 
 void Game::OnDeviceLost()
@@ -407,4 +456,34 @@ void Game::OnDeviceLost()
 	CreateDevice();
 
     CreateResources();
+}
+
+bool Game::isRunning(){
+	return m_running;
+}
+
+void Game::switchFullscreen(){
+	DWORD dwStyle = GetWindowLong(m_window, GWL_STYLE);
+	if (dwStyle & WS_OVERLAPPEDWINDOW) {
+		MONITORINFO mi = { sizeof(mi) };
+		if (GetWindowPlacement(m_window, &m_wpPrev) &&
+			GetMonitorInfo(MonitorFromWindow(m_window,
+			MONITOR_DEFAULTTOPRIMARY), &mi)) {
+			SetWindowLong(m_window, GWL_STYLE,
+				dwStyle & ~WS_OVERLAPPEDWINDOW);
+			SetWindowPos(m_window, HWND_TOP,
+				mi.rcMonitor.left, mi.rcMonitor.top,
+				mi.rcMonitor.right - mi.rcMonitor.left,
+				mi.rcMonitor.bottom - mi.rcMonitor.top,
+				SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+		}
+	}
+	else {
+		SetWindowLong(m_window, GWL_STYLE,
+			dwStyle | WS_OVERLAPPEDWINDOW);
+		SetWindowPlacement(m_window, &m_wpPrev);
+		SetWindowPos(m_window, NULL, 0, 0, 0, 0,
+			SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+			SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+	}
 }

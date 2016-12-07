@@ -13,11 +13,11 @@ Tetromino::Tetromino(int width, int height) : mMatrixWidth(width), mMatrixHeight
 	mBaseMatrix = nullptr;
 	mFieldMatrix = nullptr;
 
-	mBaseMatrix = new int[width * height];
-	memset(mBaseMatrix, 0, width * height * sizeof(int));
+	mBaseMatrix.reset(new int[width * height]);
+	memset(mBaseMatrix.get(), 0, width * height * sizeof(int));
 
-	mFieldMatrix = new int[width * height];
-	memset(mFieldMatrix, 0, width * height * sizeof(int));
+	mFieldMatrix.reset(new int[width * height]);
+	memset(mFieldMatrix.get(), 0, width * height * sizeof(int));
 }
 
 Tetromino::Tetromino(Vector2& position, bool* matrix, int width, int height, Vector4& color) : mPositionGrid(position), mMatrixWidth(width), mMatrixHeight(height), mFrameCounter(0.0f), mLocked(false), mCollisionAtSpawn(false){
@@ -69,9 +69,9 @@ Tetromino::Tetromino(Vector2& position, bool* matrix, int width, int height, Vec
 				if (matrix[y * width + x]){
 					Vector4 color = BLOCK_COLOR_SINGLE;
 
-					Tetromino* tempMino = getPart(nullptr, nullptr, width, height, x, y);
+					std::unique_ptr<Tetromino> tempMino(getPart(nullptr, nullptr, width, height, x, y));
 					int n = tempMino->getBlockCount();
-					delete tempMino;
+					tempMino.reset();
 
 					switch (n){
 					case 1:
@@ -101,16 +101,16 @@ Tetromino::Tetromino(Vector2& position, bool* matrix, int width, int height, Vec
 }
 
 Tetromino::~Tetromino(){
-	//Wenn eine Matrix erstellt wurde wird sie gelöscht.
+	/*//Wenn eine Matrix erstellt wurde wird sie gelöscht.
 	if (mBaseMatrix){
-		delete[] mBaseMatrix;
+		//delete[] mBaseMatrix;
 		mBaseMatrix = nullptr;
 	}
 	//Hier genauso
 	if (mFieldMatrix){
-		delete[] mFieldMatrix;
+		//delete[] mFieldMatrix;
 		mFieldMatrix = nullptr;
-	}
+	}*/
 }
 
 void Tetromino::update(DirectX::GamePad::ButtonStateTracker* gamePadTracker, DirectX::Keyboard::KeyboardStateTracker* keyboardTracker, DirectX::Keyboard::State* keyboardState){

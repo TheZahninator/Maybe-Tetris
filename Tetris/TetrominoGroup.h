@@ -23,12 +23,15 @@ public:
 
 	bool shouldDestroy(){ return mToBeDestroyed; }
 
+	int* getMatrix();
+	DirectX::SimpleMath::Vector2 getMatrixSize();
+
 private:
 	void split(Tetromino* tetromino);
 	bool mSplitted;
 	bool mToBeDestroyed;
 	
-	std::vector<Tetromino*> mTetrominos;
+	std::vector<std::shared_ptr<Tetromino>> mTetrominos;
 	DirectX::SimpleMath::Vector2 mPositionGrid;
 };
 

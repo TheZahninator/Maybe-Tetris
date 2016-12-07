@@ -1,6 +1,6 @@
 #pragma once
 
-#define ALL_MINOS 0
+#define ALL_MINOS 1
 
 #if ALL_MINOS
 #define NUMBER_OF_MINOS 39
