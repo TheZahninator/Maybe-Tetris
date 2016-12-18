@@ -100,6 +100,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AdditionalIncludeDirectories>E:\TheZahninator\Documents\Visual Studio 2013\Projects\Tetris\deps\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -166,12 +167,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ComputerPlayer.h" />
+    <ClInclude Include="AI.h" />
     <ClInclude Include="AIController.h" />
+    <ClInclude Include="BagContainer.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="BlockColors.h" />
     <ClInclude Include="ERotation.h" />
     <ClInclude Include="Field.h" />
+    <ClInclude Include="pugiconfig.hpp" />
+    <ClInclude Include="pugixml.hpp" />
     <ClInclude Include="TetrominoMatrices.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="pch.h" />
@@ -183,8 +187,9 @@
     <ClInclude Include="StepTimer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ComputerPlayer.cpp" />
+    <ClCompile Include="AI.cpp" />
     <ClCompile Include="AIController.cpp" />
+    <ClCompile Include="BagContainer.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Field.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -195,6 +200,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="pugixml.cpp" />
     <ClCompile Include="Tetromino.cpp" />
     <ClCompile Include="TetrominoGroup.cpp" />
     <ClCompile Include="Texture.cpp" />

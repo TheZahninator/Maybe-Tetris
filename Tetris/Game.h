@@ -8,7 +8,7 @@
 
 #include "StepTimer.h"
 #include "TetrominoGroup.h"
-#include "ComputerPlayer.h"
+#include "AI.h"
 
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
@@ -74,6 +74,7 @@ private:
 	//EIGNE VARIABLEN
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	std::unique_ptr<SpriteBatch> mSpriteBatch;
+	std::unique_ptr<SpriteFont> m_spriteFont;
 	std::shared_ptr<GamePad> mGamePad;
 	std::unique_ptr<GamePad::ButtonStateTracker> mGamePadTracker;
 	std::unique_ptr<Keyboard> mKeyboard;
@@ -82,6 +83,8 @@ private:
 	std::unique_ptr<Mouse::ButtonStateTracker> mMouseButtonTracker;
 
 	bool m_running;
+
+	bool m_noRender;
 
 	WINDOWPLACEMENT m_wpPrev;
 	void switchFullscreen();

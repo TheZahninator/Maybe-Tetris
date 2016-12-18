@@ -32,14 +32,15 @@ void Game::Initialize(HWND window, int width, int height)
 	view.TopLeftX = 0;
 	view.TopLeftY = 0;
 
-	view.Width = width;
-	view.Height = height;
+	view.Height = (float)height;
+	view.Width =  (float)width;
 
 
     CreateDevice();
 
     CreateResources();
 
+	m_spriteFont = std::make_unique<SpriteFont>(m_d3dDevice.Get(), L"res/font.spritefont");
 	mSpriteBatch->SetViewport(view);
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -48,19 +49,19 @@ void Game::Initialize(HWND window, int width, int height)
     m_timer.SetFixedTimeStep(true);
 	m_timer.SetTargetElapsedSeconds(1.0 / m_currentFPS);
 
-	srand(time(nullptr));
+	srand((unsigned)time(nullptr));
 
 	Field::init(DirectX::SimpleMath::Vector2(150, 300 - 360 / 2));
 
-	Field::AIMode = true; //Debug
+	//Field::AIMode = true; //Debug
 
 	//Eingabegeräte initialisieren
-	if (Field::AIMode){
-		mGamePad.reset(Field::AIList.front()->m_controller.get());
-	}
-	else{
-		mGamePad.reset(new GamePad);
-	}
+	//if (Field::AIMode){
+		mGamePad = Field::AIList.front()->m_controller;
+	//}
+	//else{
+	//	mGamePad.reset(new GamePad);
+	//}
 	
 	mGamePadTracker.reset(new GamePad::ButtonStateTracker);
 	mMouse = std::make_unique<Mouse>();
@@ -70,6 +71,8 @@ void Game::Initialize(HWND window, int width, int height)
 	mKeyboardTracker.reset(new Keyboard::KeyboardStateTracker);
 
 	m_wpPrev = { sizeof(m_wpPrev) };
+
+	m_noRender = false;
 }
 
 // Executes the basic game loop.
@@ -80,7 +83,10 @@ void Game::Tick()
         Update(m_timer);
     });
 
-    Render();
+	if (!m_noRender)
+	   Render();
+
+	std::this_thread::sleep_for(std::chrono::microseconds(1));
 }
 
 // Updates the world.
@@ -99,6 +105,11 @@ void Game::Update(DX::StepTimer const& timer)
 	if (state.IsConnected()){
 		mGamePadTracker->Update(state);
 
+	}
+	else{
+		AI::m_controller->reset();
+		state = AI::m_controller->GetState();
+		mGamePadTracker->Update(state);
 	}
 	Field::Update(mGamePadTracker.get(), mKeyboardTracker.get(), &keyState, &mouseState, mMouseButtonTracker.get());
     
@@ -125,6 +136,10 @@ void Game::Update(DX::StepTimer const& timer)
 		if (mKeyboardTracker->IsKeyPressed(Keyboard::NumPad5))	m_currentFPS /= 5;
 	}
 
+	if (mKeyboard->RightControl && mKeyboardTracker->IsKeyPressed(mKeyboard->R)){
+		m_noRender = !m_noRender;
+	}
+
 	if (m_currentFPS != oldFPS)
 		m_timer.SetTargetElapsedSeconds(1.0 / m_currentFPS);
 }
@@ -149,7 +164,7 @@ void Game::Render()
 																//V Setting scaling mode to nearest neighbour
 	mSpriteBatch->Begin(SpriteSortMode_Deferred, nullptr, states.PointClamp(), nullptr, nullptr, nullptr, SimpleMath::Matrix::CreateScale(1.0f));
 	
-	Field::Render(mSpriteBatch.get());
+	Field::Render(mSpriteBatch.get(), m_spriteFont.get());
 
 	mSpriteBatch->End();
 

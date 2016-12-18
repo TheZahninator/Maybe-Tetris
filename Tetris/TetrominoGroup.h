@@ -25,6 +25,8 @@ public:
 
 	int* getMatrix();
 	DirectX::SimpleMath::Vector2 getMatrixSize();
+	int getRotation(){ return m_rotation; }
+	int getType(){ return m_type; }
 
 private:
 	void split(Tetromino* tetromino);
@@ -33,5 +35,8 @@ private:
 	
 	std::vector<std::shared_ptr<Tetromino>> mTetrominos;
 	DirectX::SimpleMath::Vector2 mPositionGrid;
+
+	int m_rotation;
+	int m_type;
 };
 

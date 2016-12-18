@@ -22,7 +22,7 @@ bool Block::setPosition(DirectX::SimpleMath::Vector2& position){
 	int nX = (int)position.x;
 	int nY = (int)position.y;
 	
-	if (nX < 0 || nX > Field::getWidth() - 1 || nY > Field::getHeight() - 1)
+	if (nX < 0 || nX > (int)Field::getWidth() - 1 || nY > (int)Field::getHeight() - 1)
 		collision = true;
 
 	if (nY >= 0)

@@ -37,6 +37,7 @@ public:
 
 	int* getBaseMatrix(){ return mBaseMatrix.get(); }
 	int* getFieldMatrix(){ return mFieldMatrix.get(); }
+	int* getOriginalMatrix(){ return m_originalMatrix.get(); }
 
 	bool isLocked(){ return mLocked; }
 	bool collidedAtSpawn(){ return mCollisionAtSpawn; }
@@ -49,6 +50,7 @@ private:
 	
 	std::unique_ptr<int> mBaseMatrix;
 	std::unique_ptr<int> mFieldMatrix;
+	std::unique_ptr<int> m_originalMatrix;
 	int mMatrixWidth, mMatrixHeight;
 
 	bool mLocked;
@@ -57,4 +59,5 @@ private:
 	std::vector<std::shared_ptr<Block>> mBlocks;
 
 	float mFrameCounter;
+	UINT m_triesToRotate;
 };

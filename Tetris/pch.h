@@ -41,6 +41,10 @@ namespace DX
 #include <map>
 #include <vector>
 #include <iostream>
+#include <sstream>
+
+#include <chrono>
+#include <thread>
 
 //DXTK includes
 #include <Keyboard.h>

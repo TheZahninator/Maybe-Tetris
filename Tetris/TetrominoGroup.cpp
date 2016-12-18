@@ -3,57 +3,59 @@
 
 
 TetrominoGroup::TetrominoGroup(int type) : mSplitted(false), mToBeDestroyed(false){
-	int w;
-	int h;
+	m_type = type;
 
-	bool* matrix;
+	int w = 0;
+	int h = 0;
+
+	bool* matrix = nullptr;
 	DirectX::SimpleMath::Vector4 color = DirectX::Colors::White.v;
 	
 
 	switch (type){
-	case 1: //I
+	case 0: //I
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_MINO_I;
 		color = BLOCK_COLOR_I;
 		break;
 
-	case 2: //T
+	case 1: //T
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_MINO_T;
 		color = BLOCK_COLOR_T;
 		break;
 
-	case 3: //L
+	case 2: //L
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_MINO_L;
 		color = BLOCK_COLOR_L;
 		break;
 
-	case 4: //J
+	case 3: //J
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_MINO_J;
 		color = BLOCK_COLOR_J;
 		break;
 
-	case 5: //Z
+	case 4: //Z
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_MINO_Z;
 		color = BLOCK_COLOR_Z;
 		break;
 
-	case 6: //S
+	case 5: //S
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_MINO_S;
 		color = BLOCK_COLOR_S;
 		break;
 
-	case 7: //O
+	case 6: //O
 		w = 2;
 		h = 2;
 		matrix = new bool[w * h]MAT_MINO_O;
@@ -61,193 +63,193 @@ TetrominoGroup::TetrominoGroup(int type) : mSplitted(false), mToBeDestroyed(fals
 		break;
 
 		//SPECIAL MINOS
-	case 8: //1
+	case 7: //1
 		w = 5;
 		h = 5;
 		matrix = new bool[w * h]MAT_SPECIAL_1;
 		break;
 
-	case 9:
+	case 8:
 		w = 5;
 		h = 5;
 		matrix = new bool[w * h]MAT_SPECIAL_2;
 		break;
 
-	case 10:
+	case 9:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_3;
 		break;
 
-	case 11:
+	case 10:
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_SPECIAL_4;
 		break;
 
-	case 12:
+	case 11:
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_SPECIAL_5;
 		break;
 
-	case 13:
+	case 12:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_6;
 		break;
 
-	case 14:
+	case 13:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_7;
 		break;
 
-	case 15:
+	case 14:
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_SPECIAL_8;
 		break;
 
-	case 16:
+	case 15:
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_SPECIAL_9;
 		break;
 
-	case 17:
+	case 16:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_10;
 		break;
 
-	case 18:
+	case 17:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_11;
 		break;
 
-	case 19:
+	case 18:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_12;
 		break;
 
-	case 20:
+	case 19:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_13;
 		break;
 
-	case 21:
+	case 20:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_14;
 		break;
 
-	case 22:
+	case 21:
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_SPECIAL_15;
 		break;
 
-	case 23:
+	case 22:
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_SPECIAL_16;
 		break;
 
-	case 24:
+	case 23:
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_SPECIAL_17;
 		break;
 
-	case 25:
+	case 24:
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_SPECIAL_18;
 		break;
 
-	case 26:
+	case 25:
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_SPECIAL_19;
 		break;
 
-	case 27:
+	case 26:
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_SPECIAL_20;
 		break;
 
-	case 28:
+	case 27:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_21;
 		break;
 
-	case 29:
+	case 28:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_22;
 		break;
 
-	case 30:
+	case 29:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_23;
 		break;
 
-	case 31:
+	case 30:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_24;
 		break;
 
-	case 32:
+	case 31:
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_SPECIAL_25;
 		break;
 
-	case 33:
+	case 32:
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_SPECIAL_26;
 		break;
 
-	case 34:
+	case 33:
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_SPECIAL_27;
 		break;
 
-	case 35:
+	case 34:
 		w = 4;
 		h = 4;
 		matrix = new bool[w * h]MAT_SPECIAL_28;
 		break;
 
-	case 36:
+	case 35:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_29;
 		break;
 
-	case 37:
+	case 36:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_30;
 		break;
 
-	case 38:
+	case 37:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_31;
 		break;
 
-	case 39:
+	case 38:
 		w = 3;
 		h = 3;
 		matrix = new bool[w * h]MAT_SPECIAL_32;
@@ -262,6 +264,8 @@ TetrominoGroup::TetrominoGroup(int type) : mSplitted(false), mToBeDestroyed(fals
 	if (mTetrominos[0]->collidedAtSpawn()){
 		Field::restart();
 	}
+
+	m_rotation = 0;
 }
 
 
@@ -338,6 +342,16 @@ void TetrominoGroup::render(DirectX::SpriteBatch* spriteBatch, DirectX::SimpleMa
 }
 
 void TetrominoGroup::rotate(ERotation rotation){
+	if (rotation == ERotation::CLOCKWISE)
+		m_rotation++;
+	else if (rotation == ERotation::COUNTER_CLOCKWISE)
+		m_rotation--;
+
+	if (m_rotation < 0)
+		m_rotation = 3;
+	else if (m_rotation > 3)
+		m_rotation = 0;
+
 	for (UINT i = 0; i < mTetrominos.size(); i++){
 		mTetrominos[i]->rotate(rotation);
 	}
@@ -391,7 +405,7 @@ void TetrominoGroup::split(Tetromino* tetromino){
 
 
 int* TetrominoGroup::getMatrix(){ 
-	return mTetrominos[0]->getFieldMatrix(); 
+	return mTetrominos[0]->getOriginalMatrix(); 
 }
 
 DirectX::SimpleMath::Vector2 TetrominoGroup::getMatrixSize() { 

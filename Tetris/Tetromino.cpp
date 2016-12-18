@@ -5,19 +5,21 @@ using namespace DirectX::SimpleMath;
 
 //Setzt nur die nötigsten Variablen auf ihre Initialisierungswerte.
 Tetromino::Tetromino() : mMatrixWidth(0), mMatrixHeight(0), mLocked(false), mCollisionAtSpawn(false){
-	mBaseMatrix = nullptr;
-	mFieldMatrix = nullptr;
+	m_triesToRotate = 0;
 }
 
 Tetromino::Tetromino(int width, int height) : mMatrixWidth(width), mMatrixHeight(height), mFrameCounter(0.0f), mLocked(false), mCollisionAtSpawn(false){
-	mBaseMatrix = nullptr;
-	mFieldMatrix = nullptr;
-
+	
 	mBaseMatrix.reset(new int[width * height]);
 	memset(mBaseMatrix.get(), 0, width * height * sizeof(int));
 
 	mFieldMatrix.reset(new int[width * height]);
 	memset(mFieldMatrix.get(), 0, width * height * sizeof(int));
+
+	m_originalMatrix.reset(new int[width * height]);
+	memset(m_originalMatrix.get(), 0, width * height * sizeof(int));
+
+	m_triesToRotate = 0;
 }
 
 Tetromino::Tetromino(Vector2& position, bool* matrix, int width, int height, Vector4& color) : mPositionGrid(position), mMatrixWidth(width), mMatrixHeight(height), mFrameCounter(0.0f), mLocked(false), mCollisionAtSpawn(false){
@@ -26,23 +28,27 @@ Tetromino::Tetromino(Vector2& position, bool* matrix, int width, int height, Vec
 	mFieldMatrix = nullptr;
 
 	//Erstellt die Base Matrix und füllt sie mit Nullen.
-	mBaseMatrix = new int[width * height];
-	memset(mBaseMatrix, 0, mMatrixWidth * mMatrixHeight * sizeof(int));
-	
-	//Erstellt die Feld Matrix und füllt sie mit Nullen.
-	mFieldMatrix = new int[width * height];
-	memset(mFieldMatrix, 0, mMatrixWidth * mMatrixHeight * sizeof(int));
+	mBaseMatrix.reset(new int[width * height]);
+	memset(mBaseMatrix.get(), 0, width * height * sizeof(int));
+
+	mFieldMatrix.reset(new int[width * height]);
+	memset(mFieldMatrix.get(), 0, width * height * sizeof(int));
+
+	m_originalMatrix.reset(new int[width * height]);
+	memset(m_originalMatrix.get(), 0, width * height * sizeof(int));
 
 	//Iteriert durch alle Felder der mitgegebenen Matrix und zählt dabei wie viele Blöcke enthalten sind.
 	int n = 0;
 	for (int y = 0; y < height; y++){
 		for (int x = 0; x < width; x++){
-			mBaseMatrix[y * width + x] = 0;
+			mBaseMatrix.get()[y * width + x] = 0;
+			m_originalMatrix.get()[y * width + x] = 0;
 			if (matrix[y * width + x]){
 				//Wenn ein Block gefunden wurde, wird n um eins erhöht.
 				n++;
 				//Das entsprechende Feld in der Base Matrix wird auf den Wert n gesetzt.
-				mBaseMatrix[y * width + x] = n;
+				mBaseMatrix.get()[y * width + x] = n;
+				m_originalMatrix.get()[y * width + x] = n;
 			}
 		}
 	}
@@ -98,6 +104,7 @@ Tetromino::Tetromino(Vector2& position, bool* matrix, int width, int height, Vec
 
 	setFieldMatrix();
 	mCollisionAtSpawn = !setPosition(position);
+	m_triesToRotate = 0;
 }
 
 Tetromino::~Tetromino(){
@@ -114,11 +121,12 @@ Tetromino::~Tetromino(){
 }
 
 void Tetromino::update(DirectX::GamePad::ButtonStateTracker* gamePadTracker, DirectX::Keyboard::KeyboardStateTracker* keyboardTracker, DirectX::Keyboard::State* keyboardState){
+	m_triesToRotate = 0;
 	if (!mLocked){
 		//Zählt einen Frame.
 		mFrameCounter++;
 		//Wenn nach unten gehalten wird, werden nochmal 4 Frames hinzugezählt.
-		if (gamePadTracker->dpadDown == GamePad::ButtonStateTracker::HELD || keyboardState->Down)
+		if (gamePadTracker->dpadDown == GamePad::ButtonStateTracker::HELD || gamePadTracker->dpadDown == GamePad::ButtonStateTracker::PRESSED || keyboardState->Down)
 			mFrameCounter += 4;
 
 		//Solange mehr Frames gezählt werden als pro Reihe gewartet werden soll, fällt der Stein um eine Reihe.
@@ -142,9 +150,9 @@ void Tetromino::render(DirectX::SpriteBatch* spriteBatch){
 void Tetromino::render(DirectX::SpriteBatch* spriteBatch, DirectX::SimpleMath::Vector2& screenPosition, float scale){
 	for (int y = 0; y < mMatrixHeight; y++){
 		for (int x = 0; x < mMatrixWidth; x++){
-			int i = mBaseMatrix[y * mMatrixWidth + x];
+			int i = mBaseMatrix.get()[y * mMatrixWidth + x];
 			if (i){
-				mBlocks[i-1]->render(spriteBatch, screenPosition + Vector2(x, y) * (BLOCK_SIZE * scale), scale);
+				mBlocks[i-1]->render(spriteBatch, screenPosition + Vector2((float)x, (float)y) * (BLOCK_SIZE * scale), scale);
 			}
 		}
 	}
@@ -156,7 +164,7 @@ Tetromino* Tetromino::getPart(int* matrix, bool* checked, int width, int height,
 	
 	//Wenn keine Matrix mitgegeben wurde wird die eigene genommen.
 	if (!matrix)
-		matrix = mBaseMatrix;
+		matrix = mBaseMatrix.get();
 
 	//Wenn keine Überprüfungs Matrix mitgegeben wurde, wird eine neue erstellt.
 	bool newCheckedCreated = false;
@@ -270,13 +278,13 @@ void Tetromino::addBlock(Block& block){
 	int y = (int)block.getPosition().y;
 	
 	if (mBaseMatrix){
-		int i = mBaseMatrix[y * mMatrixWidth + x];
+		int i = mBaseMatrix.get()[y * mMatrixWidth + x];
 		if (i > 0){
 			mBlocks[i].reset(new Block(block));
 			return;
 		}
 		else{
-			mBaseMatrix[y * mMatrixWidth + x] = getBlockCount() + 1;
+			mBaseMatrix.get()[y * mMatrixWidth + x] = getBlockCount() + 1;
 		}
 	}
 
@@ -299,7 +307,7 @@ bool Tetromino::setPosition(Vector2& position){
 		for (int x = 0; x < mMatrixWidth; x++){
 
 			//Überprüft den Wert an der Stelle.
-			UINT i = mFieldMatrix[y * mMatrixWidth + x];
+			UINT i = mFieldMatrix.get()[y * mMatrixWidth + x];
 			
 			if (i > 0 && i <= mBlocks.size()){
 				
@@ -315,7 +323,9 @@ bool Tetromino::setPosition(Vector2& position){
 }
 
 void Tetromino::rotate(ERotation rotation){
-	
+	m_triesToRotate++;
+	if (m_triesToRotate > 10)
+		return;
 	//Eine neue Matrix mit der den Dimensionen der alten Matrix wird angelegt.
 	int* newMat = new int[mMatrixWidth * mMatrixHeight];
 	memset(newMat, 0, mMatrixWidth * mMatrixHeight * sizeof(int));
@@ -340,15 +350,15 @@ void Tetromino::rotate(ERotation rotation){
 			}
 
 			//Füllt das Feld in der neuen Matrix mit dem Wert des entsprecheden Feldes der alten Matrix.
-			newMat[nY * mMatrixWidth + nX] = mBaseMatrix[y * mMatrixWidth + x];
+			newMat[nY * mMatrixWidth + nX] = mBaseMatrix.get()[y * mMatrixWidth + x];
 		}
 	}
 	//Löscht die alte Matrix.
-	delete[] mBaseMatrix;
-	mBaseMatrix = nullptr;
+	//delete[] mBaseMatrix;
+	//mBaseMatrix = nullptr
 
 	//Überträgt die Speicheradresse der neuen Matrix.
-	mBaseMatrix = newMat;
+	mBaseMatrix.reset(newMat);
 
 	//Die auf dem Spielfeld benutzte Matrix wird aktualisiert.
 	setFieldMatrix();
@@ -382,7 +392,7 @@ DirectX::SimpleMath::Vector2 Tetromino::getBlockMostLeft(){
 	for (int x = 0; x < mMatrixWidth; x++){
 		for (int y = 0; y < mMatrixHeight; y++){
 			//Wenn ein Block gefunden wurde wird die x position zurück gegeben.
-			if (mBaseMatrix[y * mMatrixWidth + x])
+			if (mBaseMatrix.get()[y * mMatrixWidth + x])
 				return Vector2((float)x, 0.0f);
 		}
 	}
@@ -395,7 +405,7 @@ DirectX::SimpleMath::Vector2 Tetromino::getBlockMostRight(){
 	for (int x = mMatrixWidth - 1; x >= 0; x--){
 		for (int y = 0; y < mMatrixHeight; y++){
 			//Wenn ein Block gefunden wurde wird die x position zurück gegeben.
-			if (mBaseMatrix[y * mMatrixWidth + x])
+			if (mBaseMatrix.get()[y * mMatrixWidth + x])
 				return Vector2((float)x, 0.0f);
 		}
 	}
@@ -418,18 +428,18 @@ bool Tetromino::move(Vector2& direction){
 }
 
 void Tetromino::setFieldMatrix(){
-	if (mFieldMatrix){
-		delete[] mFieldMatrix;
-		mFieldMatrix = nullptr;
-	}
+	//if (mFieldMatrix){
+	//	delete[] mFieldMatrix;
+	//	mFieldMatrix = nullptr;
+	//}
 
-	mFieldMatrix = new int[mMatrixWidth * mMatrixHeight];
-	memset(mFieldMatrix, 0, mMatrixWidth * mMatrixHeight + sizeof(int));
+	mFieldMatrix.reset(new int[mMatrixWidth * mMatrixHeight]);
+	//memset(mFieldMatrix.get(), 0, mMatrixWidth * mMatrixHeight * sizeof(int));
 	
 	//Alle daten von der Basismatrix werden auf die Feldmatrix kopiert.
 	for (int y = 0; y < mMatrixHeight; y++){
 		for (int x = 0; x < mMatrixWidth; x++){
-			mFieldMatrix[y * mMatrixWidth + x] = mBaseMatrix[y * mMatrixWidth + x];
+			mFieldMatrix.get()[y * mMatrixWidth + x] = mBaseMatrix.get()[y * mMatrixWidth + x];
 		}
 	}
 
@@ -441,7 +451,7 @@ void Tetromino::setFieldMatrix(){
 		
 		//Schleife um die Anzahl der Blöcke in der untersten Reihe der Matrix zu zählen.
 		for (int x = 0; x < mMatrixWidth; x++){
-			if (mFieldMatrix[(mMatrixHeight - 1) * mMatrixWidth + x] > 0)
+			if (mFieldMatrix.get()[(mMatrixHeight - 1) * mMatrixWidth + x] > 0)
 				n++;
 		}
 
@@ -451,19 +461,19 @@ void Tetromino::setFieldMatrix(){
 		//Jede Reihe wird einzeln nach unten verschoben
 		for (int y = mMatrixHeight - 1; y > 0; y--){
 			for (int x = 0; x < mMatrixWidth; x++){
-				mFieldMatrix[y * mMatrixWidth + x] = mFieldMatrix[(y - 1) * mMatrixWidth + x];
+				mFieldMatrix.get()[y * mMatrixWidth + x] = mFieldMatrix.get()[(y - 1) * mMatrixWidth + x];
 			}
 		}
 
 		//Oberste Reihe wird gelöscht
 		for (int x = 0; x < mMatrixWidth; x++){
-			mFieldMatrix[x] = 0;
+			mFieldMatrix.get()[x] = 0;
 		}
 	}
 }
 
 void Tetromino::placeOnField(){
 	for (UINT i = 0; i < mBlocks.size(); i++){
-		Field::addBlock(new Block(*mBlocks[i]));
+		Field::addBlock(mBlocks[i]);
 	}
 }
