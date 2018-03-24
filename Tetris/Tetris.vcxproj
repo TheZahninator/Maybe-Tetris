@@ -167,44 +167,44 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AI.h" />
-    <ClInclude Include="AIController.h" />
-    <ClInclude Include="BagContainer.h" />
-    <ClInclude Include="Block.h" />
-    <ClInclude Include="BlockColors.h" />
-    <ClInclude Include="ERotation.h" />
-    <ClInclude Include="Field.h" />
-    <ClInclude Include="pugiconfig.hpp" />
-    <ClInclude Include="pugixml.hpp" />
-    <ClInclude Include="TetrominoMatrices.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="Tetromino.h" />
-    <ClInclude Include="TetrominoGroup.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="TextureIDs.h" />
-    <ClInclude Include="TextureManager.h" />
-    <ClInclude Include="StepTimer.h" />
+    <ClInclude Include="src\AI.h" />
+    <ClInclude Include="src\AIController.h" />
+    <ClInclude Include="src\BagContainer.h" />
+    <ClInclude Include="src\Block.h" />
+    <ClInclude Include="src\BlockColors.h" />
+    <ClInclude Include="src\ERotation.h" />
+    <ClInclude Include="src\Field.h" />
+    <ClInclude Include="src\pugiconfig.hpp" />
+    <ClInclude Include="src\pugixml.hpp" />
+    <ClInclude Include="src\TetrominoMatrices.h" />
+    <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\pch.h" />
+    <ClInclude Include="src\Tetromino.h" />
+    <ClInclude Include="src\TetrominoGroup.h" />
+    <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="src\TextureIDs.h" />
+    <ClInclude Include="src\TextureManager.h" />
+    <ClInclude Include="src\StepTimer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AI.cpp" />
-    <ClCompile Include="AIController.cpp" />
-    <ClCompile Include="BagContainer.cpp" />
-    <ClCompile Include="Block.cpp" />
-    <ClCompile Include="Field.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="src\AI.cpp" />
+    <ClCompile Include="src\AIController.cpp" />
+    <ClCompile Include="src\BagContainer.cpp" />
+    <ClCompile Include="src\Block.cpp" />
+    <ClCompile Include="src\Field.cpp" />
+    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="pugixml.cpp" />
-    <ClCompile Include="Tetromino.cpp" />
-    <ClCompile Include="TetrominoGroup.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="src\pugixml.cpp" />
+    <ClCompile Include="src\Tetromino.cpp" />
+    <ClCompile Include="src\TetrominoGroup.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

@@ -47,14 +47,14 @@ namespace DX
 #include <thread>
 
 //DXTK includes
+#include <Mouse.h>
 #include <Keyboard.h>
 #include <Gamepad.h>
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
 #include <SimpleMath.h>
 #include <WICTextureLoader.h>
-#include <Audio.h>
+//#include <Audio.h>
 
-#include <Mouse.h>
 
 #include <ZahnAI\ZahnAI.h>
