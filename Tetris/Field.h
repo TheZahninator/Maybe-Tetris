@@ -27,6 +27,14 @@ public:
 	static void addBlock(std::shared_ptr<Block> block);
 
 	static std::shared_ptr<Block>* getGrid(){ return mGrid; }
+	static bool getGrid(int x, int y){
+		if (x >= 0 && x < mWidth && y >= 0 && y < mHeight){
+			return mGrid[y * mWidth + x] != nullptr;
+		}
+		else{
+			return true;
+		}
+	}
 	static DirectX::SimpleMath::Vector2& getScreenPosition(){ return mScreenPosition; }
 
 	static UINT getWidth(){ return mWidth; }

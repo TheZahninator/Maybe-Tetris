@@ -411,3 +411,19 @@ int* TetrominoGroup::getMatrix(){
 DirectX::SimpleMath::Vector2 TetrominoGroup::getMatrixSize() { 
 	return mTetrominos[0]->getMatrixSize(); 
 }
+
+UINT TetrominoGroup::getEstimatedTouchingBlocks(){
+	UINT result = 0;
+	for (unsigned i = 0; i < mTetrominos.size(); i++){
+		result += mTetrominos[i]->getEstimatedTouchingBlocks();
+	}
+	return result;
+}
+
+UINT TetrominoGroup::getTouchingBlocks(){
+	UINT result = 0;
+	for (unsigned i = 0; i < mTetrominos.size(); i++){
+		result += mTetrominos[i]->getTouchingBlocks();
+	}
+	return result;
+}

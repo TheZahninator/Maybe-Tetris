@@ -8,7 +8,7 @@
 #define NUMBER_OF_MINOS 7
 #endif
 //+++++++++++++++++++++++++++++++++++++++++
-//STANDART MINOS
+//STANDARD MINOS
 //+++++++++++++++++++++++++++++++++++++++++
 
 #define MAT_MINO_I {0, 0, 0, 0, \

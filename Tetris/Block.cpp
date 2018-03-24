@@ -12,8 +12,8 @@ void Block::render(DirectX::SpriteBatch* spriteBatch){
 		TextureManager::getTexture(TEX_BLOCK_WHITE)->draw(spriteBatch, mPositionScreen, mTint);
 }
 
-void Block::render(DirectX::SpriteBatch* spriteBatch, DirectX::SimpleMath::Vector2& screenPosition, float scale){
-	TextureManager::getTexture(TEX_BLOCK_WHITE)->draw(spriteBatch, screenPosition, mTint, 0.0f, DirectX::SimpleMath::Vector2(0, 0), scale);
+void Block::render(DirectX::SpriteBatch* spriteBatch, DirectX::SimpleMath::Vector2& screenPosition, float scale, DirectX::SimpleMath::Vector4 tint){
+	TextureManager::getTexture(TEX_BLOCK_WHITE)->draw(spriteBatch, screenPosition, mTint * tint, 0.0f, DirectX::SimpleMath::Vector2(0, 0), scale);
 }
 
 bool Block::setPosition(DirectX::SimpleMath::Vector2& position){
@@ -25,7 +25,7 @@ bool Block::setPosition(DirectX::SimpleMath::Vector2& position){
 	if (nX < 0 || nX > (int)Field::getWidth() - 1 || nY > (int)Field::getHeight() - 1)
 		collision = true;
 
-	if (nY >= 0)
+	if (nY >= 0 && nX >= 0)
 		if (Field::getGrid()[nY * Field::getWidth() + nX])
 			collision = true;
 

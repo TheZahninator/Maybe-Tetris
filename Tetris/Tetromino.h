@@ -42,11 +42,15 @@ public:
 	bool isLocked(){ return mLocked; }
 	bool collidedAtSpawn(){ return mCollisionAtSpawn; }
 
+
+	UINT getEstimatedTouchingBlocks(){ return m_estimatedTouchingBlocks; }
+	UINT getTouchingBlocks(){ return m_touchingBlocks; }
 private:
 	void setFieldMatrix();
 
-	Vector2 mPositionSreen;
-	Vector2 mPositionGrid;
+	Vector2 m_positionSreen;
+	Vector2 m_positionGrid;
+	Vector2 m_estimatedPositionGrid;
 	
 	std::unique_ptr<int> mBaseMatrix;
 	std::unique_ptr<int> mFieldMatrix;
@@ -60,4 +64,8 @@ private:
 
 	float mFrameCounter;
 	UINT m_triesToRotate;
+
+	UINT m_estimatedTouchingBlocks;
+	UINT m_touchingBlocks;
+	void calcTouchingBlocks(UINT& result);
 };

@@ -10,7 +10,7 @@ public:
 	Block(DirectX::SimpleMath::Vector2& position, DirectX::SimpleMath::Vector4& tint = BLOCK_COLOR_SINGLE);
 
 	void render(DirectX::SpriteBatch* spriteBatch);	//Zeichnet die Textur
-	void render(DirectX::SpriteBatch* spriteBatch, DirectX::SimpleMath::Vector2& screenPosition, float scale = 1.0f); //Zeichnet die textur an einer bestimmten Stelle auf dem Bildschirm
+	void render(DirectX::SpriteBatch* spriteBatch, DirectX::SimpleMath::Vector2& screenPosition, float scale = 1.0f, DirectX::SimpleMath::Vector4 tint = DirectX::Colors::White.v); //Zeichnet die textur an einer bestimmten Stelle auf dem Bildschirm
 
 	bool setPosition(DirectX::SimpleMath::Vector2& position);	//Setzt die Spielfeldposition und gibt zurück, ob es zu einer Kollision kommt.
 

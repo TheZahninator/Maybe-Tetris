@@ -28,6 +28,9 @@ public:
 	int getRotation(){ return m_rotation; }
 	int getType(){ return m_type; }
 
+	UINT getEstimatedTouchingBlocks();
+	UINT getTouchingBlocks();
+
 private:
 	void split(Tetromino* tetromino);
 	bool mSplitted;

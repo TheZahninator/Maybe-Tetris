@@ -86,12 +86,14 @@ void Field::init(DirectX::SimpleMath::Vector2& screenPosition){
 		AIList.push_back(std::unique_ptr<AI>(new AI()));
 	}
 
-	AIMode = true;
+	AIMode = false;
 
 	m_framesSinceLastTetromino = 0;
 
 	for (unsigned i = 0; i < 6; i++)
 		pressedButtons[i] = false;
+
+	restart();
 }
 
 void Field::restart(){
@@ -338,11 +340,11 @@ void Field::Update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::
 		if (keyboardTracker->IsKeyPressed(DirectX::Keyboard::L))
 			loadGenomes();
 	}
-	if (inputGamePad->back == inputGamePad->PRESSED)
-		switchAIMode();
+	//if (inputGamePad->back == inputGamePad->PRESSED)
+	//	switchAIMode();
 
 
-	//Let the AI controll the Button presses
+	//Let the AI control the Button presses
 	if (AIMode){
 
 		m_framesSinceLastTetromino++;
@@ -354,7 +356,7 @@ void Field::Update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::
 		inputGamePad->Update(state);
 
 	}
-	else{
+	/*else{
 		m_AILearningFrameCounter++;
 
 		//Check whether any button got pressed
@@ -379,7 +381,7 @@ void Field::Update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::
 
 			m_AILearningFrameCounter = 0;
 		}
-	}
+	}*/
 
 	//Updatet den aktiven Tetromino.
 	mTetrominoQueue[0]->update(inputGamePad, keyboardTracker, keyboardState);

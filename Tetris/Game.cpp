@@ -136,9 +136,9 @@ void Game::Update(DX::StepTimer const& timer)
 		if (mKeyboardTracker->IsKeyPressed(Keyboard::NumPad5))	m_currentFPS /= 5;
 	}
 
-	if (mKeyboard->RightControl && mKeyboardTracker->IsKeyPressed(mKeyboard->R)){
-		m_noRender = !m_noRender;
-	}
+	//if (mKeyboard->RightControl && mKeyboardTracker->IsKeyPressed(mKeyboard->R)){
+	//	m_noRender = !m_noRender;
+	//}
 
 	if (m_currentFPS != oldFPS)
 		m_timer.SetTargetElapsedSeconds(1.0 / m_currentFPS);
