@@ -10,24 +10,25 @@ int main(){
 	int w = 800;
 	int h = 600;
 
-	sf::RenderWindow window(sf::VideoMode(w, h), GAME_TITLE);
+	std::shared_ptr<sf::RenderWindow> window;
+	window.reset( new sf::RenderWindow(sf::VideoMode(w, h), GAME_TITLE));
 	
 	g_game.reset(new Game());
-	g_game->Initialize(std::make_shared<sf::RenderWindow>(window), w, h);
+	g_game->Initialize(window, w, h);
 
 	sf::CircleShape shape(100.0f);
 	shape.setFillColor(sf::Color::Green);
 
-	while (window.isOpen()){
+	while (window->isOpen()){
 		sf::Event event;
 
 		g_game->getKeyboardStateTracker()->update();
 
-		while (window.pollEvent(event)){
+		while (window->pollEvent(event)){
 			switch (event.type)
 			{
 			case sf::Event::Closed:
-				window.close();
+				window->close();
 				break;
 
 			case sf::Event::KeyPressed:

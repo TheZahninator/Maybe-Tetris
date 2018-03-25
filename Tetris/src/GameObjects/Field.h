@@ -13,9 +13,12 @@
 
 class Block;
 class TetrominoGroup;
+class AI;
 
 class Field{
 public:
+	Field();
+
 	void init(sf::Vector2f& screenPosition);
 	void restart();
 

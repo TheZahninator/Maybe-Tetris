@@ -42,9 +42,6 @@
     <ClInclude Include="src\AI\AI.h">
       <Filter>Header Files\AI</Filter>
     </ClInclude>
-    <ClInclude Include="src\AI\AIController.h">
-      <Filter>Header Files\AI</Filter>
-    </ClInclude>
     <ClInclude Include="src\Graphics\TextureManager.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
@@ -87,6 +84,9 @@
     <ClInclude Include="src\Helper\KeyboardStateTracker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\AI\AIController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Game.cpp">
@@ -96,9 +96,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\AI\AI.cpp">
-      <Filter>Source Files\AI</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AI\AIController.cpp">
       <Filter>Source Files\AI</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\TextureManager.cpp">
@@ -126,6 +123,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Helper\KeyboardStateTracker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AI\AIController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

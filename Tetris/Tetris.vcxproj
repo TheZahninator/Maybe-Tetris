@@ -169,9 +169,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\AI\AIController.h" />
     <ClInclude Include="src\Helper\KeyboardStateTracker.h" />
     <ClInclude Include="src\AI\AI.h" />
-    <ClInclude Include="src\AI\AIController.h" />
     <ClInclude Include="src\Helper\BagContainer.h" />
     <ClInclude Include="src\GameObjects\Block.h" />
     <ClInclude Include="src\Graphics\BlockColors.h" />
@@ -189,9 +189,9 @@
     <ClInclude Include="src\Helper\StepTimer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\AI\AIController.cpp" />
     <ClCompile Include="src\Helper\KeyboardStateTracker.cpp" />
     <ClCompile Include="src\AI\AI.cpp" />
-    <ClCompile Include="src\AI\AIController.cpp" />
     <ClCompile Include="src\Helper\BagContainer.cpp" />
     <ClCompile Include="src\GameObjects\Block.cpp" />
     <ClCompile Include="src\GameObjects\Field.cpp" />

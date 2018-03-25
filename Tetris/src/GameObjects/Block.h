@@ -5,6 +5,8 @@
 
 #define BLOCK_SIZE 16	//Blockgröße in Pixeln
 
+class Field;
+
 class Block{
 public:
 	Block(Field& field, sf::Vector2i& position, sf::Color& tint = BLOCK_COLOR_SINGLE);

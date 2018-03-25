@@ -6,6 +6,7 @@
 #include "ERotation.h"
 
 class Tetromino;
+class Field;
 
 class TetrominoGroup{
 public:

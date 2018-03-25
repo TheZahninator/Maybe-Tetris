@@ -37,6 +37,8 @@ void Game::Initialize(std::shared_ptr<sf::RenderWindow> window, int width, int h
 	m_noRender = false;
 
 	m_keyboardStateTracker.reset(new KeyboardStateTracker());
+
+	m_field.init(sf::Vector2f(0, 0));
 }
 
 // Executes the basic game loop.
@@ -69,10 +71,10 @@ void Game::Update(StepTimer const& timer)
 		state = AI::m_controller->GetState();
 		mGamePadTracker->Update(state);
 	}
-	Field::Update(mGamePadTracker.get(), mKeyboardTracker.get(), &keyState, &mouseState, mMouseButtonTracker.get());
     
 	elapsedTime;
 	*/
+	m_field.Update(m_keyboardStateTracker.get());
 
 	if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Escape)){
 		PostQuitMessage(0);
@@ -120,6 +122,8 @@ void Game::Render()
     }
 
     m_window->clear();
+
+	m_field.Render(m_window.get());
 
  //   // TODO: Add your rendering code here.
 	//CommonStates states(m_d3dDevice.Get());

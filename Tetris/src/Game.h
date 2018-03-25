@@ -73,4 +73,6 @@ private:
 	void switchFullscreen();
 
 	double m_currentFPS;
+
+	Field m_field;
 };

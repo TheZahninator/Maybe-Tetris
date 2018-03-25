@@ -1,6 +1,9 @@
 #pragma once
 
 #include "AIController.h"
+#include "../GameObjects/Field.h"
+
+class Field;
 
 class AI
 {

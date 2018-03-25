@@ -5,6 +5,7 @@
 #include "ERotation.h"
 
 class Block;
+class Field;
 
 class Tetromino{
 public:
