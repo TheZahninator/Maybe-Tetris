@@ -2,14 +2,14 @@
 #include "TetrominoGroup.h"
 
 
-TetrominoGroup::TetrominoGroup(int type) : mSplitted(false), mToBeDestroyed(false){
+TetrominoGroup::TetrominoGroup(int type, Field& field) : mSplitted(false), mToBeDestroyed(false), m_field(field){
 	m_type = type;
 
 	int w = 0;
 	int h = 0;
 
 	bool* matrix = nullptr;
-	DirectX::SimpleMath::Vector4 color = DirectX::Colors::White.v;
+	sf::Color color = sf::Color::White;
 	
 
 	switch (type){
@@ -257,12 +257,12 @@ TetrominoGroup::TetrominoGroup(int type) : mSplitted(false), mToBeDestroyed(fals
 
 	}
 
-	mPositionGrid.x = (float)(Field::getWidth() / 2 - (int)(w / 2));
+	mPositionGrid.x = (float)(m_field.getWidth() / 2 - (int)(w / 2));
 	mPositionGrid.y = (float)(2 - h);
 
 	mTetrominos.push_back(std::shared_ptr<Tetromino>(new Tetromino(mPositionGrid, matrix, w, h, color)));
 	if (mTetrominos[0]->collidedAtSpawn()){
-		Field::restart();
+		m_field.restart();
 	}
 
 	m_rotation = 0;
@@ -272,10 +272,10 @@ TetrominoGroup::TetrominoGroup(int type) : mSplitted(false), mToBeDestroyed(fals
 TetrominoGroup::~TetrominoGroup(){
 }
 
-void TetrominoGroup::update(DirectX::GamePad::ButtonStateTracker* gamePadTracker, DirectX::Keyboard::KeyboardStateTracker* keyboardTracker, DirectX::Keyboard::State* keyboardState){
+void TetrominoGroup::update(KeyboardStateTracker* keyboardTracker){
 	
 	bool tillAllocked = false;
-	if (gamePadTracker->dpadUp == Mouse::ButtonStateTracker::PRESSED || keyboardTracker->IsKeyPressed(Keyboard::Up))
+	if (keyboardTracker->isKeyPressed(sf::Keyboard::Up))
 		tillAllocked = true;
 
 	bool allLocked = true;
@@ -283,7 +283,7 @@ void TetrominoGroup::update(DirectX::GamePad::ButtonStateTracker* gamePadTracker
 	do{
 		allLocked = true;
 		for (UINT i = 0; i < mTetrominos.size(); i++){
-			mTetrominos[i]->update(gamePadTracker, keyboardTracker, keyboardState);
+			mTetrominos[i]->update(keyboardTracker);
 			if (!mSplitted){
 				allLocked = false;
 				if (mTetrominos[i]->isLocked()){
@@ -304,19 +304,15 @@ void TetrominoGroup::update(DirectX::GamePad::ButtonStateTracker* gamePadTracker
 
 	if (!mSplitted){
 		//TODO: Input handling
-		if (gamePadTracker->x == GamePad::ButtonStateTracker::PRESSED
-			|| keyboardTracker->IsKeyPressed(Keyboard::A))
+		if (keyboardTracker->isKeyPressed(sf::Keyboard::A))
 			rotate(ERotation::COUNTER_CLOCKWISE);
-		else if (gamePadTracker->y == GamePad::ButtonStateTracker::PRESSED
-			|| keyboardTracker->IsKeyPressed(Keyboard::D))
+		else if (keyboardTracker->isKeyPressed(sf::Keyboard::D))
 			rotate(ERotation::CLOCKWISE);
 
-		if (gamePadTracker->dpadLeft == GamePad::ButtonStateTracker::PRESSED
-			|| keyboardTracker->IsKeyPressed(Keyboard::Left))
-			move(DirectX::SimpleMath::Vector2(-1, 0));
-		if (gamePadTracker->dpadRight == GamePad::ButtonStateTracker::PRESSED
-			|| keyboardTracker->IsKeyPressed(Keyboard::Right))
-			move(DirectX::SimpleMath::Vector2(1, 0));
+		if (keyboardTracker->isKeyPressed(sf::Keyboard::Left))
+			move(sf::Vector2i(-1, 0));
+		if (keyboardTracker->isKeyPressed(sf::Keyboard::Right))
+			move(sf::Vector2i(1, 0));
 	}
 	else if(allLocked){
 		//TODO: Blöcke auf das Spielfeld überschreiben und neuen Tetromino spawnen.
@@ -325,19 +321,19 @@ void TetrominoGroup::update(DirectX::GamePad::ButtonStateTracker* gamePadTracker
 
 		mToBeDestroyed = true;
 
-		Field::checkForLineClear();
+		m_field.checkForLineClear();
 	}
 }
 
-void TetrominoGroup::render(DirectX::SpriteBatch* spriteBatch){
+void TetrominoGroup::render(sf::RenderWindow* window){
 	for (UINT i = 0; i < mTetrominos.size(); i++){
-		mTetrominos[i]->render(spriteBatch);
+		mTetrominos[i]->render(window);
 	}
 }
 
-void TetrominoGroup::render(DirectX::SpriteBatch* spriteBatch, DirectX::SimpleMath::Vector2& screenPosition, float scale){
+void TetrominoGroup::render(sf::RenderWindow* window, const sf::Vector2f& screenPosition, float scale){
 	for (UINT i = 0; i < mTetrominos.size(); i++){
-		mTetrominos[i]->render(spriteBatch, screenPosition, scale);
+		mTetrominos[i]->render(window, screenPosition, scale);
 	}
 }
 
@@ -357,14 +353,14 @@ void TetrominoGroup::rotate(ERotation rotation){
 	}
 }
 
-bool TetrominoGroup::setPosition(DirectX::SimpleMath::Vector2& position){
+bool TetrominoGroup::setPosition(sf::Vector2i& position){
 	for (UINT i = 0; i < mTetrominos.size(); i++)
 		mTetrominos[i]->setPosition(position);
 
 	return true;
 }
 
-bool TetrominoGroup::move(DirectX::SimpleMath::Vector2& direction){
+bool TetrominoGroup::move(sf::Vector2i& direction){
 	bool successed = true;
 	
 	for (UINT i = 0; i < mTetrominos.size(); i++){
@@ -408,7 +404,7 @@ int* TetrominoGroup::getMatrix(){
 	return mTetrominos[0]->getOriginalMatrix(); 
 }
 
-DirectX::SimpleMath::Vector2 TetrominoGroup::getMatrixSize() { 
+sf::Vector2i TetrominoGroup::getMatrixSize() { 
 	return mTetrominos[0]->getMatrixSize(); 
 }
 
