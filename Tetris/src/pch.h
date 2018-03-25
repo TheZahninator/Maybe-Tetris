@@ -56,5 +56,4 @@ namespace DX
 #include <WICTextureLoader.h>
 //#include <Audio.h>
 
-
 #include <ZahnAI\ZahnAI.h>

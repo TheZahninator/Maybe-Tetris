@@ -195,7 +195,8 @@
     <ClCompile Include="src\GameObjects\Block.cpp" />
     <ClCompile Include="src\GameObjects\Field.cpp" />
     <ClCompile Include="src\Game.cpp" />
-    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\main.old.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

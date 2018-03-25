@@ -21,7 +21,7 @@ public:
 
     // Initialization and management
     void Initialize(HWND window, int width, int height);
-
+	
     // Basic game loop
     void Tick();
     void Render();
