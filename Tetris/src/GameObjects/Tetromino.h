@@ -55,7 +55,7 @@ private:
 	std::unique_ptr<int> mBaseMatrix;
 	std::unique_ptr<int> mFieldMatrix;
 	std::unique_ptr<int> m_originalMatrix;
-	int mMatrixWidth, mMatrixHeight;
+	unsigned mMatrixWidth, mMatrixHeight;
 
 	bool mLocked;
 	bool mCollisionAtSpawn;

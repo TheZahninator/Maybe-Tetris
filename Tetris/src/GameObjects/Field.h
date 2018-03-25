@@ -3,11 +3,11 @@
 #include <vector>
 
 #include "TetrominoGroup.h"
-#include "AI.h"
-#include "BagContainer.h"
+#include "../AI/AI.h"
+#include "../Helper/BagContainer.h"
 
 //#define PUGIXML_WCHAR_MODE
-#include "pugixml.hpp"
+#include "../Helper/pugixml.hpp"
 
 #define QUEUE_SIZE 7
 
@@ -27,7 +27,7 @@ public:
 	static void addBlock(std::shared_ptr<Block> block);
 
 	static std::shared_ptr<Block>* getGrid(){ return mGrid; }
-	static bool getGrid(int x, int y){
+	static bool getGrid(unsigned x, unsigned y){
 		if (x >= 0 && x < mWidth && y >= 0 && y < mHeight){
 			return mGrid[y * mWidth + x] != nullptr;
 		}

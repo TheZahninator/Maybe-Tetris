@@ -1,4 +1,4 @@
-#include "pch.h"
+#include <pch.h>
 #include "Field.h"
 
 std::shared_ptr<Block>* Field::mGrid;
@@ -454,65 +454,65 @@ void Field::Render(DirectX::SpriteBatch* spritebatch, DirectX::SpriteFont* sprit
 	DirectX::SimpleMath::Vector2 keyOverlayOffset(425, 375);
 
 	RECT rect;
-	rect.bottom = TEX_KEY_OVERLAY_SIZE.y;
-	rect.right = TEX_KEY_OVERLAY_SIZE.x;
+	rect.bottom = static_cast<LONG>(TEX_KEY_OVERLAY_SIZE.y);
+	rect.right = static_cast<LONG>(TEX_KEY_OVERLAY_SIZE.x);
 	//CCW
 	DirectX::SimpleMath::Vector2 off = pressedButtons[5] ? TEX_KEY_OVERLAY_CCW_PRESSED_RECT : TEX_KEY_OVERLAY_CCW_RELEASED_RECT;
 
-	rect.left = int(off.x);
-	rect.top = int(off.y);
-	rect.right = int(rect.left + TEX_KEY_OVERLAY_SIZE.x);
-	rect.bottom = int(rect.top + TEX_KEY_OVERLAY_SIZE.y);
+	rect.left =   static_cast<LONG>(off.x);
+	rect.top =    static_cast<LONG>(off.y);
+	rect.right =  static_cast<LONG>(rect.left + TEX_KEY_OVERLAY_SIZE.x);
+	rect.bottom = static_cast<LONG>(rect.top + TEX_KEY_OVERLAY_SIZE.y);
 
 	TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + DirectX::SimpleMath::Vector2(0, 0), rect);
 
 	//CW
 	off = pressedButtons[4] ? TEX_KEY_OVERLAY_CW_PRESSED_RECT : TEX_KEY_OVERLAY_CW_RELEASED_RECT;
 
-	rect.left = int(off.x);
-	rect.top = int(off.y);
-	rect.right = int(rect.left + TEX_KEY_OVERLAY_SIZE.x);
-	rect.bottom = int(rect.top + TEX_KEY_OVERLAY_SIZE.y);
+	rect.left =   static_cast<LONG>(off.x);
+	rect.top =    static_cast<LONG>(off.y);
+	rect.right =  static_cast<LONG>(rect.left + TEX_KEY_OVERLAY_SIZE.x);
+	rect.bottom = static_cast<LONG>(rect.top + TEX_KEY_OVERLAY_SIZE.y);
 
 	TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + DirectX::SimpleMath::Vector2(128, 0), rect);
 
 	//UP
 	off = pressedButtons[0] ? TEX_KEY_OVERLAY_UP_PRESSED_RECT : TEX_KEY_OVERLAY_UP_RELEASED_RECT;
-
-	rect.left = int(off.x);
-	rect.top = int(off.y);
-	rect.right = int(rect.left + TEX_KEY_OVERLAY_SIZE.x);
-	rect.bottom = int(rect.top + TEX_KEY_OVERLAY_SIZE.y);
+	
+	rect.left =   static_cast<LONG>(off.x);
+	rect.top =    static_cast<LONG>(off.y);
+	rect.right =  static_cast<LONG>(rect.left + TEX_KEY_OVERLAY_SIZE.x);
+	rect.bottom = static_cast<LONG>(rect.top + TEX_KEY_OVERLAY_SIZE.y);
 
 	TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + DirectX::SimpleMath::Vector2(64, 0), rect);
 
 	//DOWN
 	off = pressedButtons[1] ? TEX_KEY_OVERLAY_DOWN_PRESSED_RECT : TEX_KEY_OVERLAY_DOWN_RELEASED_RECT;
 
-	rect.left = int(off.x);
-	rect.top = int(off.y);
-	rect.right = int(rect.left + TEX_KEY_OVERLAY_SIZE.x);
-	rect.bottom = int(rect.top + TEX_KEY_OVERLAY_SIZE.y);
+	rect.left = static_cast<LONG>(off.x);
+	rect.top = static_cast<LONG>(off.y);
+	rect.right = static_cast<LONG>(rect.left + TEX_KEY_OVERLAY_SIZE.x);
+	rect.bottom = static_cast<LONG>(rect.top + TEX_KEY_OVERLAY_SIZE.y);
 
 	TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + DirectX::SimpleMath::Vector2(64, 64), rect);
 
 	//LEFT
 	off = pressedButtons[2] ? TEX_KEY_OVERLAY_LEFT_PRESSED_RECT : TEX_KEY_OVERLAY_LEFT_RELEASED_RECT;
 
-	rect.left = int(off.x);
-	rect.top = int(off.y);
-	rect.right = int(rect.left + TEX_KEY_OVERLAY_SIZE.x);
-	rect.bottom = int(rect.top + TEX_KEY_OVERLAY_SIZE.y);
+	rect.left = static_cast<LONG>(off.x);
+	rect.top = static_cast<LONG>(off.y);
+	rect.right = static_cast<LONG>(rect.left + TEX_KEY_OVERLAY_SIZE.x);
+	rect.bottom = static_cast<LONG>(rect.top + TEX_KEY_OVERLAY_SIZE.y);
 
 	TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + DirectX::SimpleMath::Vector2(0, 64), rect);
 
 	//RIGHT
 	off = pressedButtons[3] ? TEX_KEY_OVERLAY_RIGHT_PRESSED_RECT : TEX_KEY_OVERLAY_RIGHT_RELEASED_RECT;
 
-	rect.left = int(off.x);
-	rect.top = int(off.y);
-	rect.right = int(rect.left + TEX_KEY_OVERLAY_SIZE.x);
-	rect.bottom = int(rect.top + TEX_KEY_OVERLAY_SIZE.y);
+	rect.left = static_cast<LONG>(off.x);
+	rect.top = static_cast<LONG>(off.y);
+	rect.right = static_cast<LONG>(rect.left + TEX_KEY_OVERLAY_SIZE.x);
+	rect.bottom = static_cast<LONG>(rect.top + TEX_KEY_OVERLAY_SIZE.y);
 
 	TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + DirectX::SimpleMath::Vector2(128, 64), rect);
 

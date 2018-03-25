@@ -1,6 +1,6 @@
-#include "pch.h"
+#include <pch.h>
 #include "AI.h"
-#include "Field.h"
+#include "../GameObjects/Field.h"
 
 std::shared_ptr<AIController> AI::m_controller;
 

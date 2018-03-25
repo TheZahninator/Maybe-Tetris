@@ -1,4 +1,4 @@
-#include "pch.h"
+#include <pch.h>
 #include "Tetromino.h"
 
 using namespace DirectX::SimpleMath;
@@ -196,8 +196,8 @@ void Tetromino::calcTouchingBlocks(UINT& result){
 							}
 							else{	//Else continue
 
-								int cx = m_estimatedPositionGrid.x + x + xx;
-								int cy = m_estimatedPositionGrid.y + y + yy;
+								unsigned cx = static_cast<unsigned>(m_estimatedPositionGrid.x + x + xx);
+								unsigned cy = static_cast<unsigned>(m_estimatedPositionGrid.y + y + yy);
 
 								if (Field::getGrid(cx, cy)){
 									result++;
@@ -207,8 +207,8 @@ void Tetromino::calcTouchingBlocks(UINT& result){
 						}
 						else{	//Else continue
 
-							int cx = m_estimatedPositionGrid.x + x + xx;
-							int cy = m_estimatedPositionGrid.y + y + yy;
+							unsigned cx = static_cast<unsigned>(m_estimatedPositionGrid.x + x + xx);
+							unsigned cy = static_cast<unsigned>(m_estimatedPositionGrid.y + y + yy);
 
 							if (Field::getGrid(cx, cy)){
 								result++;
@@ -230,8 +230,8 @@ void Tetromino::render(DirectX::SpriteBatch* spriteBatch){
 		mBlocks[i]->render(spriteBatch);
 	}
 
-	for (int y = 0; y < mMatrixHeight; y++){
-		for (int x = 0; x < mMatrixWidth; x++){
+	for (unsigned y = 0; y < mMatrixHeight; y++){
+		for (unsigned x = 0; x < mMatrixWidth; x++){
 			int i = mFieldMatrix.get()[y * mMatrixWidth + x];
 			if (i){
 
@@ -244,8 +244,8 @@ void Tetromino::render(DirectX::SpriteBatch* spriteBatch){
 }
 
 void Tetromino::render(DirectX::SpriteBatch* spriteBatch, DirectX::SimpleMath::Vector2& screenPosition, float scale){
-	for (int y = 0; y < mMatrixHeight; y++){
-		for (int x = 0; x < mMatrixWidth; x++){
+	for (unsigned y = 0; y < mMatrixHeight; y++){
+		for (unsigned x = 0; x < mMatrixWidth; x++){
 			int i = mBaseMatrix.get()[y * mMatrixWidth + x];
 			if (i){
 				mBlocks[i-1]->render(spriteBatch, screenPosition + Vector2((float)x, (float)y) * (BLOCK_SIZE * scale), scale);
@@ -399,8 +399,8 @@ bool Tetromino::setPosition(Vector2& position){
 	bool collision = false;
 
 	//Iteriert durch alle Felder der Matrix.
-	for (int y = 0; y < mMatrixHeight; y++){
-		for (int x = 0; x < mMatrixWidth; x++){
+	for (unsigned y = 0; y < mMatrixHeight; y++){
+		for (unsigned x = 0; x < mMatrixWidth; x++){
 
 			//Überprüft den Wert an der Stelle.
 			UINT i = mFieldMatrix.get()[y * mMatrixWidth + x];
@@ -427,8 +427,8 @@ void Tetromino::rotate(ERotation rotation){
 	memset(newMat, 0, mMatrixWidth * mMatrixHeight * sizeof(int));
 
 	//Iteriert durch jedes Feld der Matrix durch und füllt die neue Matrix mit den entsprechenden Werten an den neuen Stellen.
-	for (int y = 0; y < mMatrixHeight; y++){
-		for (int x = 0; x < mMatrixWidth; x++){
+	for (unsigned y = 0; y < mMatrixHeight; y++){
+		for (unsigned x = 0; x < mMatrixWidth; x++){
 			//Variablen für die neue Position des Feldes.
 			int nX = 0;
 			int nY = 0;
@@ -485,8 +485,8 @@ void Tetromino::rotate(ERotation rotation){
 
 DirectX::SimpleMath::Vector2 Tetromino::getBlockMostLeft(){
 	//Geht von links angefangen jede Spalte durch.
-	for (int x = 0; x < mMatrixWidth; x++){
-		for (int y = 0; y < mMatrixHeight; y++){
+	for (unsigned x = 0; x < mMatrixWidth; x++){
+		for (unsigned y = 0; y < mMatrixHeight; y++){
 			//Wenn ein Block gefunden wurde wird die x position zurück gegeben.
 			if (mBaseMatrix.get()[y * mMatrixWidth + x])
 				return Vector2((float)x, 0.0f);
@@ -498,8 +498,8 @@ DirectX::SimpleMath::Vector2 Tetromino::getBlockMostLeft(){
 
 DirectX::SimpleMath::Vector2 Tetromino::getBlockMostRight(){
 	//Geht von links angefangen jede Spalte durch.
-	for (int x = mMatrixWidth - 1; x >= 0; x--){
-		for (int y = 0; y < mMatrixHeight; y++){
+	for (unsigned x = mMatrixWidth - 1; x >= 0; x--){
+		for (unsigned y = 0; y < mMatrixHeight; y++){
 			//Wenn ein Block gefunden wurde wird die x position zurück gegeben.
 			if (mBaseMatrix.get()[y * mMatrixWidth + x])
 				return Vector2((float)x, 0.0f);
@@ -533,8 +533,8 @@ void Tetromino::setFieldMatrix(){
 	//memset(mFieldMatrix.get(), 0, mMatrixWidth * mMatrixHeight * sizeof(int));
 	
 	//Alle daten von der Basismatrix werden auf die Feldmatrix kopiert.
-	for (int y = 0; y < mMatrixHeight; y++){
-		for (int x = 0; x < mMatrixWidth; x++){
+	for (unsigned y = 0; y < mMatrixHeight; y++){
+		for (unsigned x = 0; x < mMatrixWidth; x++){
 			mFieldMatrix.get()[y * mMatrixWidth + x] = mBaseMatrix.get()[y * mMatrixWidth + x];
 		}
 	}
@@ -546,7 +546,7 @@ void Tetromino::setFieldMatrix(){
 	while (n == 0){
 		
 		//Schleife um die Anzahl der Blöcke in der untersten Reihe der Matrix zu zählen.
-		for (int x = 0; x < mMatrixWidth; x++){
+		for (unsigned x = 0; x < mMatrixWidth; x++){
 			if (mFieldMatrix.get()[(mMatrixHeight - 1) * mMatrixWidth + x] > 0)
 				n++;
 		}
@@ -555,14 +555,14 @@ void Tetromino::setFieldMatrix(){
 		if (n) break;
 
 		//Jede Reihe wird einzeln nach unten verschoben
-		for (int y = mMatrixHeight - 1; y > 0; y--){
-			for (int x = 0; x < mMatrixWidth; x++){
+		for (unsigned y = mMatrixHeight - 1; y > 0; y--){
+			for (unsigned x = 0; x < mMatrixWidth; x++){
 				mFieldMatrix.get()[y * mMatrixWidth + x] = mFieldMatrix.get()[(y - 1) * mMatrixWidth + x];
 			}
 		}
 
 		//Oberste Reihe wird gelöscht
-		for (int x = 0; x < mMatrixWidth; x++){
+		for (unsigned x = 0; x < mMatrixWidth; x++){
 			mFieldMatrix.get()[x] = 0;
 		}
 	}

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TextureManager.h"
+#include "../Graphics/TextureManager.h"
 #include "Field.h"
 
 #define BLOCK_SIZE 16	//Blockgröße in Pixeln

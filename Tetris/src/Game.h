@@ -6,9 +6,9 @@
 
 #define GAME_TITLE L"Türme-Bau-Simulator 2016"
 
-#include "StepTimer.h"
-#include "TetrominoGroup.h"
-#include "AI.h"
+#include "Helper/StepTimer.h"
+#include "GameObjects/TetrominoGroup.h"
+#include "AI/AI.h"
 
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.

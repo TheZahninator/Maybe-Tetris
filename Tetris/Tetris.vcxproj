@@ -71,7 +71,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)/src;$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);;$(DXSDK_DIR)Lib\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -81,7 +81,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)/src;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);;$(DXSDK_DIR)Lib\x86</LibraryPath>
     <TargetName>Türme-Bau-Simulator 2016</TargetName>
   </PropertyGroup>
@@ -137,6 +137,8 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>E:\TheZahninator\Documents\Visual Studio 2013\Projects\Tetris\deps\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -167,31 +169,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\AI.h" />
-    <ClInclude Include="src\AIController.h" />
-    <ClInclude Include="src\BagContainer.h" />
-    <ClInclude Include="src\Block.h" />
-    <ClInclude Include="src\BlockColors.h" />
-    <ClInclude Include="src\ERotation.h" />
-    <ClInclude Include="src\Field.h" />
-    <ClInclude Include="src\pugiconfig.hpp" />
-    <ClInclude Include="src\pugixml.hpp" />
-    <ClInclude Include="src\TetrominoMatrices.h" />
+    <ClInclude Include="src\AI\AI.h" />
+    <ClInclude Include="src\AI\AIController.h" />
+    <ClInclude Include="src\Helper\BagContainer.h" />
+    <ClInclude Include="src\GameObjects\Block.h" />
+    <ClInclude Include="src\Graphics\BlockColors.h" />
+    <ClInclude Include="src\GameObjects\ERotation.h" />
+    <ClInclude Include="src\GameObjects\Field.h" />
+    <ClInclude Include="src\Helper\pugiconfig.hpp" />
+    <ClInclude Include="src\Helper\pugixml.hpp" />
+    <ClInclude Include="src\GameObjects\TetrominoMatrices.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\pch.h" />
-    <ClInclude Include="src\Tetromino.h" />
-    <ClInclude Include="src\TetrominoGroup.h" />
-    <ClInclude Include="src\Texture.h" />
-    <ClInclude Include="src\TextureIDs.h" />
-    <ClInclude Include="src\TextureManager.h" />
-    <ClInclude Include="src\StepTimer.h" />
+    <ClInclude Include="src\GameObjects\Tetromino.h" />
+    <ClInclude Include="src\GameObjects\TetrominoGroup.h" />
+    <ClInclude Include="src\Graphics\Texture.h" />
+    <ClInclude Include="src\Graphics\TextureIDs.h" />
+    <ClInclude Include="src\Graphics\TextureManager.h" />
+    <ClInclude Include="src\Helper\StepTimer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\AI.cpp" />
-    <ClCompile Include="src\AIController.cpp" />
-    <ClCompile Include="src\BagContainer.cpp" />
-    <ClCompile Include="src\Block.cpp" />
-    <ClCompile Include="src\Field.cpp" />
+    <ClCompile Include="src\AI\AI.cpp" />
+    <ClCompile Include="src\AI\AIController.cpp" />
+    <ClCompile Include="src\Helper\BagContainer.cpp" />
+    <ClCompile Include="src\GameObjects\Block.cpp" />
+    <ClCompile Include="src\GameObjects\Field.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\pch.cpp">
@@ -200,11 +202,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\pugixml.cpp" />
-    <ClCompile Include="src\Tetromino.cpp" />
-    <ClCompile Include="src\TetrominoGroup.cpp" />
-    <ClCompile Include="src\Texture.cpp" />
-    <ClCompile Include="src\TextureManager.cpp" />
+    <ClCompile Include="src\Helper\pugixml.cpp" />
+    <ClCompile Include="src\GameObjects\Tetromino.cpp" />
+    <ClCompile Include="src\GameObjects\TetrominoGroup.cpp" />
+    <ClCompile Include="src\Graphics\Texture.cpp" />
+    <ClCompile Include="src\Graphics\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
