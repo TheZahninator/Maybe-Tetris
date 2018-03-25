@@ -169,6 +169,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Helper\KeyboardStateTracker.h" />
     <ClInclude Include="src\AI\AI.h" />
     <ClInclude Include="src\AI\AIController.h" />
     <ClInclude Include="src\Helper\BagContainer.h" />
@@ -189,6 +190,7 @@
     <ClInclude Include="src\Helper\StepTimer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Helper\KeyboardStateTracker.cpp" />
     <ClCompile Include="src\AI\AI.cpp" />
     <ClCompile Include="src\AI\AIController.cpp" />
     <ClCompile Include="src\Helper\BagContainer.cpp" />
@@ -196,7 +198,6 @@
     <ClCompile Include="src\GameObjects\Field.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\main.old.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

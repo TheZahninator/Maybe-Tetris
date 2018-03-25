@@ -17,10 +17,6 @@
 
 #include <wrl/client.h>
 
-#include <d3d11_1.h>
-#include <DirectXMath.h>
-#include <DirectXColors.h>
-
 #include <algorithm>
 #include <exception>
 #include <memory>
@@ -46,14 +42,10 @@ namespace DX
 #include <chrono>
 #include <thread>
 
-//DXTK includes
-#include <Mouse.h>
-#include <Keyboard.h>
-#include <Gamepad.h>
-#include <SpriteBatch.h>
-#include <SpriteFont.h>
-#include <SimpleMath.h>
-#include <WICTextureLoader.h>
-//#include <Audio.h>
+#include <SFML\Graphics.hpp>
+#include <SFML\Window.hpp>
+#include <SFML\System.hpp>
 
 #include <ZahnAI\ZahnAI.h>
+
+#include "Helper\KeyboardStateTracker.h"

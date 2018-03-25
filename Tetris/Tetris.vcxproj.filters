@@ -87,6 +87,9 @@
     <ClInclude Include="src\Helper\BagContainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Helper\KeyboardStateTracker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Game.cpp">
@@ -128,7 +131,7 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\main.old.cpp">
+    <ClCompile Include="src\Helper\KeyboardStateTracker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

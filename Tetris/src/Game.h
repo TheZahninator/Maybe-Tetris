@@ -5,7 +5,9 @@
 #pragma once
 
 #define GAME_TITLE L"Türme-Bau-Simulator 2016"
-#define DEFAULT_FPS 60.0f
+#define GAME_WINDOW_WIDTH 800
+#define GAME_WINDOW_HEIGHT 600
+#define GAME_DEFAULT_FPS 60.0f
 
 #include "Helper/StepTimer.h"
 #include "GameObjects/TetrominoGroup.h"
@@ -20,7 +22,7 @@ public:
     Game();
 
     // Initialization and management
-    void Initialize(HWND window, int width, int height);
+    void Initialize(std::shared_ptr<sf::RenderWindow> window, int width, int height);
 	
     // Basic game loop
     void Tick();
@@ -42,9 +44,11 @@ public:
 
 	bool isRunning();
 
+	KeyboardStateTracker* getKeyboardStateTracker();
+
 private:
 
-    void Update(DX::StepTimer const& timer);
+    void Update(StepTimer const& timer);
 
     void CreateDevice();
     void CreateResources();
@@ -52,44 +56,20 @@ private:
     void OnDeviceLost();
 
     // Device resources.
-    HWND                                            m_window;
-    int                                             m_outputWidth;
-    int                                             m_outputHeight;
-
-    D3D_FEATURE_LEVEL                               m_featureLevel;
-    Microsoft::WRL::ComPtr<ID3D11Device>            m_d3dDevice;
-    Microsoft::WRL::ComPtr<ID3D11Device1>           m_d3dDevice1;
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext>     m_d3dContext;
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext1>    m_d3dContext1;
-
-    Microsoft::WRL::ComPtr<IDXGISwapChain>          m_swapChain;
-    Microsoft::WRL::ComPtr<IDXGISwapChain1>         m_swapChain1;
-    Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_renderTargetView;
-    Microsoft::WRL::ComPtr<ID3D11DepthStencilView>  m_depthStencilView;
+    std::shared_ptr<sf::RenderWindow> m_window;
+    int m_outputWidth;
+    int m_outputHeight;
 
     // Rendering loop timer.
-    DX::StepTimer                                   m_timer;
+    StepTimer m_timer;
 
-		
-	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	// Custom variables
-	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	std::unique_ptr<SpriteBatch> mSpriteBatch;
-	std::unique_ptr<SpriteFont> m_spriteFont;
-
-	std::shared_ptr<GamePad> mGamePad;
-	std::unique_ptr<GamePad::ButtonStateTracker> mGamePadTracker;
-	std::unique_ptr<Keyboard> mKeyboard;
-	std::unique_ptr<Keyboard::KeyboardStateTracker> mKeyboardTracker;
-	
-	std::unique_ptr<Mouse> mMouse;
-	std::unique_ptr<Mouse::ButtonStateTracker> mMouseButtonTracker;
+	std::unique_ptr<KeyboardStateTracker> m_keyboardStateTracker;
 
 	bool m_running;
 
 	bool m_noRender;
+	bool m_isFullscreen;
 
-	WINDOWPLACEMENT m_wpPrev;
 	void switchFullscreen();
 
 	double m_currentFPS;
