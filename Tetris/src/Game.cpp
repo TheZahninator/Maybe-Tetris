@@ -41,6 +41,7 @@ void Game::Initialize(std::shared_ptr<sf::RenderWindow> window, int width, int h
 	m_keyboardStateTracker.reset(new KeyboardStateTracker());
 
 	m_field.init(sf::Vector2f(150, 300 - 360 / 2));
+	m_field.setScreenSize(sf::Vector2i(GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT));
 }
 
 void Game::Run()

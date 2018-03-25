@@ -240,7 +240,7 @@ void Tetromino::render(sf::RenderWindow* window){
 				sf::Vector2f ghostPos(off.x, off.y);
 				ghostPos += m_field.getScreenPosition();
 
-				mBlocks[i - 1]->render(window, ghostPos, 1.0f, sf::Color(1.0, 1.0, 1.0, 0.5));
+				mBlocks[i - 1]->render(window, ghostPos, 1.0f, mBlocks[i-1]->getTint() * COLOR_ALPHA_50);
 
 			}
 		}
@@ -252,7 +252,7 @@ void Tetromino::render(sf::RenderWindow* window, const sf::Vector2f& screenPosit
 		for (unsigned x = 0; x < mMatrixWidth; x++){
 			int i = mBaseMatrix.get()[y * mMatrixWidth + x];
 			if (i){
-				mBlocks[i-1]->render(window, screenPosition + sf::Vector2f((float)x, (float)y) * (BLOCK_SIZE * scale), scale);
+				mBlocks[i-1]->render(window, screenPosition + sf::Vector2f((float)x, (float)y) * (BLOCK_SIZE * scale), scale, mBlocks[i-1]->getTint());
 			}
 		}
 	}

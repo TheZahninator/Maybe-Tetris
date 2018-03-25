@@ -443,6 +443,7 @@ void Field::Render(sf::RenderWindow* window){
 			//TextureManager::getTexture(TEX_BACKGROUND_FIELD_TILE)->draw(spritebatch, pos, BLOCK_COLOR_WHITE * COLOR_ALPHA_25);
 			m_backgroudFieldTileSprite.setPosition(pos.x, pos.y);
 			m_backgroudFieldTileSprite.setColor(BLOCK_COLOR_WHITE * COLOR_ALPHA_25);
+			window->draw(m_backgroudFieldTileSprite);
 		}
 	}
 
@@ -463,9 +464,6 @@ void Field::Render(sf::RenderWindow* window){
 		mTetrominoQueue[i]->render(window, mScreenPosition + sf::Vector2f(float((mWidth + 2) * BLOCK_SIZE), float((i - 1) * BLOCK_SIZE * 3.5f)), 0.75f);
 	}
 
-
-
-	
 	//Render pressed buttons overlay
 
 	sf::IntRect rect;
@@ -489,6 +487,7 @@ void Field::Render(sf::RenderWindow* window){
 	rect.top =    static_cast<LONG>(off.y);
 
 	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(128, 0), rect
+	m_keyClockwiseSprite.setTextureRect(rect);
 	window->draw(m_keyClockwiseSprite);
 
 
@@ -499,6 +498,7 @@ void Field::Render(sf::RenderWindow* window){
 	rect.top =    static_cast<LONG>(off.y);
 
 	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(64, 0), rect);
+	m_keyUpSprite.setTextureRect(rect);
 	window->draw(m_keyUpSprite);
 
 	//DOWN
@@ -508,6 +508,7 @@ void Field::Render(sf::RenderWindow* window){
 	rect.top = static_cast<LONG>(off.y);
 
 	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(64, 64), rect);
+	m_keyDownSprite.setTextureRect(rect);
 	window->draw(m_keyDownSprite);
 
 	//LEFT
@@ -517,6 +518,7 @@ void Field::Render(sf::RenderWindow* window){
 	rect.top = static_cast<LONG>(off.y);
 
 	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(0, 64), rect);
+	m_keyLeftSprite.setTextureRect(rect);
 	window->draw(m_keyLeftSprite);
 
 	//RIGHT
@@ -526,96 +528,204 @@ void Field::Render(sf::RenderWindow* window){
 	rect.top = static_cast<LONG>(off.y);
 
 	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(128, 64), rect);
+	m_keyRightSprite.setTextureRect(rect);
 	window->draw(m_keyRightSprite);
 
 	
 
 	//Render text
-	sf::Vector2f pos = mScreenPosition + sf::Vector2f(float((mWidth + 6) * BLOCK_SIZE), 0);
+	float xLeft = mScreenPosition.x + (mWidth + 7) * BLOCK_SIZE;
+	float xRight = m_screenSize.x - 150;
+	sf::Vector2f pos = mScreenPosition;
+	
+	sf::Font font;
+	font.loadFromFile("res/arial.ttf");
+
 	sf::Text text;
+	text.setFont(font);
+	text.setCharacterSize(16);
+	text.setColor(sf::Color::Black);
 
 	std::wstringstream str;
 	str.clear();
-	str << L"Points:             " << mPoints;
+	str << L"Points:";
 
-	//spriteFont->DrawString(spritebatch, str.str().c_str(), pointStringPos, Colors::Black);
+	pos.x = xLeft;
+
 	text.setString(sf::String(str.str()));
 	text.setPosition(pos);
 	window->draw(text);
 
 	str = std::wstringstream();
 	str.clear();
-	str << L"Highscore:         " << m_Highscore;
+	str << mPoints;
 
-	pos.y += 20;
-	//spriteFont->DrawString(spritebatch, str.str().c_str(), pos, Colors::Black);
+	pos.x = xRight;
+
 	text.setString(sf::String(str.str()));
 	text.setPosition(pos);
+	text.setOrigin(text.getLocalBounds().width, 0);
 	window->draw(text);
 
 	str = std::wstringstream();
 	str.clear();
-	str << L"HighscoreAI:     " << m_HighscoreAI;
+	str << L"Highscore:";
 
 	pos.y += 20;
-	//spriteFont->DrawString(spritebatch, str.str().c_str(), pos, Colors::Black);
+	pos.x = xLeft;
+	
 	text.setString(sf::String(str.str()));
 	text.setPosition(pos);
-	window->draw(text);
-
-	pos.y += 20;
-
-	str = std::wstringstream();
-	str.clear();
-	str << L"Lines:              " << mTotalLinesCleared;
-
-	pos.y += 20;
-	//spriteFont->DrawString(spritebatch, str.str().c_str(), pos, Colors::Black);
-	text.setString(sf::String(str.str()));
-	text.setPosition(pos);
+	text.setOrigin(0, 0);
 	window->draw(text);
 
 	str = std::wstringstream();
 	str.clear();
-	str << L"Highest lines:     " << m_totalLinesHighscore;
+	str << m_Highscore;
 
-	pos.y += 20;
-	//spriteFont->DrawString(spritebatch, str.str().c_str(), pos, Colors::Black);
+	pos.x = xRight;
+
 	text.setString(sf::String(str.str()));
 	text.setPosition(pos);
+	text.setOrigin(text.getLocalBounds().width, 0);
 	window->draw(text);
 
 	str = std::wstringstream();
 	str.clear();
-	str << L"Highest linesAI: " << m_totalLinesHighscoreAI;
+	str << L"HighscoreAI:";
 
 	pos.y += 20;
-	//spriteFont->DrawString(spritebatch, str.str().c_str(), pos, Colors::Black);
+	pos.x = xLeft;
+
 	text.setString(sf::String(str.str()));
 	text.setPosition(pos);
+	text.setOrigin(0, 0);
+	window->draw(text);
+
+	str = std::wstringstream();
+	str.clear();
+	str << m_HighscoreAI;
+
+	pos.x = xRight;
+
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	text.setOrigin(text.getLocalBounds().width, 0);
+	window->draw(text);
+
+	str = std::wstringstream();
+	str.clear();
+	str << L"Lines:";
+
+	pos.y += 40;
+	pos.x = xLeft;
+
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	text.setOrigin(0, 0);
+	window->draw(text);
+
+	str = std::wstringstream();
+	str.clear();
+	str << mTotalLinesCleared;
+
+	pos.x = xRight;
+
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	text.setOrigin(text.getLocalBounds().width, 0);
+	window->draw(text);
+
+	str = std::wstringstream();
+	str.clear();
+	str << L"Highest lines:";
+
+	pos.y += 20;
+	pos.x = xLeft;
+
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	text.setOrigin(0, 0);
+	window->draw(text);
+
+	str = std::wstringstream();
+	str.clear();
+	str << m_totalLinesHighscore;
+
+	pos.x = xRight;
+
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	text.setOrigin(text.getLocalBounds().width, 0);
+	window->draw(text);
+
+	str = std::wstringstream();
+	str.clear();
+	str << L"Highest linesAI:";
+
+	pos.y += 20;
+	pos.x = xLeft;
+
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	text.setOrigin(0, 0);
+	window->draw(text);
+
+	str = std::wstringstream();
+	str.clear();
+	str << m_totalLinesHighscoreAI;
+
+	pos.x = xRight;
+
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	text.setOrigin(text.getLocalBounds().width, 0);
 	window->draw(text);
 
 
-
+	pos.x = xLeft;
 	pos.y += 40;
 	str = std::wstringstream();
 	str.clear();
-	str << L"Genome: " << (CurrentAI + 1) << "/" << AICount;
+	str << L"Genome:";
 
-	pos.y += 20;
-	//spriteFont->DrawString(spritebatch, str.str().c_str(), pos, Colors::Black);
 	text.setString(sf::String(str.str()));
 	text.setPosition(pos);
+	text.setOrigin(0, 0);
 	window->draw(text);
 
 	str = std::wstringstream();
 	str.clear();
-	str << L"Generation: " << (CurrentGen + 1);
+	str << (CurrentAI + 1) << "/" << AICount;
 
-	pos.y += 20;
-	//spriteFont->DrawString(spritebatch, str.str().c_str(), pos, Colors::Black);
+	pos.x = xRight;
+
 	text.setString(sf::String(str.str()));
 	text.setPosition(pos);
+	text.setOrigin(text.getLocalBounds().width, 0);
+	window->draw(text);
+
+	pos.y += 20;
+	pos.x = xLeft;
+
+	str = std::wstringstream();
+	str.clear();
+	str << L"Generation:";
+
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	text.setOrigin(0, 0);
+	window->draw(text);
+
+	str = std::wstringstream();
+	str.clear();
+	str << (CurrentGen + 1);
+
+	pos.x = xRight;
+
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	text.setOrigin(text.getLocalBounds().width, 0);
 	window->draw(text);
 }
 

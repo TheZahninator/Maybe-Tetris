@@ -41,6 +41,8 @@ public:
 			return true;
 		}
 	}
+
+	void setScreenSize(const sf::Vector2i& size){ m_screenSize = size; }
 	sf::Vector2f& getScreenPosition(){ return mScreenPosition; }
 
 	UINT getWidth(){ return mWidth; }
@@ -74,6 +76,8 @@ private:
 	const UINT mWidth;	//Spielfeldbreite
 	const UINT mHeight;	//Spielfeldhöhe
 	std::shared_ptr<Block>* mGrid;	//Auf dem Spielfeld festgesetzte Blöcke
+
+	sf::Vector2i m_screenSize;
 
 	sf::Vector2f mScreenPosition;	//Spielfeldposition auf dem Bildschirm
 
