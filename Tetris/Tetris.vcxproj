@@ -184,7 +184,6 @@
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\GameObjects\Tetromino.h" />
     <ClInclude Include="src\GameObjects\TetrominoGroup.h" />
-    <ClInclude Include="src\Graphics\Texture.h" />
     <ClInclude Include="src\Graphics\TextureIDs.h" />
     <ClInclude Include="src\Graphics\TextureManager.h" />
     <ClInclude Include="src\Helper\StepTimer.h" />
@@ -207,7 +206,6 @@
     <ClCompile Include="src\Helper\pugixml.cpp" />
     <ClCompile Include="src\GameObjects\Tetromino.cpp" />
     <ClCompile Include="src\GameObjects\TetrominoGroup.cpp" />
-    <ClCompile Include="src\Graphics\Texture.cpp" />
     <ClCompile Include="src\Graphics\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>

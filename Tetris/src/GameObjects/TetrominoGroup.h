@@ -9,7 +9,7 @@ class Tetromino;
 
 class TetrominoGroup{
 public:
-	TetrominoGroup(int type, Field& field);
+	TetrominoGroup(Field& field, int type);
 	~TetrominoGroup();
 
 	void update(KeyboardStateTracker* keyboardTracker);

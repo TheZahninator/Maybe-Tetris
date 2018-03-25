@@ -15,7 +15,7 @@ void Field::fillBag(){
 
 	for (unsigned i = 0; i < m_copiesInBag; i++){
 		for (int j = 0; j < NUMBER_OF_MINOS; j++){
-			m_bag.add(std::shared_ptr<TetrominoGroup>(new TetrominoGroup(j)));
+			m_bag.add(std::shared_ptr<TetrominoGroup>(new TetrominoGroup(*this, j)));
 		}
 	}
 }
@@ -36,7 +36,7 @@ void Field::drawFromBag(){
 
 }
 
-void Field::init(sf::Vector2i& screenPosition){
+void Field::init(sf::Vector2f& screenPosition){
 	m_backgroundSprite = sf::Sprite(TextureManager::getTexture(TEX_BACKGROUND_1));
 	m_backgroundBorderSprite = sf::Sprite(TextureManager::getTexture(TEX_BACKGROUND_FIELD_BORDER));
 	m_backgroundOverlaySprite = sf::Sprite(TextureManager::getTexture(TEX_BACKGROUND_OVERLAY));

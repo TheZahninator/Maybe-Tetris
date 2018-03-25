@@ -2,7 +2,7 @@
 #include "TetrominoGroup.h"
 
 
-TetrominoGroup::TetrominoGroup(int type, Field& field) : mSplitted(false), mToBeDestroyed(false), m_field(field){
+TetrominoGroup::TetrominoGroup(Field& field, int type) : mSplitted(false), mToBeDestroyed(false), m_field(field){
 	m_type = type;
 
 	int w = 0;
@@ -260,7 +260,7 @@ TetrominoGroup::TetrominoGroup(int type, Field& field) : mSplitted(false), mToBe
 	mPositionGrid.x = (float)(m_field.getWidth() / 2 - (int)(w / 2));
 	mPositionGrid.y = (float)(2 - h);
 
-	mTetrominos.push_back(std::shared_ptr<Tetromino>(new Tetromino(mPositionGrid, matrix, w, h, color)));
+	mTetrominos.push_back(std::shared_ptr<Tetromino>(new Tetromino(m_field, mPositionGrid, matrix, w, h, color)));
 	if (mTetrominos[0]->collidedAtSpawn()){
 		m_field.restart();
 	}

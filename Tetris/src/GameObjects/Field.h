@@ -16,7 +16,7 @@ class TetrominoGroup;
 
 class Field{
 public:
-	void init(sf::Vector2i& screenPosition);
+	void init(sf::Vector2f& screenPosition);
 	void restart();
 
 	void Update(KeyboardStateTracker* keyboardTracker);
