@@ -25,6 +25,7 @@ public:
     void Initialize(std::shared_ptr<sf::RenderWindow> window, int width, int height);
 	
     // Basic game loop
+	void Run();
     void Tick();
     void Render();
 

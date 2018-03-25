@@ -417,7 +417,7 @@ void Field::Render(sf::RenderWindow* window){
 	//Zeichnet den Hintergrund
 	//TextureManager::getTexture(TEX_BACKGROUND_1)->draw(spritebatch, sf::Vector2i(0.0f, 0.0f));
 	window->draw(m_backgroundSprite);
-	window->display();
+	//window->display();
 
 	//Texture* borderTexture = TextureManager::getTexture(TEX_BACKGROUND_FIELD_BORDER);
 	sf::Vector2i borderOffset;
@@ -428,13 +428,13 @@ void Field::Render(sf::RenderWindow* window){
 
 	//borderTexture->draw(spritebatch, mScreenPosition + borderOffset);
 	window->draw(m_backgroundBorderSprite);
-	window->display();
+	//window->display();
 
 	//Render the overlay
 	//TextureManager::getTexture(TEX_BACKGROUND_OVERLAY)->draw(spritebatch, sf::Vector2i(0.0f, 0.0f));
 	m_backgroundOverlaySprite.setPosition(0.0f, 0.0f);
 	window->draw(m_backgroundOverlaySprite);
-	window->display();
+	//window->display();
 
 	//Zeichnet transparente Blöcke als Spielfeldhintergrund.
 	for (int y = 0; y < mHeight; y++){

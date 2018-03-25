@@ -22,6 +22,8 @@ Game::Game() :
 // Initialize the Direct3D resources required to run.
 void Game::Initialize(std::shared_ptr<sf::RenderWindow> window, int width, int height)
 {
+	TextureManager::init();
+
     m_window = window;
     m_outputWidth = std::max(width, 1);
     m_outputHeight = std::max(height, 1);
@@ -38,7 +40,20 @@ void Game::Initialize(std::shared_ptr<sf::RenderWindow> window, int width, int h
 
 	m_keyboardStateTracker.reset(new KeyboardStateTracker());
 
-	m_field.init(sf::Vector2f(0, 0));
+	m_field.init(sf::Vector2f(150, 300 - 360 / 2));
+}
+
+void Game::Run()
+{
+	//m_window.reset(new sf::RenderWindow(sf::VideoMode(GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT), GAME_TITLE));
+	
+	m_running = true;
+
+	while (m_running){
+		Tick();
+	}
+
+	m_window->close();
 }
 
 // Executes the basic game loop.
@@ -58,26 +73,36 @@ void Game::Tick()
 // Updates the world.
 void Game::Update(StepTimer const& timer)
 {
+	sf::Event event;
+
+	m_keyboardStateTracker->update();
+
+	while (m_window->pollEvent(event)){
+		switch (event.type)
+		{
+		case sf::Event::Closed:
+			m_running = false;
+			break;
+
+		case sf::Event::KeyPressed:
+			m_keyboardStateTracker->press(event.key.code);
+			break;
+
+		case sf::Event::KeyReleased:
+			m_keyboardStateTracker->release(event.key.code);
+			break;
+
+		default:
+			break;
+		}
+	}
+
     float elapsedTime = float(timer.GetElapsedSeconds());
 
-	/*
-	auto state = mGamePad->GetState(0);
-	if (state.IsConnected()){
-		mGamePadTracker->Update(state);
-
-	}
-	else{
-		AI::m_controller->reset();
-		state = AI::m_controller->GetState();
-		mGamePadTracker->Update(state);
-	}
-    
-	elapsedTime;
-	*/
 	m_field.Update(m_keyboardStateTracker.get());
 
 	if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Escape)){
-		PostQuitMessage(0);
+		m_running = false;
 	}
 
 	if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::F)){
@@ -124,15 +149,6 @@ void Game::Render()
     m_window->clear();
 
 	m_field.Render(m_window.get());
-
- //   // TODO: Add your rendering code here.
-	//CommonStates states(m_d3dDevice.Get());
-
-	//mSpriteBatch->Begin(SpriteSortMode_Deferred, nullptr, states.PointClamp(), nullptr, nullptr, nullptr, SimpleMath::Matrix::CreateScale(1.0f));
-	//
-	//Field::Render(mSpriteBatch.get(), m_spriteFont.get());
-
-	//mSpriteBatch->End();
 
     m_window->display();
 }
