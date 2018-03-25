@@ -1,22 +1,32 @@
 #include <pch.h>
 #include "Block.h"
 
-Block::Block(DirectX::SimpleMath::Vector2& position, DirectX::SimpleMath::Vector4& tint) :
+Block::Block(sf::Vector2i& position, sf::Color& tint) :
 	mTint(tint){
 
 	setPosition(position);
+
+	m_sprite = sf::Sprite(TextureManager::getTexture(TEX_BLOCK_WHITE));
 }
 
-void Block::render(DirectX::SpriteBatch* spriteBatch){
-	if (mPositionGrid.y >= 0)
-		TextureManager::getTexture(TEX_BLOCK_WHITE)->draw(spriteBatch, mPositionScreen, mTint);
+void Block::render(sf::RenderWindow* window){
+	if (mPositionGrid.y >= 0){
+		m_sprite.setPosition((float)mPositionScreen.x, (float)mPositionScreen.y);
+		m_sprite.setColor(mTint);
+
+		window->draw(m_sprite);
+	}
 }
 
-void Block::render(DirectX::SpriteBatch* spriteBatch, DirectX::SimpleMath::Vector2& screenPosition, float scale, DirectX::SimpleMath::Vector4 tint){
-	TextureManager::getTexture(TEX_BLOCK_WHITE)->draw(spriteBatch, screenPosition, mTint * tint, 0.0f, DirectX::SimpleMath::Vector2(0, 0), scale);
+void Block::render(sf::RenderWindow* window, sf::Vector2i& screenPosition, float scale, sf::Color tint){
+	m_sprite.setPosition(screenPosition.x, screenPosition.y);
+	m_sprite.setColor(tint);
+	m_sprite.setScale(scale, scale);
+
+	window->draw(m_sprite);
 }
 
-bool Block::setPosition(DirectX::SimpleMath::Vector2& position){
+bool Block::setPosition(sf::Vector2i& position){
 	bool collision = false;
 	
 	int nX = (int)position.x;
@@ -35,10 +45,10 @@ bool Block::setPosition(DirectX::SimpleMath::Vector2& position){
 	return !collision;
 }
 
-DirectX::SimpleMath::Vector2& Block::getPosition(){
+sf::Vector2i& Block::getPosition(){
 	return mPositionGrid;
 }
 
-DirectX::SimpleMath::Vector4& Block::getTint(){
+sf::Color& Block::getTint(){
 	return mTint;
 }

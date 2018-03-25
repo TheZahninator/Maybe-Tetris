@@ -7,19 +7,20 @@
 
 class Block{
 public:
-	Block(DirectX::SimpleMath::Vector2& position, DirectX::SimpleMath::Vector4& tint = BLOCK_COLOR_SINGLE);
+	Block(sf::Vector2i& position, sf::Color& tint = BLOCK_COLOR_SINGLE);
 
-	void render(DirectX::SpriteBatch* spriteBatch);	//Zeichnet die Textur
-	void render(DirectX::SpriteBatch* spriteBatch, DirectX::SimpleMath::Vector2& screenPosition, float scale = 1.0f, DirectX::SimpleMath::Vector4 tint = DirectX::Colors::White.v); //Zeichnet die textur an einer bestimmten Stelle auf dem Bildschirm
+	void render(sf::RenderWindow* window);	//Zeichnet die Textur
+	void render(sf::RenderWindow* window, sf::Vector2i& screenPosition, float scale = 1.0f, sf::Color tint = sf::Color::White); //Zeichnet die textur an einer bestimmten Stelle auf dem Bildschirm
 
-	bool setPosition(DirectX::SimpleMath::Vector2& position);	//Setzt die Spielfeldposition und gibt zurück, ob es zu einer Kollision kommt.
+	bool setPosition(sf::Vector2i& position);	//Setzt die Spielfeldposition und gibt zurück, ob es zu einer Kollision kommt.
 
-	DirectX::SimpleMath::Vector2& getPosition();	//Gibt die Spielfeldposition zurück
-	DirectX::SimpleMath::Vector4& getTint();		//Gibt die Färbung der Textur zurück
+	sf::Vector2i& getPosition();	//Gibt die Spielfeldposition zurück
+	sf::Color& getTint();		//Gibt die Färbung der Textur zurück
 
 private:
-	DirectX::SimpleMath::Vector2 mPositionGrid;	//Position auf dem Spielfeld
-	DirectX::SimpleMath::Vector2 mPositionScreen;	//Position auf dem Bildschirm
-	DirectX::SimpleMath::Vector4 mTint;		//Färbung der Textur
+	sf::Vector2i mPositionGrid;	//Position auf dem Spielfeld
+	sf::Vector2i mPositionScreen;	//Position auf dem Bildschirm
+	sf::Color mTint;		//Färbung der Textur
 	
+	sf::Sprite m_sprite;
 };
