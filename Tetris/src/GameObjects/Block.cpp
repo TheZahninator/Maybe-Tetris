@@ -1,8 +1,9 @@
 #include <pch.h>
 #include "Block.h"
 
-Block::Block(sf::Vector2i& position, sf::Color& tint) :
-	mTint(tint){
+Block::Block(Field& field, sf::Vector2i& position, sf::Color& tint) :
+mTint(tint), m_field(field)
+{
 
 	setPosition(position);
 
@@ -18,8 +19,8 @@ void Block::render(sf::RenderWindow* window){
 	}
 }
 
-void Block::render(sf::RenderWindow* window, sf::Vector2i& screenPosition, float scale, sf::Color tint){
-	m_sprite.setPosition(screenPosition.x, screenPosition.y);
+void Block::render(sf::RenderWindow* window, sf::Vector2f& screenPosition, float scale, sf::Color tint){
+	m_sprite.setPosition(screenPosition);
 	m_sprite.setColor(tint);
 	m_sprite.setScale(scale, scale);
 
@@ -32,15 +33,15 @@ bool Block::setPosition(sf::Vector2i& position){
 	int nX = (int)position.x;
 	int nY = (int)position.y;
 	
-	if (nX < 0 || nX > (int)Field::getWidth() - 1 || nY > (int)Field::getHeight() - 1)
+	if (nX < 0 || nX > (int)m_field.getWidth() - 1 || nY > (int)m_field.getHeight() - 1)
 		collision = true;
 
 	if (nY >= 0 && nX >= 0)
-		if (Field::getGrid()[nY * Field::getWidth() + nX])
+		if (m_field.getGrid()[nY * m_field.getWidth() + nX])
 			collision = true;
 
 	mPositionGrid = position;
-	mPositionScreen = Field::getScreenPosition() + mPositionGrid * BLOCK_SIZE;
+	mPositionScreen = m_field.getScreenPosition() + sf::Vector2f(mPositionGrid) * (float)BLOCK_SIZE;
 
 	return !collision;
 }

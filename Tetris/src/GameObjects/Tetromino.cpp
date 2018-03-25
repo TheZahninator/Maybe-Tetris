@@ -1,10 +1,9 @@
 #include <pch.h>
 #include "Tetromino.h"
 
-using namespace DirectX::SimpleMath;
-
 //Setzt nur die nötigsten Variablen auf ihre Initialisierungswerte.
-Tetromino::Tetromino() : mMatrixWidth(0), mMatrixHeight(0), mLocked(false), mCollisionAtSpawn(false){
+Tetromino::Tetromino(Field& field) : mMatrixWidth(0), mMatrixHeight(0), mLocked(false), mCollisionAtSpawn(false), m_field(field)
+{
 	m_triesToRotate = 0;
 
 	m_estimatedPositionGrid = m_positionGrid;
@@ -12,7 +11,8 @@ Tetromino::Tetromino() : mMatrixWidth(0), mMatrixHeight(0), mLocked(false), mCol
 	m_touchingBlocks = 0;
 }
 
-Tetromino::Tetromino(int width, int height) : mMatrixWidth(width), mMatrixHeight(height), mFrameCounter(0.0f), mLocked(false), mCollisionAtSpawn(false){
+Tetromino::Tetromino(Field& field, int width, int height) : mMatrixWidth(width), mMatrixHeight(height), mFrameCounter(0.0f), mLocked(false), mCollisionAtSpawn(false), m_field(field)
+{
 	
 	mBaseMatrix.reset(new int[width * height]);
 	memset(mBaseMatrix.get(), 0, width * height * sizeof(int));
@@ -30,7 +30,8 @@ Tetromino::Tetromino(int width, int height) : mMatrixWidth(width), mMatrixHeight
 	m_touchingBlocks = 0;
 }
 
-Tetromino::Tetromino(Vector2& position, bool* matrix, int width, int height, Vector4& color) : m_positionGrid(position), mMatrixWidth(width), mMatrixHeight(height), mFrameCounter(0.0f), mLocked(false), mCollisionAtSpawn(false){
+Tetromino::Tetromino(Field& field, sf::Vector2i& position, bool* matrix, int width, int height, sf::Color& color) : m_positionGrid(position), mMatrixWidth(width), mMatrixHeight(height), mFrameCounter(0.0f), mLocked(false), mCollisionAtSpawn(false), m_field(field)
+{
 	//Setzt beide Matrizen auf nullptr.
 	mBaseMatrix = nullptr;
 	mFieldMatrix = nullptr;
@@ -62,13 +63,13 @@ Tetromino::Tetromino(Vector2& position, bool* matrix, int width, int height, Vec
 	}
 
 
-	if (color != DirectX::Colors::White.v){
+	if (color != sf::Color::White){
 		
 		for (int y = 0; y < height; y++){
 			for (int x = 0; x < width; x++){
 				
 				if (matrix[y * width + x]){
-					mBlocks.push_back(std::shared_ptr<Block>(new Block(m_positionGrid + Vector2((float)x, (float)y), color)));
+					mBlocks.push_back(std::shared_ptr<Block>(new Block(m_field, m_positionGrid + sf::Vector2i((float)x, (float)y), color)));
 				}
 
 			}
@@ -81,7 +82,7 @@ Tetromino::Tetromino(Vector2& position, bool* matrix, int width, int height, Vec
 			for (int x = 0; x < width; x++){
 
 				if (matrix[y * width + x]){
-					Vector4 color = BLOCK_COLOR_SINGLE;
+					sf::Color color = BLOCK_COLOR_SINGLE;
 
 					std::unique_ptr<Tetromino> tempMino(getPart(nullptr, nullptr, width, height, x, y));
 					int n = tempMino->getBlockCount();
@@ -102,7 +103,7 @@ Tetromino::Tetromino(Vector2& position, bool* matrix, int width, int height, Vec
 						break;
 					}
 
-					mBlocks.push_back(std::shared_ptr<Block>(new Block(m_positionGrid + Vector2((float)x, (float)y), color)));
+					mBlocks.push_back(std::shared_ptr<Block>(new Block(m_field, m_positionGrid + sf::Vector2i((float)x, (float)y), color)));
 				}
 
 			}
@@ -132,32 +133,32 @@ Tetromino::~Tetromino(){
 	}*/
 }
 
-void Tetromino::update(DirectX::GamePad::ButtonStateTracker* gamePadTracker, DirectX::Keyboard::KeyboardStateTracker* keyboardTracker, DirectX::Keyboard::State* keyboardState){
+void Tetromino::update(KeyboardStateTracker* keyboardTracker){
 	m_triesToRotate = 0;
 	if (!mLocked){
 		//Zählt einen Frame.
 		mFrameCounter++;
 		//Wenn nach unten gehalten wird, werden nochmal 4 Frames hinzugezählt.
-		if (gamePadTracker->dpadDown == GamePad::ButtonStateTracker::HELD || gamePadTracker->dpadDown == GamePad::ButtonStateTracker::PRESSED || keyboardState->Down)
+		if (keyboardTracker->isKeyDown(sf::Keyboard::Down))
 			mFrameCounter += 4;
 
 		//Solange mehr Frames gezählt werden als pro Reihe gewartet werden soll, fällt der Stein um eine Reihe.
-		while (mFrameCounter >= 60.0f / Field::getGravity()){
+		while (mFrameCounter >= 60.0f / m_field.getGravity()){
 			//Die zu wartenden Frames werden wieder abgezogen.
-			mFrameCounter -= 60.0f / Field::getGravity();
+			mFrameCounter -= 60.0f / m_field.getGravity();
 			//Wenn eine Kollision stattfindet, darf er nicht mehr fallen.
-			if (!move(Vector2(0.0f, 1.0f))){
+			if (!move(sf::Vector2i(0.0f, 1.0f))){
 				mLocked = true;
 			}
 		}
 	}
 
 	//Calculate the estimated grid position
-	Vector2 oldPos = m_positionGrid;
+	sf::Vector2i oldPos = m_positionGrid;
 
 	bool collision = false;
 	while (!collision){
-		Vector2 newPos = m_positionGrid;
+		sf::Vector2i newPos = m_positionGrid;
 		newPos.y++;
 
 		collision = !setPosition(newPos);
@@ -199,7 +200,7 @@ void Tetromino::calcTouchingBlocks(UINT& result){
 								unsigned cx = static_cast<unsigned>(m_estimatedPositionGrid.x + x + xx);
 								unsigned cy = static_cast<unsigned>(m_estimatedPositionGrid.y + y + yy);
 
-								if (Field::getGrid(cx, cy)){
+								if (m_field.getGrid(cx, cy)){
 									result++;
 								}
 
@@ -210,7 +211,7 @@ void Tetromino::calcTouchingBlocks(UINT& result){
 							unsigned cx = static_cast<unsigned>(m_estimatedPositionGrid.x + x + xx);
 							unsigned cy = static_cast<unsigned>(m_estimatedPositionGrid.y + y + yy);
 
-							if (Field::getGrid(cx, cy)){
+							if (m_field.getGrid(cx, cy)){
 								result++;
 							}
 
@@ -225,9 +226,9 @@ void Tetromino::calcTouchingBlocks(UINT& result){
 	}
 }
 
-void Tetromino::render(DirectX::SpriteBatch* spriteBatch){
+void Tetromino::render(sf::RenderWindow* window){
 	for (UINT i = 0; i < mBlocks.size(); i++){
-		mBlocks[i]->render(spriteBatch);
+		mBlocks[i]->render(window);
 	}
 
 	for (unsigned y = 0; y < mMatrixHeight; y++){
@@ -235,20 +236,23 @@ void Tetromino::render(DirectX::SpriteBatch* spriteBatch){
 			int i = mFieldMatrix.get()[y * mMatrixWidth + x];
 			if (i){
 
-				Vector2 ghostPos = (m_estimatedPositionGrid + Vector2((float)x, (float)y)) * (BLOCK_SIZE)+Field::getScreenPosition();
-				mBlocks[i - 1]->render(spriteBatch, ghostPos, 1.0f, Vector4(1.0, 1.0, 1.0, 0.5));
+				sf::Vector2i off = (m_estimatedPositionGrid + sf::Vector2i(x, y)) * BLOCK_SIZE;
+				sf::Vector2f ghostPos(off.x, off.y);
+				ghostPos += m_field.getScreenPosition();
+
+				mBlocks[i - 1]->render(window, ghostPos, 1.0f, sf::Color(1.0, 1.0, 1.0, 0.5));
 
 			}
 		}
 	}
 }
 
-void Tetromino::render(DirectX::SpriteBatch* spriteBatch, DirectX::SimpleMath::Vector2& screenPosition, float scale){
+void Tetromino::render(sf::RenderWindow* window, const sf::Vector2f& screenPosition, float scale){
 	for (unsigned y = 0; y < mMatrixHeight; y++){
 		for (unsigned x = 0; x < mMatrixWidth; x++){
 			int i = mBaseMatrix.get()[y * mMatrixWidth + x];
 			if (i){
-				mBlocks[i-1]->render(spriteBatch, screenPosition + Vector2((float)x, (float)y) * (BLOCK_SIZE * scale), scale);
+				mBlocks[i-1]->render(window, screenPosition + sf::Vector2f((float)x, (float)y) * (BLOCK_SIZE * scale), scale);
 			}
 		}
 	}
@@ -271,21 +275,21 @@ Tetromino* Tetromino::getPart(int* matrix, bool* checked, int width, int height,
 	}
 
 	//Liste um zu speichern, welche Felder noch überprüft werden müssen.
-	std::vector<Vector2> openList;
+	std::vector<sf::Vector2i> openList;
 	//Liste um zu speichern, welche Felder nicht mehr überprüft werden dürfen.
-	std::vector<Vector2> closedList;
+	std::vector<sf::Vector2i> closedList;
 
 	//Speicherplatz für den neuen Tetromino.
 	//Ich deklariere ihn als pointer damit er bei Funktionsende nicht gelöscht wird, was einen Fehler auslösen würde.
-	Tetromino* newMino = new Tetromino(mMatrixWidth, mMatrixHeight);
+	Tetromino* newMino = new Tetromino(m_field, mMatrixWidth, mMatrixHeight);
 
 	//Packt das erste Feld in die Liste zum überprüfen.
-	openList.push_back(Vector2((float)x, (float)y));
+	openList.push_back(sf::Vector2i((float)x, (float)y));
 
 	//Läuft solange Felder zum Überprüfen in der Liste sind.
 	while (!openList.empty()){
 		//Entfernt das erste Feld aus der Liste und tut es in die Andere.
-		Vector2 current = openList[0];
+		sf::Vector2i current = openList[0];
 		closedList.push_back(current);
 		openList.erase(openList.begin());
 
@@ -297,7 +301,7 @@ Tetromino* Tetromino::getPart(int* matrix, bool* checked, int width, int height,
 			lowestY = cY;
 
 		//Farbe die der neue Block im neuen Tetromino bekommt.
-		//DirectX::SimpleMath::Vector4 color = BLOCK_COLOR_SINGLE;
+		//sf::Color color = BLOCK_COLOR_SINGLE;
 
 		//Überprüft ob der Block bereits vorhanden ist. Wenn ja, wird er dem Tetromino hinzugefügt.
 		UINT i = matrix[cY * width + cX];
@@ -308,7 +312,7 @@ Tetromino* Tetromino::getPart(int* matrix, bool* checked, int width, int height,
 		}
 		else{
 			//Fügt dem neuen Tetromino einen neuen Block hinzu.
-			newMino->addBlock(Block(current));
+			newMino->addBlock(Block(m_field, current));
 		}
 
 		//Überprüft nacheinander jedes Feld das direkt an der momentanen Position anliegt.
@@ -317,7 +321,7 @@ Tetromino* Tetromino::getPart(int* matrix, bool* checked, int width, int height,
 				if (!(i != 0 && j != 0) && !(i == 0 && j == 0)){
 					
 					//Momentan überprüfte Position
-					Vector2 checking = current + Vector2((float)i, (float)j);
+					sf::Vector2i checking = current + sf::Vector2i((float)i, (float)j);
 
 					//Helfer um den Index im Array zu berechnen.
 					int cX = (int)checking.x;
@@ -355,7 +359,7 @@ Tetromino* Tetromino::getPart(int* matrix, bool* checked, int width, int height,
 		}
 	}
 
-	Vector2 newPosition = m_positionGrid - Vector2(0.0f, (float)(height - 1 - lowestY));
+	sf::Vector2i newPosition = m_positionGrid - sf::Vector2i(0.0f, (float)(height - 1 - lowestY));
 	newMino->setPosition(newPosition);
 
 	if (newCheckedCreated)
@@ -389,10 +393,10 @@ void Tetromino::addBlock(Block& block){
 	setFieldMatrix();
 }
 
-bool Tetromino::setPosition(Vector2& position){
+bool Tetromino::setPosition(sf::Vector2i& position){
 	//Aktualisiert die Positionen.
 	m_positionGrid = position;
-	m_positionSreen = Field::getScreenPosition() + m_positionGrid * BLOCK_SIZE;
+	m_positionSreen = m_field.getScreenPosition() + sf::Vector2f(m_positionGrid) * (float)BLOCK_SIZE;
 
 
 	//Variable um zu speichern, ob eine Kollision stattfindet.
@@ -408,7 +412,7 @@ bool Tetromino::setPosition(Vector2& position){
 			if (i > 0 && i <= mBlocks.size()){
 				
 				//Wenn ein Block an der Stelle ist, wird seine Position aktualisiert.
-				Vector2 newPos = m_positionGrid + Vector2((float)x, (float)y);
+				sf::Vector2i newPos = m_positionGrid + sf::Vector2i((float)x, (float)y);
 				collision |= !mBlocks[i - 1]->setPosition(newPos);
 			}
 		}
@@ -459,16 +463,16 @@ void Tetromino::rotate(ERotation rotation){
 	//Die auf dem Spielfeld benutzte Matrix wird aktualisiert.
 	setFieldMatrix();
 	
-	Vector2 oldPosition = m_positionGrid;
+	sf::Vector2i oldPosition = m_positionGrid;
 
 	//Es werden die Blöcke auf ihre neuen Positionen gesetzt und überprüft, ob eine Kollision stattfindet
 	if (!setPosition(oldPosition)){
 		
 		//Wenn eine Kollision mit einem anderen Block stattfindet, wird es ein Feld weiter rechts versucht
-		if (!setPosition(oldPosition + Vector2( 1.0f, 0.0f))){
+		if (!setPosition(oldPosition + sf::Vector2i( 1.0f, 0.0f))){
 			
 			//Wenn wieder eine Kollision stattfindet, wird es stattdessen ein Feld links versucht
-			if (!setPosition(oldPosition + Vector2(-1.0f, 0.0f))){
+			if (!setPosition(oldPosition + sf::Vector2i(-1.0f, 0.0f))){
 				
 				//Wenn wieder eine Kollision stattfindet, wird die Rotation rückgängig gemacht
 				m_positionGrid = oldPosition;
@@ -483,34 +487,34 @@ void Tetromino::rotate(ERotation rotation){
 		
 }
 
-DirectX::SimpleMath::Vector2 Tetromino::getBlockMostLeft(){
+sf::Vector2i Tetromino::getBlockMostLeft(){
 	//Geht von links angefangen jede Spalte durch.
 	for (unsigned x = 0; x < mMatrixWidth; x++){
 		for (unsigned y = 0; y < mMatrixHeight; y++){
 			//Wenn ein Block gefunden wurde wird die x position zurück gegeben.
 			if (mBaseMatrix.get()[y * mMatrixWidth + x])
-				return Vector2((float)x, 0.0f);
+				return sf::Vector2i((float)x, 0.0f);
 		}
 	}
-	//Wenn kein Block gefunden wurde wird ein Vector2 mit Fehler Koordinaten zurückgegeben.
-	return Vector2(-1, -1);
+	//Wenn kein Block gefunden wurde wird ein sf::Vector2i mit Fehler Koordinaten zurückgegeben.
+	return sf::Vector2i(-1, -1);
 }
 
-DirectX::SimpleMath::Vector2 Tetromino::getBlockMostRight(){
+sf::Vector2i Tetromino::getBlockMostRight(){
 	//Geht von links angefangen jede Spalte durch.
 	for (unsigned x = mMatrixWidth - 1; x >= 0; x--){
 		for (unsigned y = 0; y < mMatrixHeight; y++){
 			//Wenn ein Block gefunden wurde wird die x position zurück gegeben.
 			if (mBaseMatrix.get()[y * mMatrixWidth + x])
-				return Vector2((float)x, 0.0f);
+				return sf::Vector2i((float)x, 0.0f);
 		}
 	}
-	//Wenn kein Block gefunden wurde wird ein Vector2 mit Fehler Koordinaten zurückgegeben.
-	return Vector2(-1, -1);
+	//Wenn kein Block gefunden wurde wird ein sf::Vector2i mit Fehler Koordinaten zurückgegeben.
+	return sf::Vector2i(-1, -1);
 }
 
-bool Tetromino::move(Vector2& direction){
-	Vector2 oldPosition = m_positionGrid;
+bool Tetromino::move(sf::Vector2i& direction){
+	sf::Vector2i oldPosition = m_positionGrid;
 
 	bool collision = false;
 
@@ -570,6 +574,6 @@ void Tetromino::setFieldMatrix(){
 
 void Tetromino::placeOnField(){
 	for (UINT i = 0; i < mBlocks.size(); i++){
-		Field::addBlock(mBlocks[i]);
+		m_field.addBlock(mBlocks[i]);
 	}
 }

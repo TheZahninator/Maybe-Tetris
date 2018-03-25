@@ -14,7 +14,7 @@ public:
 
 	void update(KeyboardStateTracker* keyboardTracker);
 	void render(sf::RenderWindow* window);
-	void render(sf::RenderWindow* window, sf::Vector2f& screenPosition, float scale = 1.0f);
+	void render(sf::RenderWindow* window, const sf::Vector2f& screenPosition, float scale = 1.0f);
 
 	//void update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::Keyboard::KeyboardStateTracker* keyboardTracker, DirectX::Keyboard::State* keyboardState);
 	//void render(DirectX::SpriteBatch* spriteBatch);

@@ -7,10 +7,10 @@
 
 class Block{
 public:
-	Block(sf::Vector2i& position, sf::Color& tint = BLOCK_COLOR_SINGLE);
+	Block(Field& field, sf::Vector2i& position, sf::Color& tint = BLOCK_COLOR_SINGLE);
 
 	void render(sf::RenderWindow* window);	//Zeichnet die Textur
-	void render(sf::RenderWindow* window, sf::Vector2i& screenPosition, float scale = 1.0f, sf::Color tint = sf::Color::White); //Zeichnet die textur an einer bestimmten Stelle auf dem Bildschirm
+	void render(sf::RenderWindow* window, sf::Vector2f& screenPosition, float scale = 1.0f, sf::Color tint = sf::Color::White); //Zeichnet die textur an einer bestimmten Stelle auf dem Bildschirm
 
 	bool setPosition(sf::Vector2i& position);	//Setzt die Spielfeldposition und gibt zurück, ob es zu einer Kollision kommt.
 
@@ -19,8 +19,10 @@ public:
 
 private:
 	sf::Vector2i mPositionGrid;	//Position auf dem Spielfeld
-	sf::Vector2i mPositionScreen;	//Position auf dem Bildschirm
+	sf::Vector2f mPositionScreen;	//Position auf dem Bildschirm
 	sf::Color mTint;		//Färbung der Textur
 	
 	sf::Sprite m_sprite;
+
+	Field& m_field;
 };
