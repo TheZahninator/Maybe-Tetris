@@ -16,18 +16,21 @@ class TetrominoGroup;
 
 class Field{
 public:
-	static void init(DirectX::SimpleMath::Vector2& screenPosition);
-	static void restart();
+	void init(sf::Vector2i& screenPosition);
+	void restart();
 
-	static void Update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::Keyboard::KeyboardStateTracker* keyboardTracker, DirectX::Keyboard::State* keyboardState, DirectX::Mouse::State* mouse, DirectX::Mouse::ButtonStateTracker* mouseTracker);
-	static void Render(DirectX::SpriteBatch* spritebatch, DirectX::SpriteFont* spriteFont);
+	void Update(KeyboardStateTracker* keyboardTracker);
+	void Render(sf::RenderWindow* window);
 
-	static void checkForLineClear();
+	//static void Update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::Keyboard::KeyboardStateTracker* keyboardTracker, DirectX::Keyboard::State* keyboardState, DirectX::Mouse::State* mouse, DirectX::Mouse::ButtonStateTracker* mouseTracker);
+	//static void Render(DirectX::SpriteBatch* spritebatch, DirectX::SpriteFont* spriteFont);
 
-	static void addBlock(std::shared_ptr<Block> block);
+	void checkForLineClear();
 
-	static std::shared_ptr<Block>* getGrid(){ return mGrid; }
-	static bool getGrid(unsigned x, unsigned y){
+	void addBlock(std::shared_ptr<Block> block);
+
+	std::shared_ptr<Block>* getGrid(){ return mGrid; }
+	bool getGrid(unsigned x, unsigned y){
 		if (x >= 0 && x < mWidth && y >= 0 && y < mHeight){
 			return mGrid[y * mWidth + x] != nullptr;
 		}
@@ -35,60 +38,72 @@ public:
 			return true;
 		}
 	}
-	static DirectX::SimpleMath::Vector2& getScreenPosition(){ return mScreenPosition; }
+	sf::Vector2f& getScreenPosition(){ return mScreenPosition; }
 
-	static UINT getWidth(){ return mWidth; }
-	static UINT getHeight(){ return mHeight; }
+	UINT getWidth(){ return mWidth; }
+	UINT getHeight(){ return mHeight; }
 
-	static float getGravity(){ return mGravity; }
+	float getGravity(){ return mGravity; }
 
-	static UINT getPoints(){ return mPoints; }
-	static TetrominoGroup* getCurrentTetromino(){ return mTetrominoQueue[0].get(); }
-	static std::vector<std::shared_ptr<TetrominoGroup>>& getQueue(){ return mTetrominoQueue; }
+	UINT getPoints(){ return mPoints; }
+	TetrominoGroup* getCurrentTetromino(){ return mTetrominoQueue[0].get(); }
+	std::vector<std::shared_ptr<TetrominoGroup>>& getQueue(){ return mTetrominoQueue; }
 
-	static std::vector<std::unique_ptr<AI>> AIList;
-	static bool AIMode;
-	static unsigned AICount;
-	static unsigned CurrentAI;
-	static unsigned SurvivingAIs;
-	static unsigned CurrentGen;
+	std::vector<std::unique_ptr<AI>> AIList;
+	bool AIMode;
+	unsigned AICount;
+	unsigned CurrentAI;
+	unsigned SurvivingAIs;
+	unsigned CurrentGen;
 
-	static void NewGen();
+	void NewGen();
 
-	static void saveGenomes();
-	static void loadGenomes();
+	void saveGenomes();
+	void loadGenomes();
 
 private:
-	static void clearLine(int y, int& linesCleared);
+	void clearLine(int y, int& linesCleared);
 
-	static std::vector<std::shared_ptr<TetrominoGroup>> mTetrominoQueue; //Die warteschlange für die kommenden Tetrominos.
-	static BagContainer<std::shared_ptr<TetrominoGroup>> m_bag;
-	static UINT m_copiesInBag;
+	std::vector<std::shared_ptr<TetrominoGroup>> mTetrominoQueue; //Die warteschlange für die kommenden Tetrominos.
+	BagContainer<std::shared_ptr<TetrominoGroup>> m_bag;
+	UINT m_copiesInBag;
 
-	static const UINT mWidth;	//Spielfeldbreite
-	static const UINT mHeight;	//Spielfeldhöhe
-	static std::shared_ptr<Block>* mGrid;	//Auf dem Spielfeld festgesetzte Blöcke
+	const UINT mWidth;	//Spielfeldbreite
+	const UINT mHeight;	//Spielfeldhöhe
+	std::shared_ptr<Block>* mGrid;	//Auf dem Spielfeld festgesetzte Blöcke
 
-	static DirectX::SimpleMath::Vector2 mScreenPosition;	//Spielfeldposition auf dem Bildschirm
+	sf::Vector2f mScreenPosition;	//Spielfeldposition auf dem Bildschirm
 
-	static float mGravity; //Anzahl der Felder, die ein Tetromino pro Sekunde fällt.
-	static UINT mPoints;	//Punktestand
-	static UINT m_Highscore;
-	static UINT m_HighscoreAI;
+	float mGravity; //Anzahl der Felder, die ein Tetromino pro Sekunde fällt.
+	UINT mPoints;	//Punktestand
+	UINT m_Highscore;
+	UINT m_HighscoreAI;
 
-	static UINT mTotalLinesCleared; //Anzahl der Reihen die insgesamt aufgelöst wurden. Bestimmt den Wert von mGravity.
-	static UINT m_totalLinesHighscore;
-	static UINT m_totalLinesHighscoreAI;
+	UINT mTotalLinesCleared; //Anzahl der Reihen die insgesamt aufgelöst wurden. Bestimmt den Wert von mGravity.
+	UINT m_totalLinesHighscore;
+	UINT m_totalLinesHighscoreAI;
 
-	static UINT m_framesSinceLastTetromino;
-	static UINT m_AILearningFrameCounter;
+	UINT m_framesSinceLastTetromino;
+	UINT m_AILearningFrameCounter;
 
-	static int m_lastTetrominoType;
+	int m_lastTetrominoType;
 
-	static void fillBag();
-	static void drawFromBag();
+	void fillBag();
+	void drawFromBag();
 
-	static void switchAIMode();
+	void switchAIMode();
 
-	static bool pressedButtons[6]; //Up, Down, Left, Right, CW, CCW
+	bool pressedButtons[6]; //Up, Down, Left, Right, CW, CCW
+
+	sf::Sprite m_backgroundSprite;
+	sf::Sprite m_backgroundBorderSprite;
+	sf::Sprite m_backgroundOverlaySprite;
+	sf::Sprite m_backgroudFieldTileSprite;
+
+	sf::Sprite m_keyUpSprite;
+	sf::Sprite m_keyDownSprite;
+	sf::Sprite m_keyLeftSprite;
+	sf::Sprite m_keyRightSprite;
+	sf::Sprite m_keyClockwiseSprite;
+	sf::Sprite m_keyCounterClockwiseSprite;
 };

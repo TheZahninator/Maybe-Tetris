@@ -19,22 +19,22 @@
 
 #define TEX_KEY_OVERLAY					0x0002
 
-#define TEX_KEY_OVERLAY_SIZE	DirectX::SimpleMath::Vector2(64, 64)
+#define TEX_KEY_OVERLAY_SIZE	sf::Vector2i(64, 64)
 
-#define TEX_KEY_OVERLAY_UP_RELEASED_RECT DirectX::SimpleMath::Vector2(0, 0)
-#define TEX_KEY_OVERLAY_UP_PRESSED_RECT	 DirectX::SimpleMath::Vector2(0, 64)
+#define TEX_KEY_OVERLAY_UP_RELEASED_RECT sf::Vector2i(0, 0)
+#define TEX_KEY_OVERLAY_UP_PRESSED_RECT	 sf::Vector2i(0, 64)
 
-#define TEX_KEY_OVERLAY_DOWN_RELEASED_RECT  DirectX::SimpleMath::Vector2(64, 0)
-#define TEX_KEY_OVERLAY_DOWN_PRESSED_RECT	DirectX::SimpleMath::Vector2(64, 64) 
+#define TEX_KEY_OVERLAY_DOWN_RELEASED_RECT  sf::Vector2i(64, 0)
+#define TEX_KEY_OVERLAY_DOWN_PRESSED_RECT	sf::Vector2i(64, 64) 
 											 
-#define TEX_KEY_OVERLAY_LEFT_RELEASED_RECT  DirectX::SimpleMath::Vector2(64 * 2, 0)
-#define TEX_KEY_OVERLAY_LEFT_PRESSED_RECT	DirectX::SimpleMath::Vector2(64 * 2, 64) 
+#define TEX_KEY_OVERLAY_LEFT_RELEASED_RECT  sf::Vector2i(64 * 2, 0)
+#define TEX_KEY_OVERLAY_LEFT_PRESSED_RECT	sf::Vector2i(64 * 2, 64) 
 											 
-#define TEX_KEY_OVERLAY_RIGHT_RELEASED_RECT DirectX::SimpleMath::Vector2(64 * 3, 0)
-#define TEX_KEY_OVERLAY_RIGHT_PRESSED_RECT	DirectX::SimpleMath::Vector2(64 * 3, 64) 
+#define TEX_KEY_OVERLAY_RIGHT_RELEASED_RECT sf::Vector2i(64 * 3, 0)
+#define TEX_KEY_OVERLAY_RIGHT_PRESSED_RECT	sf::Vector2i(64 * 3, 64) 
 										    
-#define TEX_KEY_OVERLAY_CCW_RELEASED_RECT   DirectX::SimpleMath::Vector2(0, 64 * 2)
-#define TEX_KEY_OVERLAY_CCW_PRESSED_RECT	DirectX::SimpleMath::Vector2(64 * 2, 64 * 2) 
+#define TEX_KEY_OVERLAY_CCW_RELEASED_RECT   sf::Vector2i(0, 64 * 2)
+#define TEX_KEY_OVERLAY_CCW_PRESSED_RECT	sf::Vector2i(64 * 2, 64 * 2) 
 										    
-#define TEX_KEY_OVERLAY_CW_RELEASED_RECT    DirectX::SimpleMath::Vector2(64, 64 * 2)
-#define TEX_KEY_OVERLAY_CW_PRESSED_RECT	    DirectX::SimpleMath::Vector2(64 * 3, 64 * 2)
+#define TEX_KEY_OVERLAY_CW_RELEASED_RECT    sf::Vector2i(64, 64 * 2)
+#define TEX_KEY_OVERLAY_CW_PRESSED_RECT	    sf::Vector2i(64 * 3, 64 * 2)

@@ -1,38 +1,15 @@
 #include <pch.h>
 #include "Field.h"
 
-std::shared_ptr<Block>* Field::mGrid;
-const UINT Field::mHeight = 20;
-const UINT Field::mWidth = 10;
 
-DirectX::SimpleMath::Vector2 Field::mScreenPosition;
-std::vector<std::shared_ptr<TetrominoGroup>> Field::mTetrominoQueue;
-BagContainer<std::shared_ptr<TetrominoGroup>> Field::m_bag;
-UINT Field::m_copiesInBag = 2;
-
-float Field::mGravity;
-
-UINT Field::mPoints;
-UINT Field::m_Highscore;
-UINT Field::m_HighscoreAI;
-
-UINT Field::mTotalLinesCleared;
-UINT Field::m_totalLinesHighscore;
-UINT Field::m_totalLinesHighscoreAI;
-
-UINT Field::m_framesSinceLastTetromino = 0;
-UINT Field::m_AILearningFrameCounter = 0;
-
-int Field::m_lastTetrominoType = 0;
-
-std::vector<std::unique_ptr<AI>>	Field::AIList;
-bool								Field::AIMode;
-unsigned							Field::AICount = 25;
-unsigned							Field::CurrentAI;
-unsigned							Field::SurvivingAIs = 2;
-unsigned							Field::CurrentGen = 0;
-
-bool Field::pressedButtons[6];
+Field::Field():
+mWidth(10), mHeight(20), m_copiesInBag(2), m_framesSinceLastTetromino(0), m_AILearningFrameCounter(0), m_lastTetrominoType(0)
+{
+	AICount = 25;
+	CurrentAI = 0;
+	SurvivingAIs = 2;
+	CurrentGen = 0;
+}
 
 void Field::fillBag(){
 
@@ -59,7 +36,30 @@ void Field::drawFromBag(){
 
 }
 
-void Field::init(DirectX::SimpleMath::Vector2& screenPosition){
+void Field::init(sf::Vector2i& screenPosition){
+	m_backgroundSprite = sf::Sprite(TextureManager::getTexture(TEX_BACKGROUND_1));
+	m_backgroundBorderSprite = sf::Sprite(TextureManager::getTexture(TEX_BACKGROUND_FIELD_BORDER));
+	m_backgroundOverlaySprite = sf::Sprite(TextureManager::getTexture(TEX_BACKGROUND_OVERLAY));
+	m_backgroudFieldTileSprite = sf::Sprite(TextureManager::getTexture(TEX_BACKGROUND_FIELD_TILE));
+
+	m_keyUpSprite = sf::Sprite(TextureManager::getTexture(TEX_KEY_OVERLAY));
+	m_keyDownSprite = sf::Sprite(TextureManager::getTexture(TEX_KEY_OVERLAY));
+	m_keyLeftSprite = sf::Sprite(TextureManager::getTexture(TEX_KEY_OVERLAY));
+	m_keyRightSprite = sf::Sprite(TextureManager::getTexture(TEX_KEY_OVERLAY));
+	m_keyCounterClockwiseSprite = sf::Sprite(TextureManager::getTexture(TEX_KEY_OVERLAY));
+	m_keyClockwiseSprite = sf::Sprite(TextureManager::getTexture(TEX_KEY_OVERLAY));
+
+
+
+	sf::Vector2f keyOverlayOffset(425, 375);
+
+	m_keyCounterClockwiseSprite.setPosition(keyOverlayOffset + sf::Vector2f(0, 0));
+	m_keyClockwiseSprite.setPosition(keyOverlayOffset + sf::Vector2f(128, 0));
+	m_keyUpSprite.setPosition(keyOverlayOffset + sf::Vector2f(64, 0));
+	m_keyDownSprite.setPosition(keyOverlayOffset + sf::Vector2f(64, 64));
+	m_keyLeftSprite.setPosition(keyOverlayOffset + sf::Vector2f(0, 64));
+	m_keyRightSprite.setPosition(keyOverlayOffset + sf::Vector2f(128, 64));
+
 	mScreenPosition = screenPosition;
 	mGrid = new std::shared_ptr<Block>[mWidth * mHeight];
 	//memset(mGrid, 0, mWidth * mHeight * sizeof(Block*));
@@ -313,14 +313,15 @@ void Field::loadGenomes(){
 	CurrentAI = 0;
 }
 
-void Field::Update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::Keyboard::KeyboardStateTracker* keyboardTracker, DirectX::Keyboard::State* keyboardState, DirectX::Mouse::State* mouse, DirectX::Mouse::ButtonStateTracker* mouseTracker){
+void Field::Update(KeyboardStateTracker* keyboardTracker){
+	/*
 #ifdef _DEBUG
-	DirectX::SimpleMath::Vector2 mousePos(0, 0);
+	sf::Vector2i mousePos(0, 0);
 	if(mouse->x > mScreenPosition.x && mouse->x < mScreenPosition.x + mWidth * BLOCK_SIZE &&
 		mouse->y > mScreenPosition.y && mouse->y < mScreenPosition.y + mHeight * BLOCK_SIZE){
 		int mX = (int)(mouse->x - mScreenPosition.x) / BLOCK_SIZE;
 		int mY = (int)(mouse->y - mScreenPosition.y) / BLOCK_SIZE;
-		mousePos = DirectX::SimpleMath::Vector2((float)mX, (float)mY);
+		mousePos = sf::Vector2i((float)mX, (float)mY);
 
 		if (mouseTracker->leftButton == Mouse::ButtonStateTracker::PRESSED){
 			//if (mGrid[mY * mWidth + mX])
@@ -329,15 +330,16 @@ void Field::Update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::
 			mGrid[mY * mWidth + mX].reset(new Block(mousePos, DirectX::SimpleMath::Vector4(rand() % 255 / 255.0f, rand() % 255 / 255.0f, rand() % 255 / 255.0f, 1.0f)));
 		}
 	}
-#endif	
+#endif
+	*/
 
-	if (keyboardState->LeftControl || keyboardState->RightControl){
-		if (keyboardTracker->IsKeyPressed(DirectX::Keyboard::M))
+	if (keyboardTracker->isKeyDown(sf::Keyboard::LControl) || keyboardTracker->isKeyDown(sf::Keyboard::RControl)){
+		if (keyboardTracker->isKeyPressed(sf::Keyboard::M))
 			switchAIMode();
 
-		if (keyboardTracker->IsKeyPressed(DirectX::Keyboard::S))
+		if (keyboardTracker->isKeyPressed(sf::Keyboard::S))
 			saveGenomes();
-		if (keyboardTracker->IsKeyPressed(DirectX::Keyboard::L))
+		if (keyboardTracker->isKeyPressed(sf::Keyboard::L))
 			loadGenomes();
 	}
 	//if (inputGamePad->back == inputGamePad->PRESSED)
@@ -345,6 +347,7 @@ void Field::Update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::
 
 
 	//Let the AI control the Button presses
+	/*
 	if (AIMode){
 
 		m_framesSinceLastTetromino++;
@@ -356,6 +359,7 @@ void Field::Update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::
 		inputGamePad->Update(state);
 
 	}
+	*/
 	/*else{
 		m_AILearningFrameCounter++;
 
@@ -384,7 +388,7 @@ void Field::Update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::
 	}*/
 
 	//Updatet den aktiven Tetromino.
-	mTetrominoQueue[0]->update(inputGamePad, keyboardTracker, keyboardState);
+	mTetrominoQueue[0]->update(keyboardTracker);
 
 	//Wenn der aktive Tetromino gesetzt wurde, wird er gelöscht und die Tetrominos in der Schlange rücken nach. Ein neuer reiht sich hinten ein.
 	if (mTetrominoQueue[0]->shouldDestroy()){
@@ -401,32 +405,41 @@ void Field::Update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::
 
 	//Update pressed buttons
 
-	pressedButtons[0] = (inputGamePad->dpadUp ==	inputGamePad->HELD || inputGamePad->dpadUp == inputGamePad->PRESSED || keyboardState->Up);
-	pressedButtons[1] = (inputGamePad->dpadDown ==	inputGamePad->HELD || inputGamePad->dpadDown == inputGamePad->PRESSED || keyboardState->Down);
-	pressedButtons[2] = (inputGamePad->dpadLeft ==	inputGamePad->HELD || inputGamePad->dpadLeft == inputGamePad->PRESSED || keyboardState->Left);
-	pressedButtons[3] = (inputGamePad->dpadRight == inputGamePad->HELD || inputGamePad->dpadRight == inputGamePad->PRESSED || keyboardState->Right);
-	pressedButtons[4] = (inputGamePad->y ==			inputGamePad->HELD || inputGamePad->y == inputGamePad->PRESSED || keyboardState->D);
-	pressedButtons[5] = (inputGamePad->x ==			inputGamePad->HELD || inputGamePad->x == inputGamePad->PRESSED || keyboardState->A);
+	pressedButtons[0] = keyboardTracker->isKeyDown(sf::Keyboard::Up);
+	pressedButtons[1] = keyboardTracker->isKeyDown(sf::Keyboard::Down);
+	pressedButtons[2] = keyboardTracker->isKeyDown(sf::Keyboard::Left);
+	pressedButtons[3] = keyboardTracker->isKeyDown(sf::Keyboard::Right);
+	pressedButtons[4] = keyboardTracker->isKeyDown(sf::Keyboard::D);
+	pressedButtons[5] = keyboardTracker->isKeyDown(sf::Keyboard::A);
 }
 
-void Field::Render(DirectX::SpriteBatch* spritebatch, DirectX::SpriteFont* spriteFont){
+void Field::Render(sf::RenderWindow* window){
 	//Zeichnet den Hintergrund
-	TextureManager::getTexture(TEX_BACKGROUND_1)->draw(spritebatch, DirectX::SimpleMath::Vector2(0.0f, 0.0f));
+	//TextureManager::getTexture(TEX_BACKGROUND_1)->draw(spritebatch, sf::Vector2i(0.0f, 0.0f));
+	window->draw(m_backgroundSprite);
 
-	Texture* borderTexture = TextureManager::getTexture(TEX_BACKGROUND_FIELD_BORDER);
-	DirectX::SimpleMath::Vector2 borderOffset;
-	borderOffset.x = (mWidth * BLOCK_SIZE - borderTexture->getWidth()) / 2.0f;
-	borderOffset.y = (mHeight * BLOCK_SIZE - borderTexture->getHeight()) / 2.0f;
+	//Texture* borderTexture = TextureManager::getTexture(TEX_BACKGROUND_FIELD_BORDER);
+	sf::Vector2i borderOffset;
+	borderOffset.x = (mWidth * BLOCK_SIZE - m_backgroundBorderSprite.getTexture()->getSize().x) / 2.0f;
+	borderOffset.y = (mHeight * BLOCK_SIZE - m_backgroundBorderSprite.getTexture()->getSize().y) / 2.0f;
 
-	borderTexture->draw(spritebatch, mScreenPosition + borderOffset);
+	m_backgroundBorderSprite.setPosition(mScreenPosition.x + borderOffset.x, mScreenPosition.y + borderOffset.y);
+
+	//borderTexture->draw(spritebatch, mScreenPosition + borderOffset);
+	window->draw(m_backgroundBorderSprite);
+
 	//Render the overlay
-	TextureManager::getTexture(TEX_BACKGROUND_OVERLAY)->draw(spritebatch, DirectX::SimpleMath::Vector2(0.0f, 0.0f));
+	//TextureManager::getTexture(TEX_BACKGROUND_OVERLAY)->draw(spritebatch, sf::Vector2i(0.0f, 0.0f));
+	m_backgroundOverlaySprite.setPosition(0.0f, 0.0f);
+	window->draw(m_backgroundOverlaySprite);
 
 	//Zeichnet transparente Blöcke als Spielfeldhintergrund.
 	for (int y = 0; y < mHeight; y++){
 		for (int x = 0; x < mWidth; x++){
-			DirectX::SimpleMath::Vector2 pos = mScreenPosition + DirectX::SimpleMath::Vector2((float)x, (float)y) * BLOCK_SIZE;
-			TextureManager::getTexture(TEX_BACKGROUND_FIELD_TILE)->draw(spritebatch, pos, BLOCK_COLOR_WHITE * COLOR_ALPHA_25);
+			sf::Vector2f pos = mScreenPosition + sf::Vector2f((float)x, (float)y) * (float)BLOCK_SIZE;
+			//TextureManager::getTexture(TEX_BACKGROUND_FIELD_TILE)->draw(spritebatch, pos, BLOCK_COLOR_WHITE * COLOR_ALPHA_25);
+			m_backgroudFieldTileSprite.setPosition(pos.x, pos.y);
+			m_backgroudFieldTileSprite.setColor(BLOCK_COLOR_WHITE * COLOR_ALPHA_25);
 		}
 	}
 
@@ -434,152 +447,173 @@ void Field::Render(DirectX::SpriteBatch* spritebatch, DirectX::SpriteFont* sprit
 	for (int y = 0; y < mHeight; y++){
 		for (int x = 0; x < mWidth; x++){
 			if (mGrid[y * mWidth + x]){
-				mGrid[y * mWidth + x]->render(spritebatch);
+				mGrid[y * mWidth + x]->render(window);
 			}
 		}
 	}
 
 	//Zeichnet den aktiven Tetromino
-	mTetrominoQueue[0]->render(spritebatch);
+	mTetrominoQueue[0]->render(window);
 
 	//Zeichnet die eingereiten tetrominos neben das Spielfeld.
 	for (UINT i = 1; i < mTetrominoQueue.size(); i++){
-		mTetrominoQueue[i]->render(spritebatch, mScreenPosition + DirectX::SimpleMath::Vector2(float((mWidth + 2) * BLOCK_SIZE), float((i - 1) * BLOCK_SIZE * 3.5f)), 0.75f);
+		mTetrominoQueue[i]->render(window, mScreenPosition + sf::Vector2f(float((mWidth + 2) * BLOCK_SIZE), float((i - 1) * BLOCK_SIZE * 3.5f)), 0.75f);
 	}
 
 
 
 	
 	//Render pressed buttons overlay
-	DirectX::SimpleMath::Vector2 keyOverlayOffset(425, 375);
 
-	RECT rect;
-	rect.bottom = static_cast<LONG>(TEX_KEY_OVERLAY_SIZE.y);
-	rect.right = static_cast<LONG>(TEX_KEY_OVERLAY_SIZE.x);
+	sf::IntRect rect;
+	rect.width = TEX_KEY_OVERLAY_SIZE.x;
+	rect.height = TEX_KEY_OVERLAY_SIZE.y;
+	
 	//CCW
-	DirectX::SimpleMath::Vector2 off = pressedButtons[5] ? TEX_KEY_OVERLAY_CCW_PRESSED_RECT : TEX_KEY_OVERLAY_CCW_RELEASED_RECT;
+	sf::Vector2i off = pressedButtons[5] ? TEX_KEY_OVERLAY_CCW_PRESSED_RECT : TEX_KEY_OVERLAY_CCW_RELEASED_RECT;
 
-	rect.left =   static_cast<LONG>(off.x);
-	rect.top =    static_cast<LONG>(off.y);
-	rect.right =  static_cast<LONG>(rect.left + TEX_KEY_OVERLAY_SIZE.x);
-	rect.bottom = static_cast<LONG>(rect.top + TEX_KEY_OVERLAY_SIZE.y);
+	rect.left = static_cast<LONG>(off.x);
+	rect.top = static_cast<LONG>(off.y);
 
-	TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + DirectX::SimpleMath::Vector2(0, 0), rect);
+	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(0, 0), rect);
+	m_keyCounterClockwiseSprite.setTextureRect(rect);
+	window->draw(m_keyCounterClockwiseSprite);
 
 	//CW
 	off = pressedButtons[4] ? TEX_KEY_OVERLAY_CW_PRESSED_RECT : TEX_KEY_OVERLAY_CW_RELEASED_RECT;
 
 	rect.left =   static_cast<LONG>(off.x);
 	rect.top =    static_cast<LONG>(off.y);
-	rect.right =  static_cast<LONG>(rect.left + TEX_KEY_OVERLAY_SIZE.x);
-	rect.bottom = static_cast<LONG>(rect.top + TEX_KEY_OVERLAY_SIZE.y);
 
-	TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + DirectX::SimpleMath::Vector2(128, 0), rect);
+	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(128, 0), rect
+	window->draw(m_keyClockwiseSprite);
+
 
 	//UP
 	off = pressedButtons[0] ? TEX_KEY_OVERLAY_UP_PRESSED_RECT : TEX_KEY_OVERLAY_UP_RELEASED_RECT;
 	
 	rect.left =   static_cast<LONG>(off.x);
 	rect.top =    static_cast<LONG>(off.y);
-	rect.right =  static_cast<LONG>(rect.left + TEX_KEY_OVERLAY_SIZE.x);
-	rect.bottom = static_cast<LONG>(rect.top + TEX_KEY_OVERLAY_SIZE.y);
 
-	TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + DirectX::SimpleMath::Vector2(64, 0), rect);
+	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(64, 0), rect);
+	window->draw(m_keyUpSprite);
 
 	//DOWN
 	off = pressedButtons[1] ? TEX_KEY_OVERLAY_DOWN_PRESSED_RECT : TEX_KEY_OVERLAY_DOWN_RELEASED_RECT;
 
 	rect.left = static_cast<LONG>(off.x);
 	rect.top = static_cast<LONG>(off.y);
-	rect.right = static_cast<LONG>(rect.left + TEX_KEY_OVERLAY_SIZE.x);
-	rect.bottom = static_cast<LONG>(rect.top + TEX_KEY_OVERLAY_SIZE.y);
 
-	TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + DirectX::SimpleMath::Vector2(64, 64), rect);
+	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(64, 64), rect);
+	window->draw(m_keyDownSprite);
 
 	//LEFT
 	off = pressedButtons[2] ? TEX_KEY_OVERLAY_LEFT_PRESSED_RECT : TEX_KEY_OVERLAY_LEFT_RELEASED_RECT;
 
 	rect.left = static_cast<LONG>(off.x);
 	rect.top = static_cast<LONG>(off.y);
-	rect.right = static_cast<LONG>(rect.left + TEX_KEY_OVERLAY_SIZE.x);
-	rect.bottom = static_cast<LONG>(rect.top + TEX_KEY_OVERLAY_SIZE.y);
 
-	TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + DirectX::SimpleMath::Vector2(0, 64), rect);
+	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(0, 64), rect);
+	window->draw(m_keyLeftSprite);
 
 	//RIGHT
 	off = pressedButtons[3] ? TEX_KEY_OVERLAY_RIGHT_PRESSED_RECT : TEX_KEY_OVERLAY_RIGHT_RELEASED_RECT;
 
 	rect.left = static_cast<LONG>(off.x);
 	rect.top = static_cast<LONG>(off.y);
-	rect.right = static_cast<LONG>(rect.left + TEX_KEY_OVERLAY_SIZE.x);
-	rect.bottom = static_cast<LONG>(rect.top + TEX_KEY_OVERLAY_SIZE.y);
 
-	TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + DirectX::SimpleMath::Vector2(128, 64), rect);
+	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(128, 64), rect);
+	window->draw(m_keyRightSprite);
 
 	
 
 	//Render text
-	DirectX::SimpleMath::Vector2 pointStringPos = mScreenPosition + DirectX::SimpleMath::Vector2(float((mWidth + 6) * BLOCK_SIZE), 0);
+	sf::Vector2f pos = mScreenPosition + sf::Vector2f(float((mWidth + 6) * BLOCK_SIZE), 0);
+	sf::Text text;
 
 	std::wstringstream str;
 	str.clear();
 	str << L"Points:             " << mPoints;
 
-	spriteFont->DrawString(spritebatch, str.str().c_str(), pointStringPos, Colors::Black);
+	//spriteFont->DrawString(spritebatch, str.str().c_str(), pointStringPos, Colors::Black);
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	window->draw(text);
 
 	str = std::wstringstream();
 	str.clear();
 	str << L"Highscore:         " << m_Highscore;
 
-	pointStringPos.y += 20;
-	spriteFont->DrawString(spritebatch, str.str().c_str(), pointStringPos, Colors::Black);
+	pos.y += 20;
+	//spriteFont->DrawString(spritebatch, str.str().c_str(), pos, Colors::Black);
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	window->draw(text);
 
 	str = std::wstringstream();
 	str.clear();
 	str << L"HighscoreAI:     " << m_HighscoreAI;
 
-	pointStringPos.y += 20;
-	spriteFont->DrawString(spritebatch, str.str().c_str(), pointStringPos, Colors::Black);
+	pos.y += 20;
+	//spriteFont->DrawString(spritebatch, str.str().c_str(), pos, Colors::Black);
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	window->draw(text);
 
-	pointStringPos.y += 20;
+	pos.y += 20;
 
 	str = std::wstringstream();
 	str.clear();
 	str << L"Lines:              " << mTotalLinesCleared;
 
-	pointStringPos.y += 20;
-	spriteFont->DrawString(spritebatch, str.str().c_str(), pointStringPos, Colors::Black);
+	pos.y += 20;
+	//spriteFont->DrawString(spritebatch, str.str().c_str(), pos, Colors::Black);
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	window->draw(text);
 
 	str = std::wstringstream();
 	str.clear();
 	str << L"Highest lines:     " << m_totalLinesHighscore;
 
-	pointStringPos.y += 20;
-	spriteFont->DrawString(spritebatch, str.str().c_str(), pointStringPos, Colors::Black);
+	pos.y += 20;
+	//spriteFont->DrawString(spritebatch, str.str().c_str(), pos, Colors::Black);
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	window->draw(text);
 
 	str = std::wstringstream();
 	str.clear();
 	str << L"Highest linesAI: " << m_totalLinesHighscoreAI;
 
-	pointStringPos.y += 20;
-	spriteFont->DrawString(spritebatch, str.str().c_str(), pointStringPos, Colors::Black);
+	pos.y += 20;
+	//spriteFont->DrawString(spritebatch, str.str().c_str(), pos, Colors::Black);
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	window->draw(text);
 
 
 
-	pointStringPos.y += 40;
+	pos.y += 40;
 	str = std::wstringstream();
 	str.clear();
 	str << L"Genome: " << (CurrentAI + 1) << "/" << AICount;
 
-	pointStringPos.y += 20;
-	spriteFont->DrawString(spritebatch, str.str().c_str(), pointStringPos, Colors::Black);
+	pos.y += 20;
+	//spriteFont->DrawString(spritebatch, str.str().c_str(), pos, Colors::Black);
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	window->draw(text);
 
 	str = std::wstringstream();
 	str.clear();
 	str << L"Generation: " << (CurrentGen + 1);
 
-	pointStringPos.y += 20;
-	spriteFont->DrawString(spritebatch, str.str().c_str(), pointStringPos, Colors::Black);
+	pos.y += 20;
+	//spriteFont->DrawString(spritebatch, str.str().c_str(), pos, Colors::Black);
+	text.setString(sf::String(str.str()));
+	text.setPosition(pos);
+	window->draw(text);
 }
 
 void Field::checkForLineClear(){
@@ -603,7 +637,7 @@ void Field::checkForLineClear(){
 	for (int y = 0; y < mHeight; y++){
 		for (int x = 0; x < mWidth; x++){
 			if (mGrid[y * mWidth + x])
-				mGrid[y * mWidth + x]->setPosition(DirectX::SimpleMath::Vector2((float)x, (float)y));
+				mGrid[y * mWidth + x]->setPosition(sf::Vector2i((float)x, (float)y));
 		}
 	}
 
