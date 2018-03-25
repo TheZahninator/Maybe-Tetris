@@ -72,14 +72,16 @@ private:
 
 		
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	//EIGNE VARIABLEN
+	// Custom variables
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	std::unique_ptr<SpriteBatch> mSpriteBatch;
 	std::unique_ptr<SpriteFont> m_spriteFont;
+
 	std::shared_ptr<GamePad> mGamePad;
 	std::unique_ptr<GamePad::ButtonStateTracker> mGamePadTracker;
 	std::unique_ptr<Keyboard> mKeyboard;
 	std::unique_ptr<Keyboard::KeyboardStateTracker> mKeyboardTracker;
+	
 	std::unique_ptr<Mouse> mMouse;
 	std::unique_ptr<Mouse::ButtonStateTracker> mMouseButtonTracker;
 
