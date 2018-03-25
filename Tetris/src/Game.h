@@ -5,6 +5,7 @@
 #pragma once
 
 #define GAME_TITLE L"Türme-Bau-Simulator 2016"
+#define DEFAULT_FPS 60.0f
 
 #include "Helper/StepTimer.h"
 #include "GameObjects/TetrominoGroup.h"

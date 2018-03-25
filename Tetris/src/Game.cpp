@@ -35,19 +35,16 @@ void Game::Initialize(HWND window, int width, int height)
 	view.Height = (float)height;
 	view.Width =  (float)width;
 
+	m_currentFPS = DEFAULT_FPS;
+
+    m_timer.SetFixedTimeStep(true);
+	m_timer.SetTargetElapsedSeconds(1.0 / m_currentFPS);
 
     CreateDevice();
-
     CreateResources();
 
 	m_spriteFont = std::make_unique<SpriteFont>(m_d3dDevice.Get(), L"res/font.spritefont");
 	mSpriteBatch->SetViewport(view);
-    // TODO: Change the timer settings if you want something other than the default variable timestep mode.
-    // e.g. for 60 FPS fixed timestep update logic, call:
-	m_currentFPS = 60.0;
-
-    m_timer.SetFixedTimeStep(true);
-	m_timer.SetTargetElapsedSeconds(1.0 / m_currentFPS);
 
 	srand((unsigned)time(nullptr));
 
@@ -94,7 +91,6 @@ void Game::Update(DX::StepTimer const& timer)
 {
     float elapsedTime = float(timer.GetElapsedSeconds());
 
-    // TODO: Add your game logic here.
 	auto mouseState = mMouse->GetState();
 	mMouseButtonTracker->Update(mouseState);
 	
@@ -135,6 +131,8 @@ void Game::Update(DX::StepTimer const& timer)
 		if (mKeyboardTracker->IsKeyPressed(Keyboard::NumPad4))	m_currentFPS /= 4;
 		if (mKeyboardTracker->IsKeyPressed(Keyboard::NumPad5))	m_currentFPS /= 5;
 	}
+
+	if (m_currentFPS < 60) m_currentFPS = 60;
 
 	//if (mKeyboard->RightControl && mKeyboardTracker->IsKeyPressed(mKeyboard->R)){
 	//	m_noRender = !m_noRender;
