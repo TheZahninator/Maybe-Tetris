@@ -8,7 +8,7 @@
 
 #include "../Helper/pugixml.hpp"
 
-#define QUEUE_SIZE 7
+#define QUEUE_SIZE 8
 
 class Block;
 class TetrominoGroup;
@@ -21,12 +21,14 @@ public:
 	void init(sf::Vector2f& screenPosition);
 	void restart();
 
-	void Update(KeyboardStateTracker& keyboardTracker);
+	void Update(KeyboardStateTracker* keyboardTracker);
 	void Render(sf::RenderWindow* window);
 
 	void checkForLineClear();
 
 	void addBlock(std::shared_ptr<Block> block);
+
+	void nextTetromino();
 
 	std::shared_ptr<Block>* getGrid(){ return mGrid; }
 	bool getGrid(unsigned x, unsigned y){

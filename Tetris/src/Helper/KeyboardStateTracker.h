@@ -13,7 +13,7 @@ public:
 	void press(int keyCode);
 	void release(int keyCode);
 
-	void update();
+	void reset();
 
 	bool isKeyPressed(int keyCode);
 	bool isKeyReleased(int keyCode);

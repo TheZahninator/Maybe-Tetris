@@ -14,6 +14,7 @@ void Block::render(sf::RenderWindow* window){
 	if (mPositionGrid.y >= 0){
 		m_sprite.setPosition((float)mPositionScreen.x, (float)mPositionScreen.y);
 		m_sprite.setColor(mTint);
+		m_sprite.setScale(1.0f, 1.0f);
 
 		window->draw(m_sprite);
 	}

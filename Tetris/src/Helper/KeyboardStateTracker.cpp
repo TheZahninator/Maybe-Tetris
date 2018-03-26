@@ -40,7 +40,7 @@ void KeyboardStateTracker::release(int keyCode){
 	m_keysDown[keyCode] = false;
 }
 
-void KeyboardStateTracker::update(){
+void KeyboardStateTracker::reset(){
 	for (unsigned i = 0; i < BufferSize; i++){
 		m_keysPressed[i] = false;
 		m_keysReleased[i] = false;

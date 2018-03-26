@@ -2,8 +2,6 @@
 #include "AI.h"
 #include "../GameObjects/Field.h"
 
-std::shared_ptr<AIController> AI::m_controller;
-
 unsigned AI::MemorySize = 10;
 
 AI::AI(Field& field) : m_fitness(0), m_field(field)
@@ -23,8 +21,7 @@ AI::AI(Field& field) : m_fitness(0), m_field(field)
 	m_net->setETA(0.2);
 	m_net->setAlpha(0.5);
 
-	if (!m_controller)
-		m_controller.reset(new AIController(m_keyboardStateTracker));
+	m_controller.reset(new AIController(&m_keyboardStateTracker));
 }
 
 
@@ -102,14 +99,18 @@ void AI::update(){
 
 	const double activationWall = 0.75;
 
+	m_controller->reset();
+
 	//if (result[0] > activationWall)
 	//	m_controller->pressUp();
-	if (result[1] > activationWall)
-		m_controller->pressDown();
+	if (result[1] > activationWall){
+		m_controller->moveDown();
+	}
+
 	if (result[2] > activationWall)
-		m_controller->pressLeft();
+		m_controller->moveLeft();
 	if (result[3] > activationWall)
-		m_controller->pressRight();
+		m_controller->moveRight();
 
 	if (result[4] > activationWall)
 		m_controller->rotateCCW();
@@ -134,7 +135,7 @@ AI* AI::recreate(AI* partner){
 }
 
 
-void AI::learn(KeyboardStateTracker& playerKeyboardTracker){
+void AI::learn(KeyboardStateTracker* playerKeyboardTracker){
 	std::vector<double> input;
 	input.clear();
 
@@ -202,22 +203,22 @@ void AI::learn(KeyboardStateTracker& playerKeyboardTracker){
 	targetVals.clear();
 
 	double d = 0.0;
-	d = double(playerKeyboardTracker.isKeyPressed(sf::Keyboard::Up));
+	d = double(playerKeyboardTracker->isKeyPressed(sf::Keyboard::Up));
 	targetVals.push_back(d);
 
-	d = double(playerKeyboardTracker.isKeyDown(sf::Keyboard::Down));
+	d = double(playerKeyboardTracker->isKeyDown(sf::Keyboard::Down));
 	targetVals.push_back(d);
 
-	d = double(playerKeyboardTracker.isKeyPressed(sf::Keyboard::Left));
+	d = double(playerKeyboardTracker->isKeyPressed(sf::Keyboard::Left));
 	targetVals.push_back(d);
 
-	d = double(playerKeyboardTracker.isKeyPressed(sf::Keyboard::Right));
+	d = double(playerKeyboardTracker->isKeyPressed(sf::Keyboard::Right));
 	targetVals.push_back(d);
 
-	d = double(playerKeyboardTracker.isKeyPressed(sf::Keyboard::A));
+	d = double(playerKeyboardTracker->isKeyPressed(sf::Keyboard::A));
 	targetVals.push_back(d);
 
-	d = double(playerKeyboardTracker.isKeyPressed(sf::Keyboard::D));
+	d = double(playerKeyboardTracker->isKeyPressed(sf::Keyboard::D));
 	targetVals.push_back(d);
 
 	m_net->train(input, targetVals);

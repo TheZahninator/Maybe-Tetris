@@ -13,7 +13,7 @@ public:
 	TetrominoGroup(Field& field, int type);
 	~TetrominoGroup();
 
-	void update(KeyboardStateTracker& keyboardTracker);
+	void update(KeyboardStateTracker* keyboardTracker);
 	void render(sf::RenderWindow* window);
 	void render(sf::RenderWindow* window, const sf::Vector2f& screenPosition, float scale = 1.0f);
 	

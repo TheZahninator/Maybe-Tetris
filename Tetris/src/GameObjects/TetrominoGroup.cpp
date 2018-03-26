@@ -272,10 +272,10 @@ TetrominoGroup::TetrominoGroup(Field& field, int type) : mSplitted(false), mToBe
 TetrominoGroup::~TetrominoGroup(){
 }
 
-void TetrominoGroup::update(KeyboardStateTracker& keyboardTracker){
+void TetrominoGroup::update(KeyboardStateTracker* keyboardTracker){
 	
 	bool tillAllocked = false;
-	if (keyboardTracker.isKeyPressed(sf::Keyboard::Up))
+	if (keyboardTracker->isKeyPressed(sf::Keyboard::Up))
 		tillAllocked = true;
 
 	bool allLocked = true;
@@ -303,14 +303,14 @@ void TetrominoGroup::update(KeyboardStateTracker& keyboardTracker){
 	} while (tillAllocked && !allLocked);
 
 	if (!mSplitted){
-		if (keyboardTracker.isKeyPressed(sf::Keyboard::A))
+		if (keyboardTracker->isKeyPressed(sf::Keyboard::A))
 			rotate(ERotation::COUNTER_CLOCKWISE);
-		else if (keyboardTracker.isKeyPressed(sf::Keyboard::D))
+		else if (keyboardTracker->isKeyPressed(sf::Keyboard::D))
 			rotate(ERotation::CLOCKWISE);
 
-		if (keyboardTracker.isKeyPressed(sf::Keyboard::Left))
+		if (keyboardTracker->isKeyPressed(sf::Keyboard::Left))
 			move(sf::Vector2i(-1, 0));
-		if (keyboardTracker.isKeyPressed(sf::Keyboard::Right))
+		if (keyboardTracker->isKeyPressed(sf::Keyboard::Right))
 			move(sf::Vector2i(1, 0));
 	}
 	else if(allLocked){

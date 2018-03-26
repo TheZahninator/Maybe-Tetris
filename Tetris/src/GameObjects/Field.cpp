@@ -147,6 +147,8 @@ void Field::switchAIMode(){
 	restart();
 	AIMode = !AIMode;
 	CurrentAI = 0;
+
+	std::cout << "AI mode: " << (AIMode ? "on" : "off") << std::endl;
 }
 
 void Field::NewGen(){
@@ -307,7 +309,14 @@ void Field::loadGenomes(){
 	CurrentAI = 0;
 }
 
-void Field::Update(KeyboardStateTracker& playerKeyboardTracker){
+void Field::nextTetromino(){
+	drawFromBag();
+	if (!mTetrominoQueue[0]->move(sf::Vector2i(0, 0))){ 
+		restart();
+	}
+}
+
+void Field::Update(KeyboardStateTracker* playerKeyboardTracker){
 	/*
 #ifdef _DEBUG
 	sf::Vector2i mousePos(0, 0);
@@ -327,17 +336,17 @@ void Field::Update(KeyboardStateTracker& playerKeyboardTracker){
 #endif
 	*/
 
-	if (playerKeyboardTracker.isKeyDown(sf::Keyboard::LControl) || playerKeyboardTracker.isKeyDown(sf::Keyboard::RControl)){
-		if (playerKeyboardTracker.isKeyPressed(sf::Keyboard::M))
+	if (playerKeyboardTracker->isKeyDown(sf::Keyboard::LControl) || playerKeyboardTracker->isKeyDown(sf::Keyboard::RControl)){
+		if (playerKeyboardTracker->isKeyPressed(sf::Keyboard::M))
 			switchAIMode();
 
-		if (playerKeyboardTracker.isKeyPressed(sf::Keyboard::S))
+		if (playerKeyboardTracker->isKeyPressed(sf::Keyboard::S))
 			saveGenomes();
-		if (playerKeyboardTracker.isKeyPressed(sf::Keyboard::L))
+		if (playerKeyboardTracker->isKeyPressed(sf::Keyboard::L))
 			loadGenomes();
 	}
 
-	KeyboardStateTracker& currentKeyboard = playerKeyboardTracker;
+	KeyboardStateTracker* currentKeyboard = playerKeyboardTracker;
 
 	//Let the AI control the Button presses
 	
@@ -348,7 +357,7 @@ void Field::Update(KeyboardStateTracker& playerKeyboardTracker){
 			restart();
 
 		AIList[CurrentAI]->update();
-		currentKeyboard = AIList[CurrentAI]->getKeyboardStateTracker();
+		currentKeyboard = &AIList[CurrentAI]->getKeyboardStateTracker();
 	}
 	
 	/*else{
@@ -384,7 +393,7 @@ void Field::Update(KeyboardStateTracker& playerKeyboardTracker){
 	if (mTetrominoQueue[0]->shouldDestroy()){
 
 		mTetrominoQueue.erase(mTetrominoQueue.begin());
-		drawFromBag();
+		nextTetromino();
 
 		mPoints += 50;
 		m_framesSinceLastTetromino = 0;
@@ -393,12 +402,12 @@ void Field::Update(KeyboardStateTracker& playerKeyboardTracker){
 
 
 	//Update pressed buttons
-	pressedButtons[0] = currentKeyboard.isKeyDown(sf::Keyboard::Up);
-	pressedButtons[1] = currentKeyboard.isKeyDown(sf::Keyboard::Down);
-	pressedButtons[2] = currentKeyboard.isKeyDown(sf::Keyboard::Left);
-	pressedButtons[3] = currentKeyboard.isKeyDown(sf::Keyboard::Right);
-	pressedButtons[4] = currentKeyboard.isKeyDown(sf::Keyboard::D);
-	pressedButtons[5] = currentKeyboard.isKeyDown(sf::Keyboard::A);
+	pressedButtons[0] = currentKeyboard->isKeyDown(sf::Keyboard::Up)	|| currentKeyboard->isKeyPressed(sf::Keyboard::Up);
+	pressedButtons[1] = currentKeyboard->isKeyDown(sf::Keyboard::Down)	|| currentKeyboard->isKeyPressed(sf::Keyboard::Down);
+	pressedButtons[2] = currentKeyboard->isKeyDown(sf::Keyboard::Left)	|| currentKeyboard->isKeyPressed(sf::Keyboard::Left);
+	pressedButtons[3] = currentKeyboard->isKeyDown(sf::Keyboard::Right) || currentKeyboard->isKeyPressed(sf::Keyboard::Right);
+	pressedButtons[4] = currentKeyboard->isKeyDown(sf::Keyboard::D)		|| currentKeyboard->isKeyPressed(sf::Keyboard::D);
+	pressedButtons[5] = currentKeyboard->isKeyDown(sf::Keyboard::A)		|| currentKeyboard->isKeyPressed(sf::Keyboard::A);
 }
 
 void Field::Render(sf::RenderWindow* window){

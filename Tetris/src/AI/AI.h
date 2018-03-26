@@ -14,7 +14,7 @@ public:
 	AI* recreate(AI* partner = nullptr);
 
 	void update();
-	void learn(KeyboardStateTracker& keyboardTracker);
+	void learn(KeyboardStateTracker* keyboardTracker);
 
 	void updateFitness(unsigned fitness){ m_fitness = fitness; if (m_fitness > m_highscore) m_highscore = m_fitness; }
 
@@ -25,7 +25,7 @@ public:
 
 	std::unique_ptr<ZahnAI::NeuralNet>& getNet(){ return m_net; }
 
-	static std::shared_ptr<AIController> m_controller;
+	std::shared_ptr<AIController> m_controller;
 	static unsigned MemorySize;
 private:
 	std::unique_ptr<ZahnAI::NeuralNet> m_net;
