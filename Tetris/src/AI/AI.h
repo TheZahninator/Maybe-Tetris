@@ -14,9 +14,11 @@ public:
 	AI* recreate(AI* partner = nullptr);
 
 	void update();
-	void learn(KeyboardStateTracker* keyboardTracker);
+	void learn(KeyboardStateTracker& keyboardTracker);
 
 	void updateFitness(unsigned fitness){ m_fitness = fitness; if (m_fitness > m_highscore) m_highscore = m_fitness; }
+
+	KeyboardStateTracker& getKeyboardStateTracker(){ return m_keyboardStateTracker; }
 
 	unsigned m_fitness;
 	unsigned m_highscore;
@@ -29,5 +31,6 @@ private:
 	std::unique_ptr<ZahnAI::NeuralNet> m_net;
 
 	Field& m_field;
+	KeyboardStateTracker m_keyboardStateTracker;
 };
 

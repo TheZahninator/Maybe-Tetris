@@ -117,11 +117,11 @@ Tetromino::Tetromino(Field& field, sf::Vector2i& position, bool* matrix, int wid
 Tetromino::~Tetromino(){
 }
 
-void Tetromino::update(KeyboardStateTracker* keyboardTracker){
+void Tetromino::update(KeyboardStateTracker& keyboardTracker){
 	m_triesToRotate = 0;
 	if (!mLocked){
 		mFrameCounter++;
-		if (keyboardTracker->isKeyDown(sf::Keyboard::Down))
+		if (keyboardTracker.isKeyDown(sf::Keyboard::Down))
 			mFrameCounter += 4;
 
 		while (mFrameCounter >= 60.0f / m_field.getGravity()){

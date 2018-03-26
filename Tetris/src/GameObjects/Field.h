@@ -21,7 +21,7 @@ public:
 	void init(sf::Vector2f& screenPosition);
 	void restart();
 
-	void Update(KeyboardStateTracker* keyboardTracker);
+	void Update(KeyboardStateTracker& keyboardTracker);
 	void Render(sf::RenderWindow* window);
 
 	void checkForLineClear();

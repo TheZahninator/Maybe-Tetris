@@ -10,7 +10,12 @@ AI::AI(Field& field) : m_fitness(0), m_field(field)
 {
 
 	std::vector<unsigned> topo;
-	topo.push_back( 2 + 2 + 1 + 2 + QUEUE_SIZE + MemorySize);
+	topo.push_back(2 + 2 + 1 + 2 + QUEUE_SIZE + MemorySize);
+	topo.push_back(64);
+	topo.push_back(64);
+	topo.push_back(64);
+	topo.push_back(64);
+	topo.push_back(64);
 	topo.push_back(64);
 	topo.push_back(6 + MemorySize);
 
@@ -19,7 +24,7 @@ AI::AI(Field& field) : m_fitness(0), m_field(field)
 	m_net->setAlpha(0.5);
 
 	if (!m_controller)
-		m_controller.reset(new AIController());
+		m_controller.reset(new AIController(m_keyboardStateTracker));
 }
 
 
@@ -27,8 +32,7 @@ AI::~AI(){
 }
 
 void AI::update(){
-	//m_controller->reset();
-	//m_fitness++;
+	m_fitness++;
 
 	std::vector<double> input;
 	input.clear();
@@ -100,17 +104,17 @@ void AI::update(){
 
 	//if (result[0] > activationWall)
 	//	m_controller->pressUp();
-	//if (result[1] > activationWall)
-	//	m_controller->pressDown();
-	//if (result[2] > activationWall)
-	//	m_controller->pressLeft();
-	//if (result[3] > activationWall)
-	//	m_controller->pressRight();
+	if (result[1] > activationWall)
+		m_controller->pressDown();
+	if (result[2] > activationWall)
+		m_controller->pressLeft();
+	if (result[3] > activationWall)
+		m_controller->pressRight();
 
-	//if (result[4] > activationWall)
-	//	m_controller->pressX();
-	//if (result[5] > activationWall)
-	//	m_controller->pressY();
+	if (result[4] > activationWall)
+		m_controller->rotateCCW();
+	if (result[5] > activationWall)
+		m_controller->rotateCW();
 }
 
 AI* AI::recreate(AI* partner){
@@ -130,7 +134,7 @@ AI* AI::recreate(AI* partner){
 }
 
 
-void AI::learn(KeyboardStateTracker* keyboardTracker){
+void AI::learn(KeyboardStateTracker& playerKeyboardTracker){
 	std::vector<double> input;
 	input.clear();
 
@@ -185,37 +189,36 @@ void AI::learn(KeyboardStateTracker* keyboardTracker){
 	input.push_back((double)m_field.getCurrentTetromino()->getTouchingBlocks());
 
 	//Memory
-	std::vector<double> tmp;
-	m_net->getResults(tmp);
+	std::vector<double> tmp = m_net->predict();
 
 	for (unsigned i = 0; i < MemorySize; i++){
 		input.push_back(tmp[tmp.size() - MemorySize + i]);
 	}
 
-	m_net->feedForward(input);
+	//m_net->feedForward(input);
 
 	//Get the target values for the button presses(player input)
 	std::vector<double> targetVals;
 	targetVals.clear();
 
 	double d = 0.0;
-	d = double(keyboardTracker->isKeyPressed(sf::Keyboard::Up));
+	d = double(playerKeyboardTracker.isKeyPressed(sf::Keyboard::Up));
 	targetVals.push_back(d);
 
-	d = double(keyboardTracker->isKeyDown(sf::Keyboard::Down));
+	d = double(playerKeyboardTracker.isKeyDown(sf::Keyboard::Down));
 	targetVals.push_back(d);
 
-	d = double(keyboardTracker->isKeyPressed(sf::Keyboard::Left));
+	d = double(playerKeyboardTracker.isKeyPressed(sf::Keyboard::Left));
 	targetVals.push_back(d);
 
-	d = double(keyboardTracker->isKeyPressed(sf::Keyboard::Right));
+	d = double(playerKeyboardTracker.isKeyPressed(sf::Keyboard::Right));
 	targetVals.push_back(d);
 
-	d = double(keyboardTracker->isKeyPressed(sf::Keyboard::A));
+	d = double(playerKeyboardTracker.isKeyPressed(sf::Keyboard::A));
 	targetVals.push_back(d);
 
-	d = double(keyboardTracker->isKeyPressed(sf::Keyboard::D));
+	d = double(playerKeyboardTracker.isKeyPressed(sf::Keyboard::D));
 	targetVals.push_back(d);
 
-	m_net->backProp(targetVals);
+	m_net->train(input, targetVals);
 }

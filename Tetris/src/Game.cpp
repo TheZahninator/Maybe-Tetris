@@ -97,8 +97,6 @@ void Game::Update(StepTimer const& timer)
 
     float elapsedTime = float(timer.GetElapsedSeconds());
 
-	m_field.Update(m_keyboardStateTracker.get());
-
 	if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Escape)){
 		m_running = false;
 	}
@@ -110,16 +108,19 @@ void Game::Update(StepTimer const& timer)
 	double oldFPS = m_currentFPS;
 
 	if (m_keyboardStateTracker->isKeyDown(sf::Keyboard::Multiply)){
-		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Num2))	m_currentFPS *= 2;
-		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Num3))	m_currentFPS *= 3;
-		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Num4))	m_currentFPS *= 4;
-		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Num5))	m_currentFPS *= 5;
+		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Numpad2)){
+			m_currentFPS *= 2;
+			std::cout << (int)m_currentFPS << std::endl;
+		}
+		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Numpad3))	m_currentFPS *= 3;
+		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Numpad4))	m_currentFPS *= 4;
+		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Numpad5))	m_currentFPS *= 5;
 	}
 	if (m_keyboardStateTracker->isKeyDown(sf::Keyboard::Divide)){
-		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Num2))	m_currentFPS /= 2;
-		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Num3))	m_currentFPS /= 3;
-		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Num4))	m_currentFPS /= 4;
-		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Num5))	m_currentFPS /= 5;
+		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Numpad2))	m_currentFPS /= 2;
+		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Numpad3))	m_currentFPS /= 3;
+		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Numpad4))	m_currentFPS /= 4;
+		if (m_keyboardStateTracker->isKeyPressed(sf::Keyboard::Numpad5))	m_currentFPS /= 5;
 	}
 
 	if (m_currentFPS < 60) {
@@ -129,6 +130,8 @@ void Game::Update(StepTimer const& timer)
 	if (m_currentFPS != oldFPS){
 		m_timer.SetTargetElapsedSeconds(1.0 / m_currentFPS);
 	}
+
+	m_field.Update(*m_keyboardStateTracker.get());
 }
 
 // Draws the scene.

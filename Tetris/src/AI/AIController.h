@@ -1,22 +1,20 @@
 #pragma once
-class AIController : public sf::Keyboard
+class AIController
 {
 public:
-	AIController();
+	AIController(KeyboardStateTracker& keyboardStateTracker);
 	~AIController();
-/*
+
 	void reset();
 
-	void pressX(){ .buttons.x = true; }
-	void pressY(){ m_state.buttons.y = true; }
-	void pressLeft(){ m_state.dpad.left = true; }
-	void pressRight(){ m_state.dpad.right = true; }
-	void pressUp(){ m_state.dpad.up = true; }
-	void pressDown(){ m_state.dpad.down = true; }
-*/
-	//State GetState();
+	void rotateCCW(){ m_keyboardStateTracker.press(sf::Keyboard::A); }
+	void rotateCW(){ m_keyboardStateTracker.press(sf::Keyboard::D); }
+	void pressLeft(){ m_keyboardStateTracker.press(sf::Keyboard::Left); }
+	void pressRight(){ m_keyboardStateTracker.press(sf::Keyboard::Right); }
+	void pressUp(){ m_keyboardStateTracker.press(sf::Keyboard::Up); }
+	void pressDown(){ m_keyboardStateTracker.press(sf::Keyboard::Down); }
 
 private:
-	//State m_state;
+	KeyboardStateTracker& m_keyboardStateTracker;
 };
 

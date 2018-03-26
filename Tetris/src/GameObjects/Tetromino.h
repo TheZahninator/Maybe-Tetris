@@ -15,7 +15,7 @@ public:
 	Tetromino(Field& field, sf::Vector2i& position, bool* matrix, int width, int height, sf::Color& color);
 	~Tetromino();
 
-	void update(KeyboardStateTracker* keyboardTracker);
+	void update(KeyboardStateTracker& keyboardTracker);
 	void render(sf::RenderWindow* window);
 	void render(sf::RenderWindow* window, const sf::Vector2f& screenPosition, float scale = 1.0f);
 
