@@ -62,13 +62,11 @@ void Field::init(sf::Vector2f& screenPosition){
 
 	mScreenPosition = screenPosition;
 	mGrid = new std::shared_ptr<Block>[mWidth * mHeight];
-	//memset(mGrid, 0, mWidth * mHeight * sizeof(Block*));
 	m_bag.clear();
 
 	fillBag();
 
 	for (int i = 0; i < QUEUE_SIZE; i++){
-		//mTetrominoQueue.push_back(std::shared_ptr<TetrominoGroup>(new TetrominoGroup(rand() % NUMBER_OF_MINOS + 1)));
 		drawFromBag();
 	}
 
@@ -103,14 +101,12 @@ void Field::restart(){
 	mTetrominoQueue.clear();
 
 	mGrid = new std::shared_ptr<Block>[mWidth * mHeight];
-	//memset(mGrid, 0, mWidth * mHeight * sizeof(Block*));
 
 	m_bag.clear();
 
 	fillBag();
 
 	for (int i = 0; i < QUEUE_SIZE; i++){
-		//mTetrominoQueue.push_back(std::shared_ptr<TetrominoGroup>(new TetrominoGroup(rand() % NUMBER_OF_MINOS + 1)));
 		drawFromBag();
 	}
 
@@ -145,9 +141,6 @@ void Field::restart(){
 	m_framesSinceLastTetromino = 0;
 
 	m_AILearningFrameCounter = 0;
-	//if (!AIMode){
-	//	AIMode = true;
-	//}
 }
 
 void Field::switchAIMode(){
@@ -177,16 +170,17 @@ void Field::NewGen(){
 		survived.push_back(std::move(AIList[x]));
 		AIList.erase(AIList.begin() + x);
 	}
-	//Clear car list.
+
+	//Clear AI list
 	AIList.clear();
 
-	//Write survived cars back into the list.
+	//Write surviving AIs back into the list.
 	for (unsigned i = 0; i < survived.size(); i++){
 		AIList.push_back(std::move(survived[i]));
 		AIList.back()->updateFitness(0);
 	}
 
-	//Calculate chances for every surviver to recreate.
+	//Calculate chances for every surviver to procreate.
 	float chanceScale = 1.5;
 
 	float totalChance = 0;
@@ -387,14 +381,12 @@ void Field::Update(KeyboardStateTracker* keyboardTracker){
 		}
 	}*/
 
-	//Updatet den aktiven Tetromino.
+	//Update the active tetromino
 	mTetrominoQueue[0]->update(keyboardTracker);
 
-	//Wenn der aktive Tetromino gesetzt wurde, wird er gelöscht und die Tetrominos in der Schlange rücken nach. Ein neuer reiht sich hinten ein.
 	if (mTetrominoQueue[0]->shouldDestroy()){
 
 		mTetrominoQueue.erase(mTetrominoQueue.begin());
-		//mTetrominoQueue.push_back(std::shared_ptr<TetrominoGroup>(new TetrominoGroup(rand() % NUMBER_OF_MINOS + 1)));
 		drawFromBag();
 
 		mPoints += 50;
@@ -404,7 +396,6 @@ void Field::Update(KeyboardStateTracker* keyboardTracker){
 
 
 	//Update pressed buttons
-
 	pressedButtons[0] = keyboardTracker->isKeyDown(sf::Keyboard::Up);
 	pressedButtons[1] = keyboardTracker->isKeyDown(sf::Keyboard::Down);
 	pressedButtons[2] = keyboardTracker->isKeyDown(sf::Keyboard::Left);
@@ -414,52 +405,41 @@ void Field::Update(KeyboardStateTracker* keyboardTracker){
 }
 
 void Field::Render(sf::RenderWindow* window){
-	//Zeichnet den Hintergrund
-	//TextureManager::getTexture(TEX_BACKGROUND_1)->draw(spritebatch, sf::Vector2i(0.0f, 0.0f));
+	//Render the background
 	window->draw(m_backgroundSprite);
-	//window->display();
-
-	//Texture* borderTexture = TextureManager::getTexture(TEX_BACKGROUND_FIELD_BORDER);
-	sf::Vector2i borderOffset;
+	
+	//Render the field border
+	sf::Vector2f borderOffset;
 	borderOffset.x = (mWidth * BLOCK_SIZE - m_backgroundBorderSprite.getTexture()->getSize().x) / 2.0f;
 	borderOffset.y = (mHeight * BLOCK_SIZE - m_backgroundBorderSprite.getTexture()->getSize().y) / 2.0f;
 
-	m_backgroundBorderSprite.setPosition(mScreenPosition.x + borderOffset.x, mScreenPosition.y + borderOffset.y);
+	m_backgroundBorderSprite.setPosition(mScreenPosition + borderOffset);
 
-	//borderTexture->draw(spritebatch, mScreenPosition + borderOffset);
 	window->draw(m_backgroundBorderSprite);
-	//window->display();
 
 	//Render the overlay
-	//TextureManager::getTexture(TEX_BACKGROUND_OVERLAY)->draw(spritebatch, sf::Vector2i(0.0f, 0.0f));
 	m_backgroundOverlaySprite.setPosition(0.0f, 0.0f);
 	window->draw(m_backgroundOverlaySprite);
-	//window->display();
 
-	//Zeichnet transparente Blöcke als Spielfeldhintergrund.
-	for (int y = 0; y < mHeight; y++){
-		for (int x = 0; x < mWidth; x++){
+	for (unsigned y = 0; y < mHeight; y++){
+		for (unsigned x = 0; x < mWidth; x++){
 			sf::Vector2f pos = mScreenPosition + sf::Vector2f((float)x, (float)y) * (float)BLOCK_SIZE;
-			//TextureManager::getTexture(TEX_BACKGROUND_FIELD_TILE)->draw(spritebatch, pos, BLOCK_COLOR_WHITE * COLOR_ALPHA_25);
 			m_backgroudFieldTileSprite.setPosition(pos.x, pos.y);
 			m_backgroudFieldTileSprite.setColor(BLOCK_COLOR_WHITE * COLOR_ALPHA_25);
 			window->draw(m_backgroudFieldTileSprite);
 		}
 	}
 
-	//Zeichnet die auf dem Spielfeld platzierten Blöcke.
-	for (int y = 0; y < mHeight; y++){
-		for (int x = 0; x < mWidth; x++){
+	for (unsigned y = 0; y < mHeight; y++){
+		for (unsigned x = 0; x < mWidth; x++){
 			if (mGrid[y * mWidth + x]){
 				mGrid[y * mWidth + x]->render(window);
 			}
 		}
 	}
 
-	//Zeichnet den aktiven Tetromino
 	mTetrominoQueue[0]->render(window);
 
-	//Zeichnet die eingereiten tetrominos neben das Spielfeld.
 	for (UINT i = 1; i < mTetrominoQueue.size(); i++){
 		mTetrominoQueue[i]->render(window, mScreenPosition + sf::Vector2f(float((mWidth + 2) * BLOCK_SIZE), float((i - 1) * BLOCK_SIZE * 3.5f)), 0.75f);
 	}
@@ -476,7 +456,6 @@ void Field::Render(sf::RenderWindow* window){
 	rect.left = static_cast<LONG>(off.x);
 	rect.top = static_cast<LONG>(off.y);
 
-	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(0, 0), rect);
 	m_keyCounterClockwiseSprite.setTextureRect(rect);
 	window->draw(m_keyCounterClockwiseSprite);
 
@@ -486,7 +465,6 @@ void Field::Render(sf::RenderWindow* window){
 	rect.left =   static_cast<LONG>(off.x);
 	rect.top =    static_cast<LONG>(off.y);
 
-	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(128, 0), rect
 	m_keyClockwiseSprite.setTextureRect(rect);
 	window->draw(m_keyClockwiseSprite);
 
@@ -497,7 +475,6 @@ void Field::Render(sf::RenderWindow* window){
 	rect.left =   static_cast<LONG>(off.x);
 	rect.top =    static_cast<LONG>(off.y);
 
-	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(64, 0), rect);
 	m_keyUpSprite.setTextureRect(rect);
 	window->draw(m_keyUpSprite);
 
@@ -507,7 +484,6 @@ void Field::Render(sf::RenderWindow* window){
 	rect.left = static_cast<LONG>(off.x);
 	rect.top = static_cast<LONG>(off.y);
 
-	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(64, 64), rect);
 	m_keyDownSprite.setTextureRect(rect);
 	window->draw(m_keyDownSprite);
 
@@ -517,7 +493,6 @@ void Field::Render(sf::RenderWindow* window){
 	rect.left = static_cast<LONG>(off.x);
 	rect.top = static_cast<LONG>(off.y);
 
-	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(0, 64), rect);
 	m_keyLeftSprite.setTextureRect(rect);
 	window->draw(m_keyLeftSprite);
 
@@ -527,15 +502,12 @@ void Field::Render(sf::RenderWindow* window){
 	rect.left = static_cast<LONG>(off.x);
 	rect.top = static_cast<LONG>(off.y);
 
-	//TextureManager::getTexture(TEX_KEY_OVERLAY)->draw(spritebatch, keyOverlayOffset + sf::Vector2i(128, 64), rect);
 	m_keyRightSprite.setTextureRect(rect);
 	window->draw(m_keyRightSprite);
 
-	
-
 	//Render text
 	float xLeft = mScreenPosition.x + (mWidth + 7) * BLOCK_SIZE;
-	float xRight = m_screenSize.x - 150;
+	float xRight = static_cast<float>(m_screenSize.x - 150);
 	sf::Vector2f pos = mScreenPosition;
 	
 	sf::Font font;
@@ -544,7 +516,7 @@ void Field::Render(sf::RenderWindow* window){
 	sf::Text text;
 	text.setFont(font);
 	text.setCharacterSize(16);
-	text.setColor(sf::Color::Black);
+	text.setFillColor(sf::Color::Black);
 
 	std::wstringstream str;
 	str.clear();
@@ -732,11 +704,11 @@ void Field::Render(sf::RenderWindow* window){
 void Field::checkForLineClear(){
 	int linesCleared = 0;
 
-	for (int y = 0; y < mHeight; y++){
+	for (unsigned y = 0; y < mHeight; y++){
 
 		int blocksInLine = 0;
 
-		for (int x = 0; x < mWidth; x++){
+		for (unsigned x = 0; x < mWidth; x++){
 			if (mGrid[y * mWidth + x]){
 				blocksInLine++;
 			}
@@ -747,10 +719,10 @@ void Field::checkForLineClear(){
 		}
 	}
 
-	for (int y = 0; y < mHeight; y++){
-		for (int x = 0; x < mWidth; x++){
+	for (unsigned y = 0; y < mHeight; y++){
+		for (unsigned x = 0; x < mWidth; x++){
 			if (mGrid[y * mWidth + x])
-				mGrid[y * mWidth + x]->setPosition(sf::Vector2i((float)x, (float)y));
+				mGrid[y * mWidth + x]->setPosition(sf::Vector2i(x, y));
 		}
 	}
 
@@ -761,19 +733,19 @@ void Field::checkForLineClear(){
 }
 
 void Field::clearLine(int y, int& linesCleared){
-	for (int x = 0; x < mWidth; x++){
+	for (unsigned x = 0; x < mWidth; x++){
 		//delete mGrid[y * mWidth + x];
 		//mGrid[y * mWidth + x] = nullptr;
 		mGrid[y * mWidth + x].reset();
 	}
 	linesCleared++;
 
-	for (int j = y; j > 0; j--){
-		for (int i = 0; i < mWidth; i++){
+	for (unsigned j = y; j > 0; j--){
+		for (unsigned i = 0; i < mWidth; i++){
 			mGrid[j * mWidth + i] = mGrid[(j - 1) * mWidth + i];
 		}
 	}
-	for (int i = 0; i < mWidth; i++)
+	for (unsigned i = 0; i < mWidth; i++)
 		mGrid[i].reset();
 }
 

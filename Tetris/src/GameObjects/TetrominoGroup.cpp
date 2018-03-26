@@ -257,8 +257,8 @@ TetrominoGroup::TetrominoGroup(Field& field, int type) : mSplitted(false), mToBe
 
 	}
 
-	mPositionGrid.x = (float)(m_field.getWidth() / 2 - (int)(w / 2));
-	mPositionGrid.y = (float)(2 - h);
+	mPositionGrid.x = m_field.getWidth() / 2 - w / 2;
+	mPositionGrid.y = 2 - h;
 
 	mTetrominos.push_back(std::shared_ptr<Tetromino>(new Tetromino(m_field, mPositionGrid, matrix, w, h, color)));
 	if (mTetrominos[0]->collidedAtSpawn()){
@@ -303,7 +303,6 @@ void TetrominoGroup::update(KeyboardStateTracker* keyboardTracker){
 	} while (tillAllocked && !allLocked);
 
 	if (!mSplitted){
-		//TODO: Input handling
 		if (keyboardTracker->isKeyPressed(sf::Keyboard::A))
 			rotate(ERotation::COUNTER_CLOCKWISE);
 		else if (keyboardTracker->isKeyPressed(sf::Keyboard::D))
@@ -315,7 +314,6 @@ void TetrominoGroup::update(KeyboardStateTracker* keyboardTracker){
 			move(sf::Vector2i(1, 0));
 	}
 	else if(allLocked){
-		//TODO: Blöcke auf das Spielfeld überschreiben und neuen Tetromino spawnen.
 		for (UINT i = 0; i < mTetrominos.size(); i++)
 			mTetrominos[i]->placeOnField();
 
@@ -370,21 +368,19 @@ bool TetrominoGroup::move(sf::Vector2i& direction){
 }
 
 void TetrominoGroup::split(Tetromino* tetromino){
-	std::vector<std::shared_ptr<Tetromino>> newMinos;	//Liste der neuen Tetrominos.
+	std::vector<std::shared_ptr<Tetromino>> newMinos;
 	
-	int* matrix = tetromino->getFieldMatrix();	//Zwischenspeichern der Matrix.
-	int width = (int)tetromino->getMatrixSize().x;	//Zwischenspeichern der Matrixbreite.
-	int height = (int)tetromino->getMatrixSize().y;	//Zwischenspeichern der Matrixhöhe.
-	bool* checked = new bool[width * height];	//Matrix um zu markieren, welche Felder bereits geprüft wurden.
-	memset(checked, 0, width * height);			//Initialisieren der Prüf-Matrix
+	int* matrix = tetromino->getFieldMatrix();
+	int width = (int)tetromino->getMatrixSize().x;
+	int height = (int)tetromino->getMatrixSize().y;
+	bool* checked = new bool[width * height];
+	memset(checked, 0, width * height);	
 
-	//Iteriert durch alle Felder der Matrix.
 	for (int y = 0; y < height; y++){
 		for (int x = 0; x < width; x++){
-			if (!checked[y * width + x]){	//Wenn das aktuelle Feld noch nicht überprüft wurde...
-				checked[y * width + x] = true;	//Das aktuelle Feld wird als überprüft markiert.
-				if (matrix[y * width + x] > 0){	//Wenn das Feld einen Block besitzt...
-					//Der Teil-Tettromino wird der Liste hinzugefügt.
+			if (!checked[y * width + x]){
+				checked[y * width + x] = true;	
+				if (matrix[y * width + x] > 0){
 					newMinos.push_back(std::shared_ptr<Tetromino>(tetromino->getPart(matrix, checked, width, height, x, y)));
 				}
 			}

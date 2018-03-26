@@ -6,7 +6,6 @@
 #include "../AI/AI.h"
 #include "../Helper/BagContainer.h"
 
-//#define PUGIXML_WCHAR_MODE
 #include "../Helper/pugixml.hpp"
 
 #define QUEUE_SIZE 7
@@ -24,9 +23,6 @@ public:
 
 	void Update(KeyboardStateTracker* keyboardTracker);
 	void Render(sf::RenderWindow* window);
-
-	//static void Update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::Keyboard::KeyboardStateTracker* keyboardTracker, DirectX::Keyboard::State* keyboardState, DirectX::Mouse::State* mouse, DirectX::Mouse::ButtonStateTracker* mouseTracker);
-	//static void Render(DirectX::SpriteBatch* spritebatch, DirectX::SpriteFont* spriteFont);
 
 	void checkForLineClear();
 
@@ -69,24 +65,23 @@ public:
 private:
 	void clearLine(int y, int& linesCleared);
 
-	std::vector<std::shared_ptr<TetrominoGroup>> mTetrominoQueue; //Die warteschlange für die kommenden Tetrominos.
+	std::vector<std::shared_ptr<TetrominoGroup>> mTetrominoQueue;
 	BagContainer<std::shared_ptr<TetrominoGroup>> m_bag;
 	UINT m_copiesInBag;
 
-	const UINT mWidth;	//Spielfeldbreite
-	const UINT mHeight;	//Spielfeldhöhe
-	std::shared_ptr<Block>* mGrid;	//Auf dem Spielfeld festgesetzte Blöcke
-
+	const UINT mWidth;	
+	const UINT mHeight;
+	std::shared_ptr<Block>* mGrid;
 	sf::Vector2i m_screenSize;
 
-	sf::Vector2f mScreenPosition;	//Spielfeldposition auf dem Bildschirm
+	sf::Vector2f mScreenPosition;	
 
-	float mGravity; //Anzahl der Felder, die ein Tetromino pro Sekunde fällt.
-	UINT mPoints;	//Punktestand
+	float mGravity; 
+	UINT mPoints;	
 	UINT m_Highscore;
 	UINT m_HighscoreAI;
 
-	UINT mTotalLinesCleared; //Anzahl der Reihen die insgesamt aufgelöst wurden. Bestimmt den Wert von mGravity.
+	UINT mTotalLinesCleared; 
 	UINT m_totalLinesHighscore;
 	UINT m_totalLinesHighscoreAI;
 

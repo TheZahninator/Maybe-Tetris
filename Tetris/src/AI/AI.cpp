@@ -11,8 +11,6 @@ AI::AI(Field& field) : m_fitness(0), m_field(field)
 
 	std::vector<unsigned> topo;
 	topo.push_back( 2 + 2 + 1 + 2 + QUEUE_SIZE + MemorySize);
-	//topo.push_back(128);
-	//topo.push_back(128);
 	topo.push_back(64);
 	topo.push_back(6 + MemorySize);
 

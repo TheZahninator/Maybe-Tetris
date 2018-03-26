@@ -14,7 +14,6 @@ public:
 	AI* recreate(AI* partner = nullptr);
 
 	void update();
-	//void learn(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::Keyboard::KeyboardStateTracker* keyboardTracker, DirectX::Keyboard::State* keyState);
 	void learn(KeyboardStateTracker* keyboardTracker);
 
 	void updateFitness(unsigned fitness){ m_fitness = fitness; if (m_fitness > m_highscore) m_highscore = m_fitness; }

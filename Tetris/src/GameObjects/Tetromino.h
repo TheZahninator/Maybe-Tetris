@@ -19,10 +19,6 @@ public:
 	void render(sf::RenderWindow* window);
 	void render(sf::RenderWindow* window, const sf::Vector2f& screenPosition, float scale = 1.0f);
 
-	//void update(DirectX::GamePad::ButtonStateTracker* inputGamePad, DirectX::Keyboard::KeyboardStateTracker* keyboardTracker, DirectX::Keyboard::State* keyboardState);
-	//void render(DirectX::SpriteBatch* spriteBatch);
-	//void render(DirectX::SpriteBatch* spriteBatch, sf::Vector2i& screenPosition, float scale = 1.0f);
-
 	void setField(Field& field);
 
 	void placeOnField();
@@ -36,7 +32,7 @@ public:
 	Tetromino* getPart(int* matrix, bool* checked, int width, int height, int x, int y);
 	int getBlockCount();
 
-	sf::Vector2i getMatrixSize(){ return sf::Vector2i((float)mMatrixWidth, (float)mMatrixHeight); }
+	sf::Vector2i getMatrixSize(){ return sf::Vector2i(mMatrixWidth, mMatrixHeight); }
 	sf::Vector2i getBlockMostLeft();
 	sf::Vector2i getBlockMostRight();
 
