@@ -1,9 +1,6 @@
 #pragma once
 
-#include <vector>
-#include <cassert>
 #include "Neuron.h"
-#include "Math.h"
 
 namespace ZahnAI{
 

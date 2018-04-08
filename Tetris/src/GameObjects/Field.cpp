@@ -402,12 +402,12 @@ void Field::Update(KeyboardStateTracker* playerKeyboardTracker){
 
 
 	//Update pressed buttons
-	pressedButtons[0] = currentKeyboard->isKeyDown(sf::Keyboard::Up)	|| currentKeyboard->isKeyPressed(sf::Keyboard::Up);
-	pressedButtons[1] = currentKeyboard->isKeyDown(sf::Keyboard::Down)	|| currentKeyboard->isKeyPressed(sf::Keyboard::Down);
-	pressedButtons[2] = currentKeyboard->isKeyDown(sf::Keyboard::Left)	|| currentKeyboard->isKeyPressed(sf::Keyboard::Left);
-	pressedButtons[3] = currentKeyboard->isKeyDown(sf::Keyboard::Right) || currentKeyboard->isKeyPressed(sf::Keyboard::Right);
-	pressedButtons[4] = currentKeyboard->isKeyDown(sf::Keyboard::D)		|| currentKeyboard->isKeyPressed(sf::Keyboard::D);
-	pressedButtons[5] = currentKeyboard->isKeyDown(sf::Keyboard::A)		|| currentKeyboard->isKeyPressed(sf::Keyboard::A);
+	pressedButtons[0] = currentKeyboard->isKeyDown(sf::Keyboard::Up)	;//|| currentKeyboard->isKeyPressed(sf::Keyboard::Up);
+	pressedButtons[1] = currentKeyboard->isKeyDown(sf::Keyboard::Down)	;//|| currentKeyboard->isKeyPressed(sf::Keyboard::Down);
+	pressedButtons[2] = currentKeyboard->isKeyDown(sf::Keyboard::Left)	;//|| currentKeyboard->isKeyPressed(sf::Keyboard::Left);
+	pressedButtons[3] = currentKeyboard->isKeyDown(sf::Keyboard::Right) ;//|| currentKeyboard->isKeyPressed(sf::Keyboard::Right);
+	pressedButtons[4] = currentKeyboard->isKeyDown(sf::Keyboard::D)		;//|| currentKeyboard->isKeyPressed(sf::Keyboard::D);
+	pressedButtons[5] = currentKeyboard->isKeyDown(sf::Keyboard::A)		;//|| currentKeyboard->isKeyPressed(sf::Keyboard::A);
 }
 
 void Field::Render(sf::RenderWindow* window){

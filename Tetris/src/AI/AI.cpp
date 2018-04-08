@@ -8,14 +8,15 @@ AI::AI(Field& field) : m_fitness(0), m_field(field)
 {
 
 	std::vector<unsigned> topo;
-	topo.push_back(2 + 2 + 1 + 2 + QUEUE_SIZE + MemorySize);
+	//topo.push_back(2 + 2 + 1 + 2 + QUEUE_SIZE + NumButtons + MemorySize);
+	topo.push_back(field.getWidth() * field.getHeight() + 2 + 2 + 5 * 5 + QUEUE_SIZE + NumButtons + MemorySize);
 	topo.push_back(64);
 	topo.push_back(64);
 	topo.push_back(64);
 	topo.push_back(64);
 	topo.push_back(64);
 	topo.push_back(64);
-	topo.push_back(6 + MemorySize);
+	topo.push_back(NumButtons + MemorySize);
 
 	m_net.reset(new ZahnAI::NeuralNet(topo));
 	m_net->setETA(0.2);
@@ -35,11 +36,12 @@ void AI::update(){
 	input.clear();
 	
 	//Input the field data
-	//for (unsigned i = 0; i < m_field.getWidth() * m_field.getHeight(); i++){
-	//	double d = m_field.getGrid()[i] ? 1.0 : 0.0;
-	//	input.push_back(d);
-	//}
+	for (unsigned i = 0; i < m_field.getWidth() * m_field.getHeight(); i++){
+		double d = m_field.getGrid()[i] ? 1.0 : 0.0;
+		input.push_back(d);
+	}
 
+	
 	//Active tetromino position
 	double x = m_field.getCurrentTetromino()->getPosition().x;
 	double y = m_field.getCurrentTetromino()->getPosition().y;
@@ -53,28 +55,30 @@ void AI::update(){
 
 	input.push_back(w);
 	input.push_back(h);
+	
 
 	//Active Tetromino matrix data
-	//int newMat[5 * 5];
-	//memset(newMat, 0, 5 * 5 * sizeof(int));
-	//
-	//int* originalMat = m_field.getCurrentTetromino()->getMatrix();
-	//
-	//for (unsigned i = 0; i < (unsigned)w; i++){
-	//	for (unsigned j = 0; j < (unsigned)h; j++){
-	//		newMat[j * 5 + i] = originalMat[j * (unsigned)w + i];
-	//	}
-	//}
-	//
-	//for (unsigned i = 0; i < 5 * 5; i++){
-	//	double d = newMat[i] > 0 ? 1.0 : 0.0;
-	//	input.push_back(d);
-	//}
+	int newMat[5 * 5];
+	memset(newMat, 0, 5 * 5 * sizeof(int));
+	
+	int* originalMat = m_field.getCurrentTetromino()->getMatrix();
+	
+	for (unsigned i = 0; i < (unsigned)w; i++){
+		for (unsigned j = 0; j < (unsigned)h; j++){
+			newMat[j * 5 + i] = originalMat[j * (unsigned)w + i];
+		}
+	}
+	
+	for (unsigned i = 0; i < 5 * 5; i++){
+		double d = newMat[i] > 0 ? 1.0 : 0.0;
+		input.push_back(d);
+	}
 
 	//Type
 	for (unsigned i = 0; i < QUEUE_SIZE; i++)
 		input.push_back((double)m_field.getQueue()[i]->getType());
 
+	/*
 	//Rotation
 	input.push_back((double)m_field.getCurrentTetromino()->getRotation());
 
@@ -83,39 +87,72 @@ void AI::update(){
 
 	//Touching blocks
 	input.push_back((double)m_field.getCurrentTetromino()->getTouchingBlocks());
+	*/
 
+	std::vector<double> tmp = m_net->predict();
+
+	//Last button output
+	for (unsigned i = 0; i < NumButtons; i++){
+		input.push_back(tmp[i]);
+	}
 	//Memory
-	std::vector<double> tmp;
-	m_net->getResults(tmp);
-
 	for (unsigned i = 0; i < MemorySize; i++){
 		input.push_back(tmp[tmp.size() - MemorySize + i]);
 	}
-
+/*
 	m_net->feedForward(input);
 
 	std::vector<double> result;
-	m_net->getResults(result);
+	m_net->getResults(result);*/
 
-	const double activationWall = 0.75;
+	m_net->feedForward(input);
+	std::vector<double> result = m_net->predict();
+
+	const double activationWall = 0.5;
 
 	m_controller->reset();
 
-	//if (result[0] > activationWall)
-	//	m_controller->pressUp();
+	if (result[0] > activationWall){
+		m_controller->pressUp();
+	}
+	else{
+		m_controller->releaseUp();
+	}
+	
 	if (result[1] > activationWall){
-		m_controller->moveDown();
+		m_controller->pressDown();
+	}
+	else{
+		m_controller->releaseDown();
 	}
 
-	if (result[2] > activationWall)
-		m_controller->moveLeft();
-	if (result[3] > activationWall)
-		m_controller->moveRight();
+	if (result[2] > activationWall){
+		m_controller->pressLeft();
+	}
+	else{
+		m_controller->releaseLeft();
+	}
+	
+	if (result[3] > activationWall){
+		m_controller->pressRight();
+	}
+	else{
+		m_controller->releaseRight();
+	}
 
-	if (result[4] > activationWall)
-		m_controller->rotateCCW();
-	if (result[5] > activationWall)
-		m_controller->rotateCW();
+	if (result[4] > activationWall){
+		m_controller->pressCCW();
+	}
+	else{
+		m_controller->releaseCCW();
+	}
+
+	if (result[5] > activationWall){
+		m_controller->pressCW();
+	}
+	else{
+		m_controller->releaseCW();
+	}
 }
 
 AI* AI::recreate(AI* partner){

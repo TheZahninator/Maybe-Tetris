@@ -16,32 +16,50 @@ void AIController::reset(){
 }
 
 
-void AIController::rotateCCW(){
+void AIController::pressCCW(){
 	m_keyboardStateTracker->press(sf::Keyboard::A);
+}
+
+void AIController::releaseCCW(){
 	m_keyboardStateTracker->release(sf::Keyboard::A);
 }
 
-void AIController::rotateCW(){
+void AIController::pressCW(){
 	m_keyboardStateTracker->press(sf::Keyboard::D);
+}
+
+void AIController::releaseCW(){
 	m_keyboardStateTracker->release(sf::Keyboard::D);
 }
 
-void AIController::moveUp(){
+void AIController::pressUp(){
 	m_keyboardStateTracker->press(sf::Keyboard::Up);
+}
+
+void AIController::releaseUp(){
 	m_keyboardStateTracker->release(sf::Keyboard::Up);
 }
 
-void AIController::moveDown(){
+void AIController::pressDown(){
 	m_keyboardStateTracker->press(sf::Keyboard::Down);
+}
+
+void AIController::releaseDown(){
 	m_keyboardStateTracker->release(sf::Keyboard::Down);
 }
 
-void AIController::moveLeft(){
+void AIController::pressLeft(){
 	m_keyboardStateTracker->press(sf::Keyboard::Left);
+}
+
+void AIController::releaseLeft(){
 	m_keyboardStateTracker->release(sf::Keyboard::Left);
 }
 
-void AIController::moveRight(){
+void AIController::pressRight(){
 	m_keyboardStateTracker->press(sf::Keyboard::Right);
+}
+
+void AIController::releaseRight(){
 	m_keyboardStateTracker->release(sf::Keyboard::Right);
 }

@@ -26,7 +26,9 @@ public:
 	std::unique_ptr<ZahnAI::NeuralNet>& getNet(){ return m_net; }
 
 	std::shared_ptr<AIController> m_controller;
+
 	static unsigned MemorySize;
+	const static unsigned NumButtons = 6;
 private:
 	std::unique_ptr<ZahnAI::NeuralNet> m_net;
 

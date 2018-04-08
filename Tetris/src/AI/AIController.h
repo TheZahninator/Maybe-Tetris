@@ -7,12 +7,23 @@ public:
 
 	void reset();
 
-	void rotateCCW();
-	void rotateCW();
-	void moveLeft();
-	void moveRight();
-	void moveUp();
-	void moveDown();
+	void pressCCW();
+	void releaseCCW();
+
+	void pressCW();
+	void releaseCW();
+	
+	void pressLeft();
+	void releaseLeft();
+	
+	void pressRight();
+	void releaseRight();
+	
+	void pressUp();
+	void releaseUp();
+	
+	void pressDown();
+	void releaseDown();
 
 private:
 	KeyboardStateTracker* m_keyboardStateTracker;
