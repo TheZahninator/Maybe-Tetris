@@ -15,6 +15,8 @@ public:
 
 	void update();
 	void learn(KeyboardStateTracker* keyboardTracker);
+	
+	std::vector<double> getInputData();
 
 	void updateFitness(unsigned fitness){ m_fitness = fitness; if (m_fitness > m_highscore) m_highscore = m_fitness; }
 

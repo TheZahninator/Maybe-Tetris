@@ -1,15 +1,15 @@
 #pragma once
 
-#define ALL_MINOS 1
+#define SPECIAL_MINOS 0
 
-#if ALL_MINOS
+#if SPECIAL_MINOS
 #define NUMBER_OF_MINOS 39
 #else
 #define NUMBER_OF_MINOS 7
 #endif
 //+++++++++++++++++++++++++++++++++++++++++
 //STANDARD MINOS
-//+++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++<
 
 #define MAT_MINO_I {0, 0, 0, 0, \
 					1, 1, 1, 1, \

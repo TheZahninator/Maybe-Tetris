@@ -19,8 +19,6 @@ AI::AI(Field& field) : m_fitness(0), m_field(field)
 	topo.push_back(NumButtons + MemorySize);
 
 	m_net.reset(new ZahnAI::NeuralNet(topo));
-	m_net->setETA(0.2);
-	m_net->setAlpha(0.5);
 
 	m_controller.reset(new AIController(&m_keyboardStateTracker));
 }
@@ -29,19 +27,17 @@ AI::AI(Field& field) : m_fitness(0), m_field(field)
 AI::~AI(){
 }
 
-void AI::update(){
-	m_fitness++;
-
+std::vector<double> AI::getInputData(){
 	std::vector<double> input;
 	input.clear();
-	
+
 	//Input the field data
 	for (unsigned i = 0; i < m_field.getWidth() * m_field.getHeight(); i++){
 		double d = m_field.getGrid()[i] ? 1.0 : 0.0;
 		input.push_back(d);
 	}
 
-	
+
 	//Active tetromino position
 	double x = m_field.getCurrentTetromino()->getPosition().x;
 	double y = m_field.getCurrentTetromino()->getPosition().y;
@@ -55,20 +51,20 @@ void AI::update(){
 
 	input.push_back(w);
 	input.push_back(h);
-	
+
 
 	//Active Tetromino matrix data
 	int newMat[5 * 5];
 	memset(newMat, 0, 5 * 5 * sizeof(int));
-	
+
 	int* originalMat = m_field.getCurrentTetromino()->getMatrix();
-	
+
 	for (unsigned i = 0; i < (unsigned)w; i++){
 		for (unsigned j = 0; j < (unsigned)h; j++){
 			newMat[j * 5 + i] = originalMat[j * (unsigned)w + i];
 		}
 	}
-	
+
 	for (unsigned i = 0; i < 5 * 5; i++){
 		double d = newMat[i] > 0 ? 1.0 : 0.0;
 		input.push_back(d);
@@ -99,11 +95,14 @@ void AI::update(){
 	for (unsigned i = 0; i < MemorySize; i++){
 		input.push_back(tmp[tmp.size() - MemorySize + i]);
 	}
-/*
-	m_net->feedForward(input);
 
-	std::vector<double> result;
-	m_net->getResults(result);*/
+	return input;
+}
+
+void AI::update(){
+	m_fitness++;
+
+	std::vector<double> input = getInputData();
 
 	m_net->feedForward(input);
 	std::vector<double> result = m_net->predict();
@@ -173,65 +172,7 @@ AI* AI::recreate(AI* partner){
 
 
 void AI::learn(KeyboardStateTracker* playerKeyboardTracker){
-	std::vector<double> input;
-	input.clear();
-
-	//Input the field data
-	//for (unsigned i = 0; i < m_field.getWidth() * m_field.getHeight(); i++){
-	//	double d = m_field.getGrid()[i] ? 1.0 : 0.0;
-	//	input.push_back(d);
-	//}
-
-	//Active tetromino position
-	double x = m_field.getCurrentTetromino()->getPosition().x;
-	double y = m_field.getCurrentTetromino()->getPosition().y;
-
-	input.push_back(x);
-	input.push_back(y);
-
-	//Active Tetromino size
-	double w = m_field.getCurrentTetromino()->getMatrixSize().x;
-	double h = m_field.getCurrentTetromino()->getMatrixSize().y;
-
-	input.push_back(w);
-	input.push_back(h);
-
-	//Active Tetromino matrix data
-	//int newMat[5 * 5];
-	//memset(newMat, 0, 5 * 5 * sizeof(int));
-	//
-	//int* originalMat = m_field.getCurrentTetromino()->getMatrix();
-	//
-	//for (unsigned i = 0; i < (unsigned)w; i++){
-	//	for (unsigned j = 0; j < (unsigned)h; j++){
-	//		newMat[j * 5 + i] = originalMat[j * (unsigned)w + i];
-	//	}
-	//}
-	//
-	//for (unsigned i = 0; i < 5 * 5; i++){
-	//	double d = newMat[i] > 0 ? 1.0 : 0.0;
-	//	input.push_back(d);
-	//}
-
-	//Type
-	for (unsigned i = 0; i < QUEUE_SIZE; i++)
-		input.push_back((double)m_field.getQueue()[i]->getType());
-
-	//Rotation
-	input.push_back((double)m_field.getCurrentTetromino()->getRotation());
-
-	//Estimated thouching blocks
-	input.push_back((double)m_field.getCurrentTetromino()->getEstimatedTouchingBlocks());
-
-	//Touching blocks
-	input.push_back((double)m_field.getCurrentTetromino()->getTouchingBlocks());
-
-	//Memory
-	std::vector<double> tmp = m_net->predict();
-
-	for (unsigned i = 0; i < MemorySize; i++){
-		input.push_back(tmp[tmp.size() - MemorySize + i]);
-	}
+	std::vector<double> input = getInputData();
 
 	//m_net->feedForward(input);
 
