@@ -25,14 +25,14 @@ public:
 	unsigned m_fitness;
 	unsigned m_highscore;
 
-	std::unique_ptr<ZahnAI::NeuralNet>& getNet(){ return m_net; }
+	std::unique_ptr<ZahnNN::NeuralNet>& getNet(){ return m_net; }
 
 	std::shared_ptr<AIController> m_controller;
 
 	static unsigned MemorySize;
 	const static unsigned NumButtons = 6;
 private:
-	std::unique_ptr<ZahnAI::NeuralNet> m_net;
+	std::unique_ptr<ZahnNN::NeuralNet> m_net;
 
 	Field& m_field;
 	KeyboardStateTracker m_keyboardStateTracker;

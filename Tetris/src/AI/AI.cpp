@@ -18,7 +18,7 @@ AI::AI(Field& field) : m_fitness(0), m_field(field)
 	topo.push_back(64);
 	topo.push_back(NumButtons + MemorySize);
 
-	m_net.reset(new ZahnAI::NeuralNet(topo));
+	m_net.reset(new ZahnNN::NeuralNet(topo));
 
 	m_controller.reset(new AIController(&m_keyboardStateTracker));
 }
@@ -164,7 +164,7 @@ AI* AI::recreate(AI* partner){
 	
 
 	double num = (double)rand();
-	num = ZAHN_MAP(num, 0, RAND_MAX, 1.0, 10.0);
+	num = ZahnNN::map(num, 0.0, (double)RAND_MAX, 1.0, 10.0);
 	child->m_net->mutate(num);
 
 	return child;

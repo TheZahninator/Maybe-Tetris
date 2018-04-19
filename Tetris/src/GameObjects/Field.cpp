@@ -200,7 +200,7 @@ void Field::NewGen(){
 
 	while (AIList.size() < AICount){
 		int num = rand();
-		float result = static_cast<float>(ZAHN_MAP(static_cast<double>(num), 0.0, static_cast<double>(RAND_MAX), 0.0, static_cast<double>(totalChance)));
+		float result = static_cast<float>(ZahnNN::map(static_cast<double>(num), 0.0, static_cast<double>(RAND_MAX), 0.0, static_cast<double>(totalChance)));
 
 		float cumlutativeChance = totalChance;
 
@@ -237,11 +237,11 @@ void Field::saveGenomes(){
 		pugi::xml_node ai = root.append_child("AI");
 
 		for (unsigned j = 0; j < AIList[i]->getNet()->getLayerCount(); j++){
-			ZahnAI::Layer& layer = AIList[i]->getNet()->getLayer(j);
+			ZahnNN::Layer& layer = AIList[i]->getNet()->getLayer(j);
 			pugi::xml_node layerNode = ai.append_child("Layer");
 
 			for (unsigned k = 0; k < layer.size(); k++){
-				ZahnAI::Neuron& neuron = layer[k];
+				ZahnNN::Neuron& neuron = layer[k];
 				pugi::xml_node neuronNode = layerNode.append_child("neuron");
 
 				for (unsigned l = 0; l < neuron.getOutputWeights().size(); l++){
@@ -281,7 +281,7 @@ void Field::loadGenomes(){
 	for(auto ai : root.children("AI")){
 		AIList.push_back(std::unique_ptr<AI>(new AI(*this)));
 
-		ZahnAI::NeuralNet* net = AIList.back()->getNet().get();
+		ZahnNN::NeuralNet* net = AIList.back()->getNet().get();
 
 		int i = 0;
 		for(auto layer : ai.children("Layer")){

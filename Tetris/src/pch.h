@@ -46,6 +46,6 @@ namespace DX
 #include <SFML\Window.hpp>
 #include <SFML\System.hpp>
 
-#include <ZahnAI\ZahnAI.h>
+#include <Neural Network\ZahnNN.h>
 
 #include "Helper\KeyboardStateTracker.h"
