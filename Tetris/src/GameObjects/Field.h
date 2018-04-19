@@ -14,6 +14,13 @@ class Block;
 class TetrominoGroup;
 class AI;
 
+struct ReplayData{
+	unsigned frameNumber;
+	bool pressedButtons[6];
+	bool newTetromino;
+	byte tetrominoQueue[QUEUE_SIZE];
+};
+
 class Field{
 public:
 	Field();
@@ -46,9 +53,9 @@ public:
 	UINT getWidth(){ return mWidth; }
 	UINT getHeight(){ return mHeight; }
 
-	float getGravity(){ return mGravity; }
+	float getGravity(){ return m_gravity; }
 
-	UINT getPoints(){ return mPoints; }
+	UINT getPoints(){ return m_score; }
 	TetrominoGroup* getCurrentTetromino(){ return mTetrominoQueue[0].get(); }
 	std::vector<std::shared_ptr<TetrominoGroup>>& getQueue(){ return mTetrominoQueue; }
 
@@ -64,6 +71,8 @@ public:
 	void saveGenomes();
 	void loadGenomes();
 
+	void saveReplay();
+
 private:
 	void clearLine(int y, int& linesCleared);
 
@@ -78,12 +87,12 @@ private:
 
 	sf::Vector2f mScreenPosition;	
 
-	float mGravity; 
-	UINT mPoints;	
+	float m_gravity; 
+	UINT m_score;	
 	UINT m_Highscore;
 	UINT m_HighscoreAI;
 
-	UINT mTotalLinesCleared; 
+	UINT m_totalLinesCleared; 
 	UINT m_totalLinesHighscore;
 	UINT m_totalLinesHighscoreAI;
 
@@ -92,10 +101,13 @@ private:
 
 	int m_lastTetrominoType;
 
+	bool m_trainingMode;
+
 	void fillBag();
 	void drawFromBag();
 
 	void switchAIMode();
+	void switchTrainingMode();
 
 	bool pressedButtons[6]; //Up, Down, Left, Right, CW, CCW
 
@@ -110,4 +122,14 @@ private:
 	sf::Sprite m_keyRightSprite;
 	sf::Sprite m_keyClockwiseSprite;
 	sf::Sprite m_keyCounterClockwiseSprite;
+
+private:
+	std::vector<ReplayData> m_replayData;
+
+	bool m_recordMode;
+
+	bool m_spawnedNewTetromino;
+	unsigned m_recordModeFrameCount;
+
+	void switchRecordMode();
 };

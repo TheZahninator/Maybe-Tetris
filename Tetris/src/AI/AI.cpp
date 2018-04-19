@@ -9,14 +9,14 @@ AI::AI(Field& field) : m_fitness(0), m_field(field)
 
 	std::vector<unsigned> topo;
 	//topo.push_back(2 + 2 + 1 + 2 + QUEUE_SIZE + NumButtons + MemorySize);
-	topo.push_back(field.getWidth() * field.getHeight() + 2 + 2 + 5 * 5 + QUEUE_SIZE + NumButtons + MemorySize);
+	topo.push_back(field.getWidth() * field.getHeight() + 2 + 2 + 5 * 5 + QUEUE_SIZE + NumButtons /*+ MemorySize*/);
 	topo.push_back(64);
 	topo.push_back(64);
 	topo.push_back(64);
 	topo.push_back(64);
 	topo.push_back(64);
 	topo.push_back(64);
-	topo.push_back(NumButtons + MemorySize);
+	topo.push_back(NumButtons /*+ MemorySize*/);
 
 	m_net.reset(new ZahnNN::NeuralNet(topo));
 
@@ -92,9 +92,9 @@ std::vector<double> AI::getInputData(){
 		input.push_back(tmp[i]);
 	}
 	//Memory
-	for (unsigned i = 0; i < MemorySize; i++){
+	/*for (unsigned i = 0; i < MemorySize; i++){
 		input.push_back(tmp[tmp.size() - MemorySize + i]);
-	}
+	}*/
 
 	return input;
 }

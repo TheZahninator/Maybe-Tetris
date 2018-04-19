@@ -70,13 +70,13 @@ void Field::init(sf::Vector2f& screenPosition){
 		drawFromBag();
 	}
 
-	mGravity = 1.0f;
+	m_gravity = 1.0f;
 	
-	mPoints = 0;
+	m_score = 0;
 	m_Highscore = 0;
 	m_HighscoreAI = 0;
 
-	mTotalLinesCleared = 0;
+	m_totalLinesCleared = 0;
 	m_totalLinesHighscore = 0;
 	m_totalLinesHighscoreAI = 0;
 
@@ -85,16 +85,36 @@ void Field::init(sf::Vector2f& screenPosition){
 	}
 
 	AIMode = false;
+	m_trainingMode = false;
 
 	m_framesSinceLastTetromino = 0;
 
 	for (unsigned i = 0; i < 6; i++)
 		pressedButtons[i] = false;
 
+	m_recordMode = false;
+
 	restart();
 }
 
 void Field::restart(){
+	if (m_recordMode){
+		char c;
+
+		do{
+			std::cout << "Save replay? <Y/n>" << std::endl;
+
+			c = std::getchar();
+		} while (c != 'n' && c != 'Y' && c != '\r');
+
+		if (c == 'y' || c == '\n'){
+			saveReplay();
+			std::cout << "Replay saved" << std::endl;
+		}
+	
+		m_replayData.clear();
+	}
+
 	if (mGrid)
 		delete[] mGrid;
 
@@ -111,7 +131,7 @@ void Field::restart(){
 	}
 
 	if (AIMode){
-		AIList[CurrentAI]->updateFitness(mPoints);
+		AIList[CurrentAI]->updateFitness(m_score);
 		CurrentAI++;
 
 		if (CurrentAI >= AICount){
@@ -121,34 +141,56 @@ void Field::restart(){
 		}
 
 
-		if (mPoints > m_HighscoreAI)
-			m_HighscoreAI = mPoints;
+		if (m_score > m_HighscoreAI)
+			m_HighscoreAI = m_score;
 
-		if (mTotalLinesCleared > m_totalLinesHighscoreAI)
-			m_totalLinesHighscoreAI = mTotalLinesCleared;
+		if (m_totalLinesCleared > m_totalLinesHighscoreAI)
+			m_totalLinesHighscoreAI = m_totalLinesCleared;
 	}
 	else{
-		if (mPoints > m_Highscore)
-			m_Highscore = mPoints;
+		if (m_score > m_Highscore)
+			m_Highscore = m_score;
 
-		if (mTotalLinesCleared > m_totalLinesHighscore)
-			m_totalLinesHighscore = mTotalLinesCleared;
+		if (m_totalLinesCleared > m_totalLinesHighscore)
+			m_totalLinesHighscore = m_totalLinesCleared;
 	}
 
-	mGravity = 1.0f;
-	mPoints = 0;
-	mTotalLinesCleared = 0;
+	m_gravity = 1.0f;
+	m_score = 0;
+	m_totalLinesCleared = 0;
 	m_framesSinceLastTetromino = 0;
 
 	m_AILearningFrameCounter = 0;
+
+	m_recordModeFrameCount = 0;
 }
 
-void Field::switchAIMode(){
+void Field::switchAIMode()
+{
 	restart();
+
 	AIMode = !AIMode;
 	CurrentAI = 0;
 
 	std::cout << "AI mode: " << (AIMode ? "on" : "off") << std::endl;
+}
+
+void Field::switchTrainingMode()
+{
+	restart();
+
+	m_trainingMode = !m_trainingMode;
+
+	std::cout << "Training mode: " << (m_trainingMode ? "on" : "off") << std::endl;
+}
+
+void Field::switchRecordMode()
+{
+	restart();
+
+	m_recordMode = !m_recordMode;
+
+	std::cout << "Recording: " << (m_recordMode ? "on" : "off") << std::endl;
 }
 
 void Field::NewGen(){
@@ -217,9 +259,62 @@ void Field::NewGen(){
 	CurrentGen++;
 }
 
+void Field::saveReplay()
+{
+	pugi::xml_document doc;
+	pugi::xml_node root = doc.append_child("replay");
+	
+	pugi::xml_attribute atr = root.append_attribute("data_count");
+	atr.set_value(m_replayData.size());
+	
+	atr = root.append_attribute("score");
+	atr.set_value(m_score);
+	
+	atr = root.append_attribute("lines");
+	atr.set_value(m_totalLinesCleared);
 
+	for (ReplayData replayData : m_replayData){
+		pugi::xml_node data = root.append_child("data");
+		
+		atr = data.append_attribute("frame");
+		atr.set_value(replayData.frameNumber);
 
-void Field::saveGenomes(){
+		atr = data.append_attribute("spawned_new");
+		atr.set_value(replayData.newTetromino);
+
+		pugi::xml_node buttons = data.append_child("buttons");
+		unsigned i = 0;
+		for (bool button : replayData.pressedButtons){
+			pugi::xml_node button_node = buttons.append_child("button");
+			
+			atr = button_node.append_attribute("index");
+			atr.set_value(i++);
+
+			atr = button_node.append_attribute("pressed");
+			atr.set_value(button);
+		}
+
+		pugi::xml_node queue = data.append_child("queue");
+		i = 0;
+		for (int type : replayData.tetrominoQueue){
+			pugi::xml_node tetromino = queue.append_child("tetromino");
+
+			atr = tetromino.append_attribute("index");
+			atr.set_value(i++);
+
+			atr = tetromino.append_attribute("type");
+			atr.set_value(type);
+		}
+	}
+
+	std::stringstream str;
+	str << "res/replay_" << std::time(nullptr) << ".xml";
+
+	doc.save_file(str.str().c_str());
+}
+
+void Field::saveGenomes()
+{
 	pugi::xml_document doc;
 	pugi::xml_node root = doc.append_child("root");
 	pugi::xml_attribute atr = root.append_attribute("popSize");
@@ -311,34 +406,23 @@ void Field::loadGenomes(){
 
 void Field::nextTetromino(){
 	drawFromBag();
+	m_spawnedNewTetromino = true;
 	if (!mTetrominoQueue[0]->move(sf::Vector2i(0, 0))){ 
 		restart();
 	}
 }
 
-void Field::Update(KeyboardStateTracker* playerKeyboardTracker){
-	/*
-#ifdef _DEBUG
-	sf::Vector2i mousePos(0, 0);
-	if(mouse->x > mScreenPosition.x && mouse->x < mScreenPosition.x + mWidth * BLOCK_SIZE &&
-		mouse->y > mScreenPosition.y && mouse->y < mScreenPosition.y + mHeight * BLOCK_SIZE){
-		int mX = (int)(mouse->x - mScreenPosition.x) / BLOCK_SIZE;
-		int mY = (int)(mouse->y - mScreenPosition.y) / BLOCK_SIZE;
-		mousePos = sf::Vector2i((float)mX, (float)mY);
-
-		if (mouseTracker->leftButton == Mouse::ButtonStateTracker::PRESSED){
-			//if (mGrid[mY * mWidth + mX])
-			//	delete mGrid[mY * mWidth + mX];
-
-			mGrid[mY * mWidth + mX].reset(new Block(mousePos, DirectX::SimpleMath::Vector4(rand() % 255 / 255.0f, rand() % 255 / 255.0f, rand() % 255 / 255.0f, 1.0f)));
-		}
-	}
-#endif
-	*/
+void Field::Update(KeyboardStateTracker* playerKeyboardTracker)
+{
+	m_spawnedNewTetromino = false;
 
 	if (playerKeyboardTracker->isKeyDown(sf::Keyboard::LControl) || playerKeyboardTracker->isKeyDown(sf::Keyboard::RControl)){
 		if (playerKeyboardTracker->isKeyPressed(sf::Keyboard::M))
 			switchAIMode();
+		if (playerKeyboardTracker->isKeyPressed(sf::Keyboard::T))
+			switchTrainingMode();
+		if (playerKeyboardTracker->isKeyPressed(sf::Keyboard::R))
+			switchRecordMode();
 
 		if (playerKeyboardTracker->isKeyPressed(sf::Keyboard::S))
 			saveGenomes();
@@ -359,33 +443,28 @@ void Field::Update(KeyboardStateTracker* playerKeyboardTracker){
 		AIList[CurrentAI]->update();
 		currentKeyboard = &AIList[CurrentAI]->getKeyboardStateTracker();
 	}
-	
-	/*else{
-		m_AILearningFrameCounter++;
 
-		//Check whether any button got pressed
-		bool buttonPressed = false;
-		buttonPressed |= (inputGamePad->dpadUp == inputGamePad->PRESSED);
-		buttonPressed |= (inputGamePad->dpadDown == inputGamePad->PRESSED);
-		buttonPressed |= (inputGamePad->dpadLeft == inputGamePad->PRESSED);
-		buttonPressed |= (inputGamePad->dpadRight == inputGamePad->PRESSED);
-		buttonPressed |= (inputGamePad->x == inputGamePad->PRESSED);
-		buttonPressed |= (inputGamePad->y == inputGamePad->PRESSED);
+	else{
+		if (m_trainingMode){
+			m_AILearningFrameCounter++;
 
-		buttonPressed |= keyboardTracker->IsKeyPressed(Keyboard::Up);
-		buttonPressed |= keyboardState->Down;
-		buttonPressed |= keyboardTracker->IsKeyPressed(Keyboard::Left);
-		buttonPressed |= keyboardTracker->IsKeyPressed(Keyboard::Right);
-		buttonPressed |= keyboardTracker->IsKeyPressed(Keyboard::A);
-		buttonPressed |= keyboardTracker->IsKeyPressed(Keyboard::D);
+			//Check whether any button got pressed
+			bool buttonPressed = false;
 
-		if (buttonPressed || m_AILearningFrameCounter >= 20){
-			for (unsigned i = 0; i < AICount; i++)
-				AIList[i]->learn(inputGamePad, keyboardTracker, keyboardState);
+			buttonPressed |= currentKeyboard->isKeyPressed(sf::Keyboard::Up);
+			buttonPressed |= currentKeyboard->isKeyDown(sf::Keyboard::Down);
+			buttonPressed |= currentKeyboard->isKeyPressed(sf::Keyboard::Left);
+			buttonPressed |= currentKeyboard->isKeyPressed(sf::Keyboard::Right);
+			buttonPressed |= currentKeyboard->isKeyPressed(sf::Keyboard::A);
+			buttonPressed |= currentKeyboard->isKeyPressed(sf::Keyboard::D);
 
-			m_AILearningFrameCounter = 0;
+			if (buttonPressed){ // || m_AILearningFrameCounter >= 20){
+				AIList.front()->learn(currentKeyboard);
+
+				m_AILearningFrameCounter = 0;
+			}
 		}
-	}*/
+	}
 
 	//Update the active tetromino
 	mTetrominoQueue[0]->update(currentKeyboard);
@@ -395,7 +474,7 @@ void Field::Update(KeyboardStateTracker* playerKeyboardTracker){
 		mTetrominoQueue.erase(mTetrominoQueue.begin());
 		nextTetromino();
 
-		mPoints += 50;
+		m_score += 50;
 		m_framesSinceLastTetromino = 0;
 	}
 
@@ -408,6 +487,23 @@ void Field::Update(KeyboardStateTracker* playerKeyboardTracker){
 	pressedButtons[3] = currentKeyboard->isKeyDown(sf::Keyboard::Right) ;//|| currentKeyboard->isKeyPressed(sf::Keyboard::Right);
 	pressedButtons[4] = currentKeyboard->isKeyDown(sf::Keyboard::D)		;//|| currentKeyboard->isKeyPressed(sf::Keyboard::D);
 	pressedButtons[5] = currentKeyboard->isKeyDown(sf::Keyboard::A)		;//|| currentKeyboard->isKeyPressed(sf::Keyboard::A);
+
+	if (m_recordMode){
+		ReplayData currentFrameData;
+		
+		currentFrameData.frameNumber = m_recordModeFrameCount++;
+		currentFrameData.newTetromino = m_spawnedNewTetromino;
+		
+		for (unsigned i = 0; i < 6; i++){
+			currentFrameData.pressedButtons[i] = pressedButtons[i];
+		}
+
+		for (unsigned i = 0; i < mTetrominoQueue.size(); i++){
+			currentFrameData.tetrominoQueue[i] = mTetrominoQueue[i]->getType();
+		}
+
+		m_replayData.push_back(currentFrameData);
+	}
 }
 
 void Field::Render(sf::RenderWindow* window){
@@ -536,7 +632,7 @@ void Field::Render(sf::RenderWindow* window){
 
 	str = std::wstringstream();
 	str.clear();
-	str << mPoints;
+	str << m_score;
 
 	pos.x = xRight;
 
@@ -605,7 +701,7 @@ void Field::Render(sf::RenderWindow* window){
 
 	str = std::wstringstream();
 	str.clear();
-	str << mTotalLinesCleared;
+	str << m_totalLinesCleared;
 
 	pos.x = xRight;
 
@@ -732,10 +828,10 @@ void Field::checkForLineClear(){
 		}
 	}
 
-	mPoints += 1000 * linesCleared * linesCleared;
+	m_score += 1000 * linesCleared * linesCleared;
 
-	mTotalLinesCleared += linesCleared;
-	mGravity = mTotalLinesCleared / 10.0f + 1.0f;
+	m_totalLinesCleared += linesCleared;
+	m_gravity = m_totalLinesCleared / 10.0f + 1.0f;
 }
 
 void Field::clearLine(int y, int& linesCleared){
