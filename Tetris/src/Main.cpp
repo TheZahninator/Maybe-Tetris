@@ -10,6 +10,8 @@ int main(){
 	int w = 800;
 	int h = 600;
 
+	std::cout << sizeof ReplayData << std::endl;
+
 	std::shared_ptr<sf::RenderWindow> window;
 	window.reset( new sf::RenderWindow(sf::VideoMode(w, h), GAME_TITLE));
 	

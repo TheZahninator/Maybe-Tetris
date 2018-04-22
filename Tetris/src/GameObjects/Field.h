@@ -19,6 +19,8 @@ struct ReplayData{
 	bool pressedButtons[6];
 	bool newTetromino;
 	byte tetrominoQueue[QUEUE_SIZE];
+
+	std::vector<double> inputData;
 };
 
 class Field{
@@ -68,8 +70,8 @@ public:
 
 	void NewGen();
 
-	void saveGenomes();
-	void loadGenomes();
+	void saveBest();
+	void loadBest();
 
 	void saveReplay();
 

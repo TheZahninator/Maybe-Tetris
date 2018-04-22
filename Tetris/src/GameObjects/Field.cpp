@@ -2,8 +2,8 @@
 #include "Field.h"
 
 
-Field::Field():
-mWidth(10), mHeight(20), m_copiesInBag(2), m_framesSinceLastTetromino(0), m_AILearningFrameCounter(0), m_lastTetrominoType(0)
+Field::Field() :
+	mWidth(10), mHeight(20), m_copiesInBag(2), m_framesSinceLastTetromino(0), m_AILearningFrameCounter(0), m_lastTetrominoType(0)
 {
 	AICount = 25;
 	CurrentAI = 0;
@@ -11,23 +11,23 @@ mWidth(10), mHeight(20), m_copiesInBag(2), m_framesSinceLastTetromino(0), m_AILe
 	CurrentGen = 0;
 }
 
-void Field::fillBag(){
+void Field::fillBag() {
 
-	for (unsigned i = 0; i < m_copiesInBag; i++){
-		for (int j = 0; j < NUMBER_OF_MINOS; j++){
+	for (unsigned i = 0; i < m_copiesInBag; i++) {
+		for (int j = 0; j < NUMBER_OF_MINOS; j++) {
 			m_bag.add(std::shared_ptr<TetrominoGroup>(new TetrominoGroup(*this, j)));
 		}
 	}
 }
 
-void Field::drawFromBag(){
+void Field::drawFromBag() {
 	std::shared_ptr<TetrominoGroup> group;
-	
-	do{
-		if(!mTetrominoQueue.empty())
+
+	do {
+		if (!mTetrominoQueue.empty())
 			m_lastTetrominoType = mTetrominoQueue.back()->getType();
 		group = m_bag.draw();
-		
+
 		if (m_bag.isEmpty())
 			fillBag();
 	} while (group->getType() == m_lastTetrominoType);
@@ -36,7 +36,7 @@ void Field::drawFromBag(){
 
 }
 
-void Field::init(sf::Vector2f& screenPosition){
+void Field::init(sf::Vector2f& screenPosition) {
 	m_backgroundSprite = sf::Sprite(TextureManager::getTexture(TEX_BACKGROUND_1));
 	m_backgroundBorderSprite = sf::Sprite(TextureManager::getTexture(TEX_BACKGROUND_FIELD_BORDER));
 	m_backgroundOverlaySprite = sf::Sprite(TextureManager::getTexture(TEX_BACKGROUND_OVERLAY));
@@ -66,12 +66,12 @@ void Field::init(sf::Vector2f& screenPosition){
 
 	fillBag();
 
-	for (int i = 0; i < QUEUE_SIZE; i++){
+	for (int i = 0; i < QUEUE_SIZE; i++) {
 		drawFromBag();
 	}
 
 	m_gravity = 1.0f;
-	
+
 	m_score = 0;
 	m_Highscore = 0;
 	m_HighscoreAI = 0;
@@ -80,7 +80,7 @@ void Field::init(sf::Vector2f& screenPosition){
 	m_totalLinesHighscore = 0;
 	m_totalLinesHighscoreAI = 0;
 
-	for (unsigned i = 0; i < AICount; i++){
+	for (unsigned i = 0; i < AICount; i++) {
 		AIList.push_back(std::unique_ptr<AI>(new AI(*this)));
 	}
 
@@ -97,21 +97,21 @@ void Field::init(sf::Vector2f& screenPosition){
 	restart();
 }
 
-void Field::restart(){
-	if (m_recordMode){
+void Field::restart() {
+	if (m_recordMode) {
 		char c;
 
-		do{
+		do {
 			std::cout << "Save replay? <Y/n>" << std::endl;
 
 			c = std::getchar();
-		} while (c != 'n' && c != 'Y' && c != '\r');
+		} while (c != 'n' && c != 'Y' && c != '\n');
 
-		if (c == 'y' || c == '\n'){
+		if (c == 'Y' || c == '\n') {
 			saveReplay();
 			std::cout << "Replay saved" << std::endl;
 		}
-	
+
 		m_replayData.clear();
 	}
 
@@ -126,15 +126,15 @@ void Field::restart(){
 
 	fillBag();
 
-	for (int i = 0; i < QUEUE_SIZE; i++){
+	for (int i = 0; i < QUEUE_SIZE; i++) {
 		drawFromBag();
 	}
 
-	if (AIMode){
+	if (AIMode) {
 		AIList[CurrentAI]->updateFitness(m_score);
 		CurrentAI++;
 
-		if (CurrentAI >= AICount){
+		if (CurrentAI >= AICount) {
 			NewGen();
 
 			CurrentAI = 0;
@@ -147,7 +147,7 @@ void Field::restart(){
 		if (m_totalLinesCleared > m_totalLinesHighscoreAI)
 			m_totalLinesHighscoreAI = m_totalLinesCleared;
 	}
-	else{
+	else {
 		if (m_score > m_Highscore)
 			m_Highscore = m_score;
 
@@ -193,19 +193,19 @@ void Field::switchRecordMode()
 	std::cout << "Recording: " << (m_recordMode ? "on" : "off") << std::endl;
 }
 
-void Field::NewGen(){
+void Field::NewGen() {
 	if (AIList.size() < SurvivingAIs)
 		SurvivingAIs = AIList.size();
 
 	std::vector<std::unique_ptr<AI>> survived;
 	survived.clear();
 
-	while (survived.size() < SurvivingAIs){
+	while (survived.size() < SurvivingAIs) {
 		AI* highestFitness = AIList.front().get();
 		unsigned x = 0;
 
-		for (unsigned i = 1; i < AIList.size(); i++){
-			if (AIList[i]->m_fitness > highestFitness->m_fitness){
+		for (unsigned i = 1; i < AIList.size(); i++) {
+			if (AIList[i]->m_fitness > highestFitness->m_fitness) {
 				highestFitness = AIList[i].get();
 				x = i;
 			}
@@ -219,7 +219,7 @@ void Field::NewGen(){
 	AIList.clear();
 
 	//Write surviving AIs back into the list.
-	for (unsigned i = 0; i < survived.size(); i++){
+	for (unsigned i = 0; i < survived.size(); i++) {
 		AIList.push_back(std::move(survived[i]));
 		AIList.back()->updateFitness(0);
 	}
@@ -234,26 +234,36 @@ void Field::NewGen(){
 
 	totalChance += 1;
 
-	for (unsigned i = 1; i < SurvivingAIs; i++){
+	for (unsigned i = 1; i < SurvivingAIs; i++) {
 		float chance = chances[i - 1] / chanceScale;
 		totalChance += chance;
 		chances.push_back(chance);
 	}
 
-	while (AIList.size() < AICount){
+	while (AIList.size() < AICount) {
 		int num = rand();
 		float result = static_cast<float>(ZahnNN::map(static_cast<double>(num), 0.0, static_cast<double>(RAND_MAX), 0.0, static_cast<double>(totalChance)));
 
 		float cumlutativeChance = totalChance;
-
-		for (unsigned i = 0; i < chances.size(); i++){
+		unsigned i = 0;
+		for (i = 0; i < chances.size(); i++) {
 			cumlutativeChance -= chances[i];
-			if (result >= cumlutativeChance){
+			if (result >= cumlutativeChance) {
 
-				AIList.push_back(std::unique_ptr<AI>(AIList[0]->recreate(AIList[1].get())));
 				break;
 			}
 		}
+
+		cumlutativeChance = totalChance;
+		unsigned j = 0;
+		for (j = 0; j < chances.size(); j++) {
+			cumlutativeChance -= chances[j];
+			if (result >= cumlutativeChance) {
+
+				break;
+			}
+		}
+		AIList.push_back(std::unique_ptr<AI>(AIList[i]->recreate(AIList[j].get())));
 	}
 	CurrentAI = 0;
 	CurrentGen++;
@@ -261,21 +271,23 @@ void Field::NewGen(){
 
 void Field::saveReplay()
 {
+	std::cout << "Saving replay..." << std::endl;
+
 	pugi::xml_document doc;
 	pugi::xml_node root = doc.append_child("replay");
-	
+
 	pugi::xml_attribute atr = root.append_attribute("data_count");
 	atr.set_value(m_replayData.size());
-	
+
 	atr = root.append_attribute("score");
 	atr.set_value(m_score);
-	
+
 	atr = root.append_attribute("lines");
 	atr.set_value(m_totalLinesCleared);
 
-	for (ReplayData replayData : m_replayData){
+	for (ReplayData replayData : m_replayData) {
 		pugi::xml_node data = root.append_child("data");
-		
+
 		atr = data.append_attribute("frame");
 		atr.set_value(replayData.frameNumber);
 
@@ -284,9 +296,9 @@ void Field::saveReplay()
 
 		pugi::xml_node buttons = data.append_child("buttons");
 		unsigned i = 0;
-		for (bool button : replayData.pressedButtons){
+		for (bool button : replayData.pressedButtons) {
 			pugi::xml_node button_node = buttons.append_child("button");
-			
+
 			atr = button_node.append_attribute("index");
 			atr.set_value(i++);
 
@@ -296,7 +308,7 @@ void Field::saveReplay()
 
 		pugi::xml_node queue = data.append_child("queue");
 		i = 0;
-		for (int type : replayData.tetrominoQueue){
+		for (int type : replayData.tetrominoQueue) {
 			pugi::xml_node tetromino = queue.append_child("tetromino");
 
 			atr = tetromino.append_attribute("index");
@@ -305,58 +317,81 @@ void Field::saveReplay()
 			atr = tetromino.append_attribute("type");
 			atr.set_value(type);
 		}
+
+		pugi::xml_node input_node = data.append_child("input");
+
+		for (unsigned i = 0; i < replayData.inputData.size(); i++) {
+			pugi::xml_node value = input_node.append_child("value");
+
+			atr = value.append_attribute("index");
+			atr.set_value(i);
+
+			atr = value.append_attribute("val");
+			atr.set_value(replayData.inputData[i]);
+		}
 	}
 
 	std::stringstream str;
-	str << "res/replay_" << std::time(nullptr) << ".xml";
+	str << "res/replays/replay_" << std::time(nullptr) << ".xml";
 
 	doc.save_file(str.str().c_str());
 }
 
-void Field::saveGenomes()
+void Field::saveBest()
 {
 	pugi::xml_document doc;
 	pugi::xml_node root = doc.append_child("root");
-	pugi::xml_attribute atr = root.append_attribute("popSize");
-	atr.set_value(AICount);
-	atr = root.append_attribute("highscore");
-	atr.set_value(m_HighscoreAI);
-	atr = root.append_attribute("lines");
-	atr.set_value(m_totalLinesHighscoreAI);
-	atr = root.append_attribute("generation");
-	atr.set_value(CurrentGen);
-	atr = root.append_attribute("memory");
+
+	pugi::xml_attribute atr = root.append_attribute("memory");
 	atr.set_value(AI::MemorySize);
 
-	for (unsigned i = 0; i < AICount; i++){
-		pugi::xml_node ai = root.append_child("AI");
+	ZahnNN::NeuralNet* best_net = AIList.front()->getNet().get();
 
-		for (unsigned j = 0; j < AIList[i]->getNet()->getLayerCount(); j++){
-			ZahnNN::Layer& layer = AIList[i]->getNet()->getLayer(j);
-			pugi::xml_node layerNode = ai.append_child("Layer");
+	pugi::xml_node ai = root.append_child("AI");
 
-			for (unsigned k = 0; k < layer.size(); k++){
-				ZahnNN::Neuron& neuron = layer[k];
-				pugi::xml_node neuronNode = layerNode.append_child("neuron");
+	for (unsigned j = 0; j < best_net->getLayerCount(); j++) {
+		ZahnNN::Layer& layer = best_net->getLayer(j);
+		pugi::xml_node layerNode = ai.append_child("Layer");
 
-				for (unsigned l = 0; l < neuron.getOutputWeights().size(); l++){
-					double weight = neuron.getOutputWeights()[l].weight;
-					pugi::xml_attribute weightAtr = neuronNode.append_attribute("weight");
-					weightAtr.set_value(weight);
-				}
+		bool isOutputLayer = j == best_net->getLayerCount() - 1;
+
+		pugi::xml_attribute size = layerNode.append_attribute("size");
+		size.set_value(layer.size() - (unsigned)!isOutputLayer);
+
+		for (unsigned k = 0; k < layer.size() - (unsigned)isOutputLayer; k++) {
+			ZahnNN::Neuron& neuron = layer[k];
+			pugi::xml_node neuronNode = layerNode.append_child("neuron");
+
+			for (unsigned l = 0; l < neuron.getOutputWeights().size(); l++) {
+				double weight = neuron.getOutputWeights()[l].weight;
+				pugi::xml_attribute weightAtr = neuronNode.append_attribute("weight");
+				weightAtr.set_value(weight);
+			}
+		}
+
+		if (!isOutputLayer) {
+			ZahnNN::Neuron& bias = layer.back();
+			pugi::xml_node biasNode = layerNode.append_child("bias");
+
+			for (unsigned l = 0; l < bias.getOutputWeights().size(); l++) {
+				double weight = bias.getOutputWeights()[l].weight;
+				pugi::xml_attribute weightAtr = biasNode.append_attribute("weight");
+				weightAtr.set_value(weight);
 			}
 		}
 	}
 
 	doc.save_file("res/save.xml");
+
+	std::cout << "Saved network" << std::endl;
 }
 
-void Field::loadGenomes(){
+void Field::loadBest() {
 	pugi::xml_document doc;
 	doc.load_file("res/save.xml");
 
 	pugi::xml_node root = doc.child("root");
-	pugi::xml_attribute atr = root.attribute("popSize");
+	/*pugi::xml_attribute atr = root.attribute("popSize");
 	AICount = atr.as_uint();
 	atr = root.attribute("highscore");
 	if (atr)
@@ -369,45 +404,57 @@ void Field::loadGenomes(){
 		CurrentGen = atr.as_uint();
 	atr = root.attribute("memory");
 	if (atr)
-		AI::MemorySize = atr.as_uint();
+		AI::MemorySize = atr.as_uint();*/
 
 	AIList.clear();
 
-	for(auto ai : root.children("AI")){
-		AIList.push_back(std::unique_ptr<AI>(new AI(*this)));
+	AIList.push_back(std::unique_ptr<AI>(new AI(*this)));
 
-		ZahnNN::NeuralNet* net = AIList.back()->getNet().get();
+	ZahnNN::NeuralNet* net = AIList.back()->getNet().get();
 
-		int i = 0;
-		for(auto layer : ai.children("Layer")){
+	pugi::xml_node ai = root.child("AI");
 
-			int j = 0;
-			for (auto neuron : layer.children("neuron")){
+	int i = 0;
+	for (auto layer : ai.children("Layer"))
+	{
+		int j = 0;
+		for (auto neuron : layer.children("neuron"))
+		{
+			int k = 0;
+			for (auto weight : neuron.attributes())
+			{
+				net->getLayer(i)[j].getOutputWeights()[k].weight = weight.as_double();
 
-				int k = 0;
-				for (auto weight : neuron.attributes()){
-
-					net->getLayer(i)[j].getOutputWeights()[k].weight = weight.as_double();
-
-					k++;
-				}
-
-				j++;
+				k++;
 			}
-
-			i++;
+			j++;
 		}
+
+		for (auto bias : layer.children("bias"))
+		{
+
+			int k = 0;
+			for (auto weight : bias.attributes())
+			{
+				net->getLayer(i).back().getOutputWeights()[k].weight = weight.as_double();
+
+				k++;
+			}
+			j++;
+		}
+		i++;
 	}
 
 	CurrentAI = 0;
+	NewGen();
 	restart();
 	CurrentAI = 0;
 }
 
-void Field::nextTetromino(){
+void Field::nextTetromino() {
 	drawFromBag();
 	m_spawnedNewTetromino = true;
-	if (!mTetrominoQueue[0]->move(sf::Vector2i(0, 0))){ 
+	if (!mTetrominoQueue[0]->move(sf::Vector2i(0, 0))) {
 		restart();
 	}
 }
@@ -416,7 +463,7 @@ void Field::Update(KeyboardStateTracker* playerKeyboardTracker)
 {
 	m_spawnedNewTetromino = false;
 
-	if (playerKeyboardTracker->isKeyDown(sf::Keyboard::LControl) || playerKeyboardTracker->isKeyDown(sf::Keyboard::RControl)){
+	if (playerKeyboardTracker->isKeyDown(sf::Keyboard::LControl) || playerKeyboardTracker->isKeyDown(sf::Keyboard::RControl)) {
 		if (playerKeyboardTracker->isKeyPressed(sf::Keyboard::M))
 			switchAIMode();
 		if (playerKeyboardTracker->isKeyPressed(sf::Keyboard::T))
@@ -425,16 +472,16 @@ void Field::Update(KeyboardStateTracker* playerKeyboardTracker)
 			switchRecordMode();
 
 		if (playerKeyboardTracker->isKeyPressed(sf::Keyboard::S))
-			saveGenomes();
+			saveBest();
 		if (playerKeyboardTracker->isKeyPressed(sf::Keyboard::L))
-			loadGenomes();
+			loadBest();
 	}
 
 	KeyboardStateTracker* currentKeyboard = playerKeyboardTracker;
 
 	//Let the AI control the Button presses
-	
-	if (AIMode){
+
+	if (AIMode) {
 
 		m_framesSinceLastTetromino++;
 		if (m_framesSinceLastTetromino > 60 * 60)
@@ -444,8 +491,8 @@ void Field::Update(KeyboardStateTracker* playerKeyboardTracker)
 		currentKeyboard = &AIList[CurrentAI]->getKeyboardStateTracker();
 	}
 
-	else{
-		if (m_trainingMode){
+	else {
+		if (m_trainingMode) {
 			m_AILearningFrameCounter++;
 
 			//Check whether any button got pressed
@@ -458,7 +505,7 @@ void Field::Update(KeyboardStateTracker* playerKeyboardTracker)
 			buttonPressed |= currentKeyboard->isKeyPressed(sf::Keyboard::A);
 			buttonPressed |= currentKeyboard->isKeyPressed(sf::Keyboard::D);
 
-			if (buttonPressed){ // || m_AILearningFrameCounter >= 20){
+			if (buttonPressed) { // || m_AILearningFrameCounter >= 20){
 				AIList.front()->learn(currentKeyboard);
 
 				m_AILearningFrameCounter = 0;
@@ -469,7 +516,7 @@ void Field::Update(KeyboardStateTracker* playerKeyboardTracker)
 	//Update the active tetromino
 	mTetrominoQueue[0]->update(currentKeyboard);
 
-	if (mTetrominoQueue[0]->shouldDestroy()){
+	if (mTetrominoQueue[0]->shouldDestroy()) {
 
 		mTetrominoQueue.erase(mTetrominoQueue.begin());
 		nextTetromino();
@@ -478,38 +525,57 @@ void Field::Update(KeyboardStateTracker* playerKeyboardTracker)
 		m_framesSinceLastTetromino = 0;
 	}
 
-
+	bool buttonsPressedLastFrame[6];
+	for (unsigned i = 0; i < 6; i++) {
+		buttonsPressedLastFrame[i] = pressedButtons[i];
+	}
 
 	//Update pressed buttons
-	pressedButtons[0] = currentKeyboard->isKeyDown(sf::Keyboard::Up)	;//|| currentKeyboard->isKeyPressed(sf::Keyboard::Up);
-	pressedButtons[1] = currentKeyboard->isKeyDown(sf::Keyboard::Down)	;//|| currentKeyboard->isKeyPressed(sf::Keyboard::Down);
-	pressedButtons[2] = currentKeyboard->isKeyDown(sf::Keyboard::Left)	;//|| currentKeyboard->isKeyPressed(sf::Keyboard::Left);
-	pressedButtons[3] = currentKeyboard->isKeyDown(sf::Keyboard::Right) ;//|| currentKeyboard->isKeyPressed(sf::Keyboard::Right);
-	pressedButtons[4] = currentKeyboard->isKeyDown(sf::Keyboard::D)		;//|| currentKeyboard->isKeyPressed(sf::Keyboard::D);
-	pressedButtons[5] = currentKeyboard->isKeyDown(sf::Keyboard::A)		;//|| currentKeyboard->isKeyPressed(sf::Keyboard::A);
+	pressedButtons[0] = currentKeyboard->isKeyDown(sf::Keyboard::Up);//|| currentKeyboard->isKeyPressed(sf::Keyboard::Up);
+	pressedButtons[1] = currentKeyboard->isKeyDown(sf::Keyboard::Down);//|| currentKeyboard->isKeyPressed(sf::Keyboard::Down);
+	pressedButtons[2] = currentKeyboard->isKeyDown(sf::Keyboard::Left);//|| currentKeyboard->isKeyPressed(sf::Keyboard::Left);
+	pressedButtons[3] = currentKeyboard->isKeyDown(sf::Keyboard::Right);//|| currentKeyboard->isKeyPressed(sf::Keyboard::Right);
+	pressedButtons[4] = currentKeyboard->isKeyDown(sf::Keyboard::D);//|| currentKeyboard->isKeyPressed(sf::Keyboard::D);
+	pressedButtons[5] = currentKeyboard->isKeyDown(sf::Keyboard::A);//|| currentKeyboard->isKeyPressed(sf::Keyboard::A);
 
-	if (m_recordMode){
+	if (m_recordMode)
+	{
 		ReplayData currentFrameData;
-		
+
 		currentFrameData.frameNumber = m_recordModeFrameCount++;
 		currentFrameData.newTetromino = m_spawnedNewTetromino;
-		
-		for (unsigned i = 0; i < 6; i++){
+
+		for (unsigned i = 0; i < 6; i++)
+		{
 			currentFrameData.pressedButtons[i] = pressedButtons[i];
 		}
 
-		for (unsigned i = 0; i < mTetrominoQueue.size(); i++){
+		for (unsigned i = 0; i < mTetrominoQueue.size(); i++)
+		{
 			currentFrameData.tetrominoQueue[i] = mTetrominoQueue[i]->getType();
+		}
+
+		auto frontAI = AIList.front().get();
+
+		for (unsigned i = 0; i < frontAI->getInputData().size() - frontAI->NumButtons; i++)
+		{
+			currentFrameData.inputData.push_back(frontAI->getInputData()[i]);
+		}
+
+		for (unsigned i = 0; i < 6; i++)
+		{
+			currentFrameData.inputData.push_back(buttonsPressedLastFrame[i] ? 1.0 : 0.0);
 		}
 
 		m_replayData.push_back(currentFrameData);
 	}
 }
 
-void Field::Render(sf::RenderWindow* window){
+void Field::Render(sf::RenderWindow* window)
+{
 	//Render the background
 	window->draw(m_backgroundSprite);
-	
+
 	//Render the field border
 	sf::Vector2f borderOffset;
 	borderOffset.x = (mWidth * BLOCK_SIZE - m_backgroundBorderSprite.getTexture()->getSize().x) / 2.0f;
@@ -523,8 +589,8 @@ void Field::Render(sf::RenderWindow* window){
 	m_backgroundOverlaySprite.setPosition(0.0f, 0.0f);
 	window->draw(m_backgroundOverlaySprite);
 
-	for (unsigned y = 0; y < mHeight; y++){
-		for (unsigned x = 0; x < mWidth; x++){
+	for (unsigned y = 0; y < mHeight; y++) {
+		for (unsigned x = 0; x < mWidth; x++) {
 			sf::Vector2f pos = mScreenPosition + sf::Vector2f((float)x, (float)y) * (float)BLOCK_SIZE;
 			m_backgroudFieldTileSprite.setPosition(pos.x, pos.y);
 			m_backgroudFieldTileSprite.setColor(BLOCK_COLOR_WHITE * COLOR_ALPHA_25);
@@ -532,9 +598,9 @@ void Field::Render(sf::RenderWindow* window){
 		}
 	}
 
-	for (unsigned y = 0; y < mHeight; y++){
-		for (unsigned x = 0; x < mWidth; x++){
-			if (mGrid[y * mWidth + x]){
+	for (unsigned y = 0; y < mHeight; y++) {
+		for (unsigned x = 0; x < mWidth; x++) {
+			if (mGrid[y * mWidth + x]) {
 				mGrid[y * mWidth + x]->render(window);
 			}
 		}
@@ -542,7 +608,7 @@ void Field::Render(sf::RenderWindow* window){
 
 	mTetrominoQueue[0]->render(window);
 
-	for (UINT i = 1; i < mTetrominoQueue.size(); i++){
+	for (UINT i = 1; i < mTetrominoQueue.size(); i++) {
 		mTetrominoQueue[i]->render(window, mScreenPosition + sf::Vector2f(float((mWidth + 2) * BLOCK_SIZE), float((i - 1) * BLOCK_SIZE * 3.5f)), 0.75f);
 	}
 
@@ -551,7 +617,7 @@ void Field::Render(sf::RenderWindow* window){
 	sf::IntRect rect;
 	rect.width = TEX_KEY_OVERLAY_SIZE.x;
 	rect.height = TEX_KEY_OVERLAY_SIZE.y;
-	
+
 	//CCW
 	sf::Vector2i off = pressedButtons[5] ? TEX_KEY_OVERLAY_CCW_PRESSED_RECT : TEX_KEY_OVERLAY_CCW_RELEASED_RECT;
 
@@ -564,8 +630,8 @@ void Field::Render(sf::RenderWindow* window){
 	//CW
 	off = pressedButtons[4] ? TEX_KEY_OVERLAY_CW_PRESSED_RECT : TEX_KEY_OVERLAY_CW_RELEASED_RECT;
 
-	rect.left =   static_cast<LONG>(off.x);
-	rect.top =    static_cast<LONG>(off.y);
+	rect.left = static_cast<LONG>(off.x);
+	rect.top = static_cast<LONG>(off.y);
 
 	m_keyClockwiseSprite.setTextureRect(rect);
 	window->draw(m_keyClockwiseSprite);
@@ -573,9 +639,9 @@ void Field::Render(sf::RenderWindow* window){
 
 	//UP
 	off = pressedButtons[0] ? TEX_KEY_OVERLAY_UP_PRESSED_RECT : TEX_KEY_OVERLAY_UP_RELEASED_RECT;
-	
-	rect.left =   static_cast<LONG>(off.x);
-	rect.top =    static_cast<LONG>(off.y);
+
+	rect.left = static_cast<LONG>(off.x);
+	rect.top = static_cast<LONG>(off.y);
 
 	m_keyUpSprite.setTextureRect(rect);
 	window->draw(m_keyUpSprite);
@@ -611,7 +677,7 @@ void Field::Render(sf::RenderWindow* window){
 	float xLeft = mScreenPosition.x + (mWidth + 7) * BLOCK_SIZE;
 	float xRight = static_cast<float>(m_screenSize.x - 150);
 	sf::Vector2f pos = mScreenPosition;
-	
+
 	sf::Font font;
 	font.loadFromFile("res/arial.ttf");
 
@@ -647,7 +713,7 @@ void Field::Render(sf::RenderWindow* window){
 
 	pos.y += 20;
 	pos.x = xLeft;
-	
+
 	text.setString(sf::String(str.str()));
 	text.setPosition(pos);
 	text.setOrigin(0, 0);
@@ -803,26 +869,26 @@ void Field::Render(sf::RenderWindow* window){
 	window->draw(text);
 }
 
-void Field::checkForLineClear(){
+void Field::checkForLineClear() {
 	int linesCleared = 0;
 
-	for (unsigned y = 0; y < mHeight; y++){
+	for (unsigned y = 0; y < mHeight; y++) {
 
 		int blocksInLine = 0;
 
-		for (unsigned x = 0; x < mWidth; x++){
-			if (mGrid[y * mWidth + x]){
+		for (unsigned x = 0; x < mWidth; x++) {
+			if (mGrid[y * mWidth + x]) {
 				blocksInLine++;
 			}
 
-			if (blocksInLine >= 10){
+			if (blocksInLine >= 10) {
 				clearLine(y, linesCleared);
 			}
 		}
 	}
 
-	for (unsigned y = 0; y < mHeight; y++){
-		for (unsigned x = 0; x < mWidth; x++){
+	for (unsigned y = 0; y < mHeight; y++) {
+		for (unsigned x = 0; x < mWidth; x++) {
 			if (mGrid[y * mWidth + x])
 				mGrid[y * mWidth + x]->setPosition(sf::Vector2i(x, y));
 		}
@@ -834,16 +900,16 @@ void Field::checkForLineClear(){
 	m_gravity = m_totalLinesCleared / 10.0f + 1.0f;
 }
 
-void Field::clearLine(int y, int& linesCleared){
-	for (unsigned x = 0; x < mWidth; x++){
+void Field::clearLine(int y, int& linesCleared) {
+	for (unsigned x = 0; x < mWidth; x++) {
 		//delete mGrid[y * mWidth + x];
 		//mGrid[y * mWidth + x] = nullptr;
 		mGrid[y * mWidth + x].reset();
 	}
 	linesCleared++;
 
-	for (unsigned j = y; j > 0; j--){
-		for (unsigned i = 0; i < mWidth; i++){
+	for (unsigned j = y; j > 0; j--) {
+		for (unsigned i = 0; i < mWidth; i++) {
 			mGrid[j * mWidth + i] = mGrid[(j - 1) * mWidth + i];
 		}
 	}
@@ -851,11 +917,11 @@ void Field::clearLine(int y, int& linesCleared){
 		mGrid[i].reset();
 }
 
-void Field::addBlock(std::shared_ptr<Block> block){
+void Field::addBlock(std::shared_ptr<Block> block) {
 	int x = (int)block->getPosition().x;
 	int y = (int)block->getPosition().y;
 
-	if (x < 0 || y < 0){
+	if (x < 0 || y < 0) {
 		//restart();
 		return;
 	}

@@ -39,15 +39,15 @@ std::vector<double> AI::getInputData(){
 
 
 	//Active tetromino position
-	double x = m_field.getCurrentTetromino()->getPosition().x;
-	double y = m_field.getCurrentTetromino()->getPosition().y;
+	double x = m_field.getCurrentTetromino()->getPosition().x / (double)m_field.getWidth();
+	double y = m_field.getCurrentTetromino()->getPosition().y / (double)m_field.getHeight();
 
 	input.push_back(x);
 	input.push_back(y);
 
 	//Active Tetromino size
-	double w = m_field.getCurrentTetromino()->getMatrixSize().x;
-	double h = m_field.getCurrentTetromino()->getMatrixSize().y;
+	double w = m_field.getCurrentTetromino()->getMatrixSize().x / 4.0;
+	double h = m_field.getCurrentTetromino()->getMatrixSize().y / 4.0;
 
 	input.push_back(w);
 	input.push_back(h);
