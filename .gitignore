@@ -6,6 +6,11 @@
 *.user
 *.sln.docstates
 
+# Generated resource files
+Tetris/res/save.xml
+Tetris/res/replays/
+AI-Trainer/res/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

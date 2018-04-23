@@ -383,7 +383,7 @@ void Field::saveBest()
 
 	doc.save_file("res/save.xml");
 
-	std::cout << "Saved network" << std::endl;
+	std::cout << "Saved best network" << std::endl;
 }
 
 void Field::loadBest() {
@@ -445,10 +445,11 @@ void Field::loadBest() {
 		i++;
 	}
 
-	CurrentAI = 0;
 	NewGen();
 	restart();
 	CurrentAI = 0;
+
+	std::cout << "Loaded network" << std::endl;
 }
 
 void Field::nextTetromino() {

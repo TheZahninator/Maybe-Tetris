@@ -6,16 +6,20 @@ unsigned AI::MemorySize = 10;
 
 AI::AI(Field& field) : m_fitness(0), m_field(field)
 {
+	ZahnNN::Neuron::DefaultActivationFunction = ZahnNN::Neuron::ActivationFastSigmoid;
+	ZahnNN::Neuron::DefaultActivationFunctionDerivative = ZahnNN::Neuron::ActivationFastSigmoidDerivative;
 
 	std::vector<unsigned> topo;
 	//topo.push_back(2 + 2 + 1 + 2 + QUEUE_SIZE + NumButtons + MemorySize);
 	topo.push_back(field.getWidth() * field.getHeight() + 2 + 2 + 5 * 5 + QUEUE_SIZE + NumButtons /*+ MemorySize*/);
+	topo.push_back(32);
+	topo.push_back(32);
+	topo.push_back(32);
+	topo.push_back(32);
+	/*
 	topo.push_back(64);
 	topo.push_back(64);
-	topo.push_back(64);
-	topo.push_back(64);
-	topo.push_back(64);
-	topo.push_back(64);
+	*/
 	topo.push_back(NumButtons /*+ MemorySize*/);
 
 	m_net.reset(new ZahnNN::NeuralNet(topo));

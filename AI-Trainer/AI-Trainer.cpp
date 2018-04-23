@@ -22,6 +22,8 @@ void saveNetwork(ZahnNN::NeuralNet& net, const wchar_t* path);
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	ZahnNN::Neuron::DefaultActivationFunction = ZahnNN::Neuron::ActivationFastSigmoid;
+	ZahnNN::Neuron::DefaultActivationFunctionDerivative = ZahnNN::Neuron::ActivationFastSigmoidDerivative;
 
 	std::cout << "Tetris AI trainer" << std::endl << std::endl;
 
